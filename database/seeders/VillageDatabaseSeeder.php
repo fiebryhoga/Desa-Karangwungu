@@ -76,6 +76,18 @@ class VillageDatabaseSeeder extends Seeder
                 'views' => 195,
                 'is_featured' => false,
                 'published_at' => Carbon::now()->subDays(18),
+            ],
+            [
+                'title' => 'Pelayanan Posyandu Balita & Lansia Terpadu Cegah Stunting di Desa Karangwungu',
+                'slug' => 'pelayanan-posyandu-balita-dan-lansia-karangwungu',
+                'category' => 'Kesehatan',
+                'excerpt' => 'Kader PKK dan Bidan Desa Karangwungu aktif berikan pemeriksaan gizi, vitamin, serta penimbangan balita berkala.',
+                'content' => '<p>Pemerintah Desa Karangwungu melalui Pokja IV PKK dan Tenaga Kesehatan Puskesmas Karanggeneng rutin menggelar Posyandu Balita dan Lansia Terpadu di Balai Dusun. Kegiatan ini merupakan upaya nyata dalam menjaga kesehatan ibu, anak, dan pencegahan stunting sejak dini.</p>',
+                'image' => 'https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?auto=format&fit=crop&w=1200&q=80',
+                'author' => 'Kader PKK Karangwungu',
+                'views' => 310,
+                'is_featured' => false,
+                'published_at' => Carbon::now()->subDays(22),
             ]
         ];
 

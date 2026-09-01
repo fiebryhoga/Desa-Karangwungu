@@ -19,11 +19,29 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
 
+    <!-- Inline Theme Initializer (Prevent FOUC) -->
+    <script>
+        (function() {
+            try {
+                const savedTheme = localStorage.getItem('theme');
+                if (savedTheme === 'light') {
+                    document.documentElement.classList.remove('dark');
+                    document.documentElement.classList.add('light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    document.documentElement.classList.remove('light');
+                }
+            } catch (e) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
+
     @viteReactRefresh
     @vite(['resources/css/app.css', 'resources/js/app.jsx'])
     @inertiaHead
 </head>
-<body class="bg-texture-main text-zinc-100 antialiased min-h-screen selection:bg-red-800 selection:text-amber-300">
+<body class="bg-texture-main text-zinc-900 dark:text-zinc-100 antialiased min-h-screen selection:bg-red-800 selection:text-amber-300 transition-colors duration-300">
     @inertia
 </body>
 </html>

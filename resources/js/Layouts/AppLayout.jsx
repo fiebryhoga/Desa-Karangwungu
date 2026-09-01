@@ -35,7 +35,7 @@ export default function AppLayout({ children }) {
     };
 
     return (
-        <div className="min-h-screen flex flex-col bg-texture-main text-zinc-100 antialiased selection:bg-red-800 selection:text-amber-300">
+        <div className="min-h-screen flex flex-col bg-texture-main text-zinc-900 dark:text-zinc-100 antialiased selection:bg-red-800 selection:text-amber-300 pb-16 lg:pb-0">
             {/* Accessibility: Skip to Main Content */}
             <a
                 href="#main-content"
@@ -85,9 +85,9 @@ export default function AppLayout({ children }) {
                 <button
                     onClick={scrollToTop}
                     aria-label="Kembali ke atas"
-                    className="fixed bottom-6 right-6 z-40 p-2.5 rounded-lg bg-zinc-900/95 text-amber-400 border border-amber-500/50 shadow-2xl hover:bg-red-800 hover:text-white hover:scale-105 transition-all duration-200 cursor-pointer"
+                    className="fixed bottom-20 lg:bottom-6 right-5 lg:right-6 z-30 h-11 w-11 rounded-2xl bg-white/85 dark:bg-zinc-900/85 backdrop-blur-xl text-zinc-800 dark:text-zinc-200 border border-zinc-200/90 dark:border-zinc-800/90 shadow-lg hover:shadow-red-600/20 hover:bg-red-600 hover:text-white dark:hover:bg-red-600 dark:hover:text-white hover:border-red-500 hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center cursor-pointer group"
                 >
-                    <ArrowUp className="h-5 w-5" />
+                    <ArrowUp className="h-5 w-5 group-hover:-translate-y-0.5 transition-transform" />
                 </button>
             )}
         </div>

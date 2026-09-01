@@ -1,85 +1,121 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @source "../views/**/*.blade.php";
 @source "../js/**/*.{js,jsx,ts,tsx}";
 
 @layer base {
   :root {
-    --background: 0 0% 4%;
+    --background: 0 0% 100%;
+    --foreground: 240 10% 4%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 4%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 4%;
+    
+    --primary: 350 89% 50%;
+    --primary-foreground: 0 0% 98%;
+
+    --accent-red: 350 89% 45%;
+    --accent-gold: 43 96% 45%;
+
+    --border: 240 6% 90%;
+    --input: 240 6% 90%;
+    --ring: 350 89% 45%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 240 10% 3%;
     --foreground: 0 0% 98%;
-    --card: 0 0% 8%;
+    --card: 240 10% 5%;
     --card-foreground: 0 0% 98%;
-    --popover: 0 0% 8%;
+    --popover: 240 10% 5%;
     --popover-foreground: 0 0% 98%;
     
     --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
+    --primary-foreground: 240 10% 4%;
 
     --accent-red: 350 89% 50%;
     --accent-gold: 43 96% 56%;
 
-    --border: 0 0% 16%;
-    --input: 0 0% 16%;
+    --border: 240 5% 15%;
+    --input: 240 5% 15%;
     --ring: 43 96% 56%;
-    --radius: 0.5rem;
-  }
-
-  * {
-    border-color: rgba(255, 255, 255, 0.08);
   }
 
   body {
+    background-color: #fafafa;
+    color: #18181b;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  .dark body {
     background-color: #060608;
     color: #f4f4f5;
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 }
 
-/* Master Unified Seamless Background (Satu kesatuan Merah - Hitam - Emas) */
+/* Master Background: Terang (Putih dengan Sentuhan Gradasi Merah Halus & Tekstur Grid Dot) */
 .bg-texture-main {
+  background-color: #fafafa;
+  background-image: 
+    radial-gradient(1100px 550px at 50% -120px, rgba(220, 38, 38, 0.08), transparent 70%),
+    radial-gradient(850px 450px at 100% 45%, rgba(220, 38, 38, 0.05), transparent 65%),
+    radial-gradient(850px 450px at 0% 85%, rgba(220, 38, 38, 0.05), transparent 65%),
+    radial-gradient(circle at 1px 1px, #d4d4d8 1px, transparent 0);
+  background-size: auto, auto, auto, 28px 28px;
+  background-attachment: fixed;
+}
+
+/* Master Background: Gelap (Hitam Obsidian dengan Sentuhan Gradasi Merah Crimson Mewah) */
+.dark .bg-texture-main {
   background-color: #060608;
   background-image: 
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(185, 28, 28, 0.25), transparent),
-    radial-gradient(ellipse 60% 40% at 100% 40%, rgba(180, 83, 9, 0.12), transparent),
-    radial-gradient(ellipse 60% 40% at 0% 70%, rgba(153, 27, 27, 0.18), transparent),
-    radial-gradient(ellipse 80% 50% at 50% 120%, rgba(185, 28, 28, 0.2), transparent),
-    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23fbbf24' fill-opacity='0.025'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    radial-gradient(1100px 550px at 50% -120px, rgba(185, 28, 28, 0.28), transparent 70%),
+    radial-gradient(850px 450px at 100% 45%, rgba(185, 28, 28, 0.16), transparent 65%),
+    radial-gradient(850px 450px at 0% 85%, rgba(185, 28, 28, 0.18), transparent 65%),
+    radial-gradient(circle at 1px 1px, #27272a 1px, transparent 0);
+  background-size: auto, auto, auto, 28px 28px;
   background-attachment: fixed;
 }
 
 /* Ambient glow accents */
 .ambient-glow-red {
   position: absolute;
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, rgba(185, 28, 28, 0.2) 0%, transparent 70%);
-  filter: blur(60px);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(220, 38, 38, 0.09) 0%, transparent 70%);
+  filter: blur(75px);
   pointer-events: none;
   z-index: 0;
+}
+.dark .ambient-glow-red {
+  background: radial-gradient(circle, rgba(185, 28, 28, 0.22) 0%, transparent 70%);
 }
 
 .ambient-glow-gold {
   position: absolute;
-  width: 450px;
-  height: 450px;
-  background: radial-gradient(circle, rgba(217, 119, 6, 0.15) 0%, transparent 70%);
-  filter: blur(60px);
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(217, 119, 6, 0.07) 0%, transparent 70%);
+  filter: blur(75px);
   pointer-events: none;
   z-index: 0;
 }
+.dark .ambient-glow-gold {
+  background: radial-gradient(circle, rgba(217, 119, 6, 0.14) 0%, transparent 70%);
+}
 
-/* Custom scrollbar */
+/* Hide scrollbar for Chrome, Safari and Opera */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  display: none;
 }
-::-webkit-scrollbar-track {
-  background: #060608;
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(185, 28, 28, 0.6);
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(217, 119, 6, 0.8);
+
+/* Hide scrollbar for IE, Edge and Firefox */
+html, body {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
