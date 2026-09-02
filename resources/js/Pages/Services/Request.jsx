@@ -48,42 +48,35 @@ export default function Request({ defaultType = 'sku' }) {
             />
 
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <Breadcrumb
-                    items={[
-                        { label: 'Layanan Online', url: '/layanan' },
-                        { label: 'Ajukan Surat Online', url: '/layanan/ajukan' },
-                    ]}
-                />
-
                 <div className="my-6">
                     <Badge variant="red">Pelayanan Mandiri</Badge>
-                    <h1 className="text-3xl font-extrabold text-white mt-2">
+                    <h1 className="text-3xl font-extrabold text-zinc-900 dark:text-white mt-2">
                         Formulir Permohonan Surat Online
                     </h1>
-                    <p className="text-base text-zinc-300 mt-1 leading-relaxed">
+                    <p className="text-base text-zinc-600 dark:text-zinc-400 mt-1 leading-relaxed">
                         Silakan lengkapi data pemohon di bawah ini dengan benar sesuai data KTP / KK Anda.
                     </p>
                 </div>
 
                 <div className="my-8">
-                    <Card className="border-zinc-800">
+                    <Card className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
                         <CardHeader>
-                            <CardTitle className="text-lg text-amber-400">Data Pemohon & Keperluan</CardTitle>
-                            <CardDescription>
-                                Setelah form dikirimkan, Anda akan memperoleh <strong className="text-white">Kode Tracking</strong> untuk memantau proses verifikasi berkas oleh perangkat desa.
+                            <CardTitle className="text-lg text-red-600 dark:text-amber-400">Data Pemohon & Keperluan</CardTitle>
+                            <CardDescription className="text-zinc-500 dark:text-zinc-400">
+                                Setelah form dikirimkan, Anda akan memperoleh <strong className="text-zinc-900 dark:text-white">Kode Tracking</strong> untuk memantau proses verifikasi berkas oleh perangkat desa.
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
                             <form onSubmit={handleSubmit} className="space-y-5">
                                 {/* Jenis Surat */}
                                 <div>
-                                    <label className="block text-sm font-semibold text-zinc-200 mb-1.5">
-                                        Jenis Surat yang Diajukan <span className="text-red-400">*</span>
+                                    <label className="block text-sm font-semibold text-zinc-700 dark:text-zinc-200 mb-1.5">
+                                        Jenis Surat yang Diajukan <span className="text-red-500">*</span>
                                     </label>
                                     <select
                                         value={data.letter_type}
                                         onChange={(e) => setData('letter_type', e.target.value)}
-                                        className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3.5 py-2.5 text-sm text-zinc-100 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-500"
+                                        className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-amber-400 focus:border-red-500 dark:focus:border-amber-500"
                                         required
                                     >
                                         <option value="Surat Keterangan Usaha (SKU)">Surat Keterangan Usaha (SKU)</option>
@@ -95,33 +88,33 @@ export default function Request({ defaultType = 'sku' }) {
                                         <option value="Surat Pengantar Kehilangan">Surat Pengantar Kehilangan</option>
                                     </select>
                                     {errors.letter_type && (
-                                        <p className="text-xs text-red-400 mt-1">{errors.letter_type}</p>
+                                        <p className="text-xs text-red-500 mt-1">{errors.letter_type}</p>
                                     )}
                                 </div>
 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     {/* Nama Lengkap */}
                                     <div>
-                                        <label className="block text-sm font-semibold text-zinc-200 mb-1.5">
-                                            Nama Lengkap (Sesuai KTP) <span className="text-red-400">*</span>
+                                        <label className="block text-sm font-semibold text-zinc-700 dark:text-zinc-200 mb-1.5">
+                                            Nama Lengkap (Sesuai KTP) <span className="text-red-500">*</span>
                                         </label>
                                         <input
                                             type="text"
                                             placeholder="Contoh: Budi Prasetyo"
                                             value={data.citizen_name}
                                             onChange={(e) => setData('citizen_name', e.target.value)}
-                                            className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-500"
+                                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-amber-400 focus:border-red-500 dark:focus:border-amber-500"
                                             required
                                         />
                                         {errors.citizen_name && (
-                                            <p className="text-xs text-red-400 mt-1">{errors.citizen_name}</p>
+                                            <p className="text-xs text-red-500 mt-1">{errors.citizen_name}</p>
                                         )}
                                     </div>
 
                                     {/* NIK */}
                                     <div>
-                                        <label className="block text-sm font-semibold text-zinc-200 mb-1.5">
-                                            NIK (16 Digit Angka) <span className="text-red-400">*</span>
+                                        <label className="block text-sm font-semibold text-zinc-700 dark:text-zinc-200 mb-1.5">
+                                            NIK (16 Digit Angka) <span className="text-red-500">*</span>
                                         </label>
                                         <input
                                             type="text"
@@ -129,11 +122,11 @@ export default function Request({ defaultType = 'sku' }) {
                                             placeholder="3524xxxxxxxxxxxx"
                                             value={data.citizen_nik}
                                             onChange={(e) => setData('citizen_nik', e.target.value.replace(/\D/g, ''))}
-                                            className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-500"
+                                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-amber-400 focus:border-red-500 dark:focus:border-amber-500"
                                             required
                                         />
                                         {errors.citizen_nik && (
-                                            <p className="text-xs text-red-400 mt-1">{errors.citizen_nik}</p>
+                                            <p className="text-xs text-red-500 mt-1">{errors.citizen_nik}</p>
                                         )}
                                     </div>
                                 </div>
@@ -141,64 +134,57 @@ export default function Request({ defaultType = 'sku' }) {
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     {/* No Telepon / WhatsApp */}
                                     <div>
-                                        <label className="block text-sm font-semibold text-zinc-200 mb-1.5">
-                                            Nomor WhatsApp / HP Aktif <span className="text-red-400">*</span>
+                                        <label className="block text-sm font-semibold text-zinc-700 dark:text-zinc-200 mb-1.5">
+                                            Nomor WhatsApp / HP Aktif <span className="text-red-500">*</span>
                                         </label>
                                         <input
                                             type="tel"
                                             placeholder="081234567890"
                                             value={data.citizen_phone}
                                             onChange={(e) => setData('citizen_phone', e.target.value)}
-                                            className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-500"
+                                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-amber-400 focus:border-red-500 dark:focus:border-amber-500"
                                             required
                                         />
                                         {errors.citizen_phone && (
-                                            <p className="text-xs text-red-400 mt-1">{errors.citizen_phone}</p>
+                                            <p className="text-xs text-red-500 mt-1">{errors.citizen_phone}</p>
                                         )}
                                     </div>
 
                                     {/* Alamat */}
                                     <div>
-                                        <label className="block text-sm font-semibold text-zinc-200 mb-1.5">
-                                            Alamat Lengkap (RT/RW / Dusun) <span className="text-red-400">*</span>
+                                        <label className="block text-sm font-semibold text-zinc-700 dark:text-zinc-200 mb-1.5">
+                                            Alamat Lengkap (RT/RW / Dusun) <span className="text-red-500">*</span>
                                         </label>
                                         <input
                                             type="text"
                                             placeholder="RT 02 RW 01 Dusun Krajan"
                                             value={data.citizen_address}
                                             onChange={(e) => setData('citizen_address', e.target.value)}
-                                            className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-500"
+                                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-amber-400 focus:border-red-500 dark:focus:border-amber-500"
                                             required
                                         />
                                         {errors.citizen_address && (
-                                            <p className="text-xs text-red-400 mt-1">{errors.citizen_address}</p>
+                                            <p className="text-xs text-red-500 mt-1">{errors.citizen_address}</p>
                                         )}
                                     </div>
                                 </div>
 
                                 {/* Keperluan / Tujuan Surat */}
                                 <div>
-                                    <label className="block text-sm font-semibold text-zinc-200 mb-1.5">
-                                        Keperluan / Tujuan Pembuatan Surat <span className="text-red-400">*</span>
+                                    <label className="block text-sm font-semibold text-zinc-700 dark:text-zinc-200 mb-1.5">
+                                        Keperluan / Tujuan Pembuatan Surat <span className="text-red-500">*</span>
                                     </label>
                                     <textarea
                                         rows={3}
                                         placeholder="Contoh: Untuk persyaratan pengajuan modal usaha KUR BRI Unit Karanggeneng."
                                         value={data.purpose}
                                         onChange={(e) => setData('purpose', e.target.value)}
-                                        className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3.5 py-2.5 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-500"
+                                        className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-amber-400 focus:border-red-500 dark:focus:border-amber-500"
                                         required
                                     />
                                     {errors.purpose && (
-                                        <p className="text-xs text-red-400 mt-1">{errors.purpose}</p>
+                                        <p className="text-xs text-red-500 mt-1">{errors.purpose}</p>
                                     )}
-                                </div>
-
-                                <div className="p-3.5 rounded-lg bg-zinc-950 border border-zinc-800 text-xs text-zinc-400 flex items-start gap-2.5">
-                                    <Info className="h-4 w-4 text-amber-400 shrink-0 mt-0.5" />
-                                    <span>
-                                        Dengan menekan tombol Kirim Permohonan, Anda menyatakan bahwa data yang diisi adalah benar dan dapat dipertanggungjawabkan sesuai hukum yang berlaku.
-                                    </span>
                                 </div>
 
                                 <div className="pt-2">

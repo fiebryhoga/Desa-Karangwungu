@@ -11,7 +11,15 @@ export default function AppLayout({ children }) {
     const [alertDismissed, setAlertDismissed] = useState(false);
 
     useEffect(() => {
-        setAlertDismissed(false);
+        if (flash?.success || flash?.error) {
+            setAlertDismissed(false);
+            const timer = setTimeout(() => {
+                setAlertDismissed(true);
+            }, 3500);
+            return () => clearTimeout(timer);
+        } else {
+            setAlertDismissed(true);
+        }
     }, [flash]);
 
     useEffect(() => {
@@ -85,7 +93,7 @@ export default function AppLayout({ children }) {
                 <button
                     onClick={scrollToTop}
                     aria-label="Kembali ke atas"
-                    className="fixed bottom-20 lg:bottom-6 right-5 lg:right-6 z-30 h-11 w-11 rounded-2xl bg-white/85 dark:bg-zinc-900/85 backdrop-blur-xl text-zinc-800 dark:text-zinc-200 border border-zinc-200/90 dark:border-zinc-800/90 shadow-lg hover:shadow-red-600/20 hover:bg-red-600 hover:text-white dark:hover:bg-red-600 dark:hover:text-white hover:border-red-500 hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center cursor-pointer group"
+                    className="fixed bottom-20 lg:bottom-6 right-5 lg:right-6 z-30 h-11 w-11 rounded-2xl bg-white dark:bg-zinc-900 text-red-600 dark:text-red-400 border border-zinc-200/90 dark:border-zinc-800 shadow-lg hover:shadow-red-600/30 hover:bg-red-600 hover:text-white dark:hover:bg-red-600 dark:hover:text-white hover:border-red-600 hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center cursor-pointer group"
                 >
                     <ArrowUp className="h-5 w-5 group-hover:-translate-y-0.5 transition-transform" />
                 </button>

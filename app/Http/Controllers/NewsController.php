@@ -27,12 +27,23 @@ class NewsController extends Controller
             $query->where('category', $category);
         }
 
-        $posts = $query->orderBy('published_at', 'desc')->paginate(9)->withQueryString();
+        $posts = $query->orderBy('published_at', 'desc')->paginate(6)->withQueryString();
+
+        $recommendedPosts = Post::where('is_featured', true)
+            ->orderBy('published_at', 'desc')
+            ->take(3)
+            ->get();
+
+        $popularPosts = Post::orderBy('views', 'desc')
+            ->take(4)
+            ->get();
 
         $categories = ['Semua', 'Berita', 'Pertanian', 'Perikanan', 'Pengumuman', 'Prestasi'];
 
         return Inertia::render('News/Index', [
             'posts' => $posts,
+            'recommendedPosts' => $recommendedPosts,
+            'popularPosts' => $popularPosts,
             'filters' => [
                 'search' => $search,
                 'category' => $category ?: 'Semua',
@@ -48,18 +59,27 @@ class NewsController extends Controller
         // Increment view count
         $post->increment('views');
 
+        // Load approved comments with nested replies
+        $post->load('comments');
+
         $relatedPosts = Post::where('id', '!=', $post->id)
             ->where(function ($q) use ($post) {
                 $q->where('category', $post->category)
                   ->orWhere('is_featured', true);
             })
             ->orderBy('published_at', 'desc')
-            ->take(3)
+            ->take(4)
+            ->get();
+
+        $popularPosts = Post::where('id', '!=', $post->id)
+            ->orderBy('views', 'desc')
+            ->take(5)
             ->get();
 
         return Inertia::render('News/Show', [
             'post' => $post,
             'relatedPosts' => $relatedPosts,
+            'popularPosts' => $popularPosts,
         ]);
     }
 }

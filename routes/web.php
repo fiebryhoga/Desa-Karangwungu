@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\HomeController;
@@ -46,6 +47,7 @@ Route::get('/galeri', [GalleryController::class, 'index'])->name('gallery.index'
 // Berita & Pengumuman
 Route::get('/berita', [NewsController::class, 'index'])->name('news.index');
 Route::get('/berita/{slug}', [NewsController::class, 'show'])->name('news.show');
+Route::post('/berita/{slug}/komentar', [CommentController::class, 'store'])->name('news.comment.store');
 
 // Kontak, Lokasi & Pengaduan
 Route::get('/kontak', [ContactController::class, 'index'])->name('contact.index');

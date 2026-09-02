@@ -34,15 +34,13 @@ export default function Contact({ feedbacks = [] }) {
             />
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <Breadcrumb items={[{ label: 'Kontak & Pengaduan', url: '/kontak' }]} />
-
                 {/* Header Title */}
                 <div className="my-6">
                     <Badge variant="gold">Hubungi Kami</Badge>
-                    <h1 className="text-3xl font-extrabold text-white mt-2">
+                    <h1 className="text-3xl font-extrabold text-zinc-900 dark:text-white mt-2">
                         Kontak & Layanan Aspirasi Warga
                     </h1>
-                    <p className="text-base text-zinc-300 mt-1 max-w-3xl leading-relaxed">
+                    <p className="text-base text-zinc-600 dark:text-zinc-400 mt-1 max-w-3xl leading-relaxed">
                         Kami siap melayani kebutuhan informasi dan mendengar masukan konstruktif dari seluruh masyarakat Desa Karangwungu.
                     </p>
                 </div>
@@ -53,52 +51,52 @@ export default function Contact({ feedbacks = [] }) {
                     <div className="lg:col-span-5 space-y-6">
                         <Card>
                             <CardHeader>
-                                <CardTitle className="text-base text-amber-400">Kantor Balai Desa</CardTitle>
+                                <CardTitle className="text-base text-red-600 dark:text-amber-400">Kantor Balai Desa</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4 text-sm">
                                 <div className="flex items-start gap-3">
-                                    <div className="h-9 w-9 rounded-lg bg-red-950/80 text-red-400 border border-red-800/40 flex items-center justify-center shrink-0">
+                                    <div className="h-9 w-9 rounded-lg bg-red-500/10 dark:bg-red-950/80 text-red-600 dark:text-red-400 border border-red-500/20 dark:border-red-800/40 flex items-center justify-center shrink-0">
                                         <MapPin className="h-5 w-5" />
                                     </div>
                                     <div>
-                                        <span className="font-semibold text-white block">Alamat Resmi:</span>
-                                        <p className="text-zinc-400 mt-0.5 leading-relaxed">
+                                        <span className="font-semibold text-zinc-900 dark:text-white block">Alamat Resmi:</span>
+                                        <p className="text-zinc-600 dark:text-zinc-400 mt-0.5 leading-relaxed">
                                             Jl. Raya Karangwungu No. 01, Kecamatan Karanggeneng, Kabupaten Lamongan, Jawa Timur 62254
                                         </p>
                                     </div>
                                 </div>
 
                                 <div className="flex items-start gap-3">
-                                    <div className="h-9 w-9 rounded-lg bg-amber-950/80 text-amber-400 border border-amber-800/40 flex items-center justify-center shrink-0">
+                                    <div className="h-9 w-9 rounded-lg bg-amber-500/10 dark:bg-amber-950/80 text-amber-600 dark:text-amber-400 border border-amber-500/20 dark:border-amber-800/40 flex items-center justify-center shrink-0">
                                         <Phone className="h-5 w-5" />
                                     </div>
                                     <div>
-                                        <span className="font-semibold text-white block">Telepon / WhatsApp:</span>
-                                        <p className="text-zinc-400 mt-0.5">
+                                        <span className="font-semibold text-zinc-900 dark:text-white block">Telepon / WhatsApp:</span>
+                                        <p className="text-zinc-600 dark:text-zinc-400 mt-0.5">
                                             (0812) 3456-7890
                                         </p>
                                     </div>
                                 </div>
 
                                 <div className="flex items-start gap-3">
-                                    <div className="h-9 w-9 rounded-lg bg-red-950/80 text-red-400 border border-red-800/40 flex items-center justify-center shrink-0">
+                                    <div className="h-9 w-9 rounded-lg bg-red-500/10 dark:bg-red-950/80 text-red-600 dark:text-red-400 border border-red-500/20 dark:border-red-800/40 flex items-center justify-center shrink-0">
                                         <Mail className="h-5 w-5" />
                                     </div>
                                     <div>
-                                        <span className="font-semibold text-white block">Email Resmi:</span>
-                                        <p className="text-zinc-400 mt-0.5">
+                                        <span className="font-semibold text-zinc-900 dark:text-white block">Email Resmi:</span>
+                                        <p className="text-zinc-600 dark:text-zinc-400 mt-0.5">
                                             pemdes@karangwungu-lamongan.desa.id
                                         </p>
                                     </div>
                                 </div>
 
                                 <div className="flex items-start gap-3">
-                                    <div className="h-9 w-9 rounded-lg bg-amber-950/80 text-amber-400 border border-amber-800/40 flex items-center justify-center shrink-0">
+                                    <div className="h-9 w-9 rounded-lg bg-amber-500/10 dark:bg-amber-950/80 text-amber-600 dark:text-amber-400 border border-amber-500/20 dark:border-amber-800/40 flex items-center justify-center shrink-0">
                                         <Clock className="h-5 w-5" />
                                     </div>
                                     <div>
-                                        <span className="font-semibold text-white block">Jam Operasional Pelayanan:</span>
-                                        <p className="text-zinc-400 mt-0.5">
+                                        <span className="font-semibold text-zinc-900 dark:text-white block">Jam Operasional Pelayanan:</span>
+                                        <p className="text-zinc-600 dark:text-zinc-400 mt-0.5">
                                             Senin - Kamis: 08.00 - 15.30 WIB<br />
                                             Jumat: 08.00 - 14.30 WIB
                                         </p>
@@ -131,11 +129,11 @@ export default function Contact({ feedbacks = [] }) {
                     <div className="lg:col-span-7 space-y-6">
                         <Card>
                             <CardHeader>
-                                <CardTitle className="text-lg flex items-center gap-2 text-white">
-                                    <MessageSquare className="h-5 w-5 text-amber-400" />
+                                <CardTitle className="text-lg flex items-center gap-2 text-zinc-900 dark:text-white">
+                                    <MessageSquare className="h-5 w-5 text-red-600 dark:text-amber-400" />
                                     <span>Form Aspirasi & Pengaduan Warga (Lapor Desa)</span>
                                 </CardTitle>
-                                <CardDescription>
+                                <CardDescription className="text-zinc-500 dark:text-zinc-400">
                                     Sampaikan aspirasi, kritik membangun, maupun laporan kondisi fasilitas umum secara langsung kepada Pemdes Karangwungu.
                                 </CardDescription>
                             </CardHeader>
@@ -144,7 +142,7 @@ export default function Contact({ feedbacks = [] }) {
                                 <form onSubmit={handleSubmit} className="space-y-4">
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-xs font-semibold text-zinc-300 mb-1">
+                                            <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
                                                 Nama Lengkap <span className="text-red-500">*</span>
                                             </label>
                                             <input
@@ -152,14 +150,14 @@ export default function Contact({ feedbacks = [] }) {
                                                 placeholder="Nama Anda"
                                                 value={data.name}
                                                 onChange={(e) => setData('name', e.target.value)}
-                                                className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3.5 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-500"
+                                                className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 px-3.5 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-amber-400 focus:border-red-500 dark:focus:border-amber-500"
                                                 required
                                             />
-                                            {errors.name && <p className="text-xs text-red-400 mt-1">{errors.name}</p>}
+                                            {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name}</p>}
                                         </div>
 
                                         <div>
-                                            <label className="block text-xs font-semibold text-zinc-300 mb-1">
+                                            <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
                                                 No. HP / WhatsApp / Email <span className="text-red-500">*</span>
                                             </label>
                                             <input
@@ -167,21 +165,21 @@ export default function Contact({ feedbacks = [] }) {
                                                 placeholder="08xxxxxxxxxx atau email"
                                                 value={data.contact_info}
                                                 onChange={(e) => setData('contact_info', e.target.value)}
-                                                className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3.5 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-500"
+                                                className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 px-3.5 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-amber-400 focus:border-red-500 dark:focus:border-amber-500"
                                                 required
                                             />
-                                            {errors.contact_info && <p className="text-xs text-red-400 mt-1">{errors.contact_info}</p>}
+                                            {errors.contact_info && <p className="text-xs text-red-500 mt-1">{errors.contact_info}</p>}
                                         </div>
                                     </div>
 
                                     <div>
-                                        <label className="block text-xs font-semibold text-zinc-300 mb-1">
+                                        <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
                                             Kategori Laporan / Masukan <span className="text-red-500">*</span>
                                         </label>
                                         <select
                                             value={data.category}
                                             onChange={(e) => setData('category', e.target.value)}
-                                            className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3.5 py-2 text-sm text-zinc-100 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-500"
+                                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 px-3.5 py-2 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-amber-400 focus:border-red-500 dark:focus:border-amber-500"
                                         >
                                             <option value="Saran">Saran & Masukan Pembangunan</option>
                                             <option value="Pelayanan">Kritik & Pelayanan Administrasi</option>
@@ -192,7 +190,7 @@ export default function Contact({ feedbacks = [] }) {
                                     </div>
 
                                     <div>
-                                        <label className="block text-xs font-semibold text-zinc-300 mb-1">
+                                        <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
                                             Isi Pesan Aspirasi / Pengaduan <span className="text-red-500">*</span>
                                         </label>
                                         <textarea
@@ -200,10 +198,10 @@ export default function Contact({ feedbacks = [] }) {
                                             placeholder="Tuliskan uraian aspirasi, lokasi spesifik, atau pengaduan Anda dengan jelas dan santun..."
                                             value={data.message}
                                             onChange={(e) => setData('message', e.target.value)}
-                                            className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3.5 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-500"
+                                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 px-3.5 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-amber-400 focus:border-red-500 dark:focus:border-amber-500"
                                             required
                                         />
-                                        {errors.message && <p className="text-xs text-red-400 mt-1">{errors.message}</p>}
+                                        {errors.message && <p className="text-xs text-red-500 mt-1">{errors.message}</p>}
                                     </div>
 
                                     <Button

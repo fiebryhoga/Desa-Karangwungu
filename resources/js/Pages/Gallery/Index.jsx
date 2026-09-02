@@ -29,15 +29,13 @@ export default function GalleryIndex({
             />
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <Breadcrumb items={[{ label: 'Galeri Desa', url: '/galeri' }]} />
-
                 {/* Header Title */}
                 <div className="my-6">
                     <Badge variant="gold">Dokumentasi Visual</Badge>
-                    <h1 className="text-3xl font-extrabold text-white mt-2">
+                    <h1 className="text-3xl font-extrabold text-zinc-900 dark:text-white mt-2">
                         Galeri Foto & Dokumentasi Kegiatan
                     </h1>
-                    <p className="text-base text-zinc-300 mt-1 max-w-3xl leading-relaxed">
+                    <p className="text-base text-zinc-600 dark:text-zinc-400 mt-1 max-w-3xl leading-relaxed">
                         Koleksi arsip dokumentasi visual pembangunan, pelayanan masyarakat, keindahan alam, serta denyut kehidupan warga Desa Karangwungu.
                     </p>
                 </div>
@@ -51,7 +49,7 @@ export default function GalleryIndex({
                             className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                                 selectedCategory === cat
                                     ? 'bg-amber-500 text-zinc-950 shadow-md'
-                                    : 'bg-zinc-900/80 text-zinc-300 hover:bg-zinc-800 border border-zinc-800'
+                                    : 'bg-zinc-100 dark:bg-zinc-900/80 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-zinc-800'
                             }`}
                         >
                             {cat}
@@ -61,10 +59,10 @@ export default function GalleryIndex({
 
                 {/* Gallery Masonry / Grid */}
                 {galleries.length === 0 ? (
-                    <Card className="my-8 border-dashed border-zinc-800">
+                    <Card className="my-8 border-dashed border-zinc-300 dark:border-zinc-800">
                         <CardContent className="p-8 text-center space-y-2">
-                            <Image className="h-10 w-10 text-amber-400 mx-auto" />
-                            <p className="text-base font-semibold text-zinc-300">
+                            <Image className="h-10 w-10 text-red-600 dark:text-amber-400 mx-auto" />
+                            <p className="text-base font-semibold text-zinc-700 dark:text-zinc-300">
                                 Belum ada foto dalam kategori ini.
                             </p>
                         </CardContent>
@@ -74,7 +72,7 @@ export default function GalleryIndex({
                         {galleries.map((item) => (
                             <Card
                                 key={item.id}
-                                className="overflow-hidden flex flex-col group cursor-pointer hover:border-amber-500/60 transition-all hover:shadow-2xl bg-zinc-900/70 backdrop-blur-md"
+                                className="overflow-hidden flex flex-col group cursor-pointer hover:border-red-500/50 dark:hover:border-amber-500/60 transition-all hover:shadow-2xl bg-white dark:bg-zinc-900/70 border-zinc-200 dark:border-zinc-800 backdrop-blur-md"
                                 onClick={() => setActiveImage(item)}
                             >
                                 <div className="relative h-56 w-full overflow-hidden bg-zinc-950">

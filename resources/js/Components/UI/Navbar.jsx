@@ -231,7 +231,7 @@ export default function Navbar() {
                             )}
                         </div>
 
-                        {/* Layanan Online Dropdown */}
+                        {/* Layanan Dropdown */}
                         <div
                             className="relative"
                             onMouseEnter={() => setServicesDropdownOpen(true)}
@@ -244,7 +244,7 @@ export default function Navbar() {
                                         : "text-zinc-700 dark:text-zinc-300 hover:text-red-600 dark:hover:text-amber-300"
                                 }`}
                             >
-                                <span>Layanan Online</span>
+                                <span>Layanan</span>
                                 <ChevronDown className="h-3.5 w-3.5 opacity-70" />
                                 {isActive("/layanan") && (
                                     <span className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-red-600 dark:bg-amber-400 rounded-full" />
@@ -312,13 +312,13 @@ export default function Navbar() {
                                     : "text-zinc-700 dark:text-zinc-300 hover:text-red-600 dark:hover:text-amber-300"
                             }`}
                         >
-                            <span>Warta Desa</span>
+                            <span>Berita</span>
                             {isActive("/berita") && (
                                 <span className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-red-600 dark:bg-amber-400 rounded-full" />
                             )}
                         </Link>
 
-                        {/* Informasi & Lainnya Dropdown */}
+                        {/* Informasi Dropdown */}
                         <div
                             className="relative"
                             onMouseEnter={() => setMoreDropdownOpen(true)}
@@ -331,7 +331,7 @@ export default function Navbar() {
                                         : "text-zinc-700 dark:text-zinc-300 hover:text-red-600 dark:hover:text-amber-300"
                                 }`}
                             >
-                                <span>Informasi & Lainnya</span>
+                                <span>Informasi</span>
                                 <ChevronDown className="h-3.5 w-3.5 opacity-70" />
                                 {isMoreActive() && (
                                     <span className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-red-600 dark:bg-amber-400 rounded-full" />
@@ -677,7 +677,7 @@ export default function Navbar() {
                                     )}
                                 </div>
 
-                                {/* Accordion: Layanan Online */}
+                                {/* Accordion: Layanan */}
                                 <div>
                                     <button
                                         onClick={() =>
@@ -691,7 +691,7 @@ export default function Navbar() {
                                                 : "text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-900"
                                         }`}
                                     >
-                                        <span>Layanan Online</span>
+                                        <span>Layanan</span>
                                         <ChevronDown
                                             className={`h-4 w-4 transition-transform duration-200 ${
                                                 mobileServicesOpen
@@ -733,7 +733,7 @@ export default function Navbar() {
                                     )}
                                 </div>
 
-                                {/* Warta Desa */}
+                                {/* Berita */}
                                 <Link
                                     href="/berita"
                                     onClick={() => setMobileMenuOpen(false)}
@@ -743,10 +743,10 @@ export default function Navbar() {
                                             : "text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-900"
                                     }`}
                                 >
-                                    <span>Warta Desa</span>
+                                    <span>Berita</span>
                                 </Link>
 
-                                {/* Accordion: Informasi & Lainnya */}
+                                {/* Accordion: Informasi */}
                                 <div>
                                     <button
                                         onClick={() =>
@@ -758,7 +758,7 @@ export default function Navbar() {
                                                 : "text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-900"
                                         }`}
                                     >
-                                        <span>Informasi & Lainnya</span>
+                                        <span>Informasi</span>
                                         <ChevronDown
                                             className={`h-4 w-4 transition-transform duration-200 ${
                                                 mobileMoreOpen

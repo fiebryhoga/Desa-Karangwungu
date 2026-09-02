@@ -46,20 +46,13 @@ export default function Track({ searchedCode = '', letter = null }) {
             />
 
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <Breadcrumb
-                    items={[
-                        { label: 'Layanan Online', url: '/layanan' },
-                        { label: 'Lacak Status Surat', url: '/layanan/lacak' },
-                    ]}
-                />
-
                 <div className="my-6">
                     <Badge variant="gold">Tracking Surat</Badge>
-                    <h1 className="text-3xl font-extrabold text-white mt-2">
+                    <h1 className="text-3xl font-extrabold text-zinc-900 dark:text-white mt-2">
                         Lacak Status Permohonan Surat
                     </h1>
-                    <p className="text-base text-zinc-300 mt-1 leading-relaxed">
-                        Masukkan kode permohonan surat Anda (contoh: <code className="text-amber-400 font-mono">KW-20260901-001</code>) untuk mengecek status pemrosesan.
+                    <p className="text-base text-zinc-600 dark:text-zinc-400 mt-1 leading-relaxed">
+                        Masukkan kode permohonan surat Anda (contoh: <code className="text-red-600 dark:text-amber-400 font-mono">KW-20260901-001</code>) untuk mengecek status pemrosesan.
                     </p>
                 </div>
 
@@ -68,13 +61,13 @@ export default function Track({ searchedCode = '', letter = null }) {
                     <CardContent className="p-6">
                         <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-3">
                             <div className="relative flex-1">
-                                <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-amber-400" />
+                                <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-red-600 dark:text-amber-400" />
                                 <input
                                     type="text"
                                     placeholder="Masukkan Kode Tracking (Contoh: KW-20260901-001)"
                                     value={code}
                                     onChange={(e) => setCode(e.target.value)}
-                                    className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-zinc-700 bg-zinc-950 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-500"
+                                    className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-amber-400 focus:border-red-500 dark:focus:border-amber-500"
                                     required
                                 />
                             </div>
@@ -88,14 +81,14 @@ export default function Track({ searchedCode = '', letter = null }) {
 
                 {/* Search Result Not Found */}
                 {searchedCode && !letter && (
-                    <Card className="my-6 border-dashed border-zinc-800">
+                    <Card className="my-6 border-dashed border-zinc-300 dark:border-zinc-800">
                         <CardContent className="p-8 text-center space-y-3">
-                            <AlertCircle className="h-10 w-10 text-amber-400 mx-auto" />
-                            <h3 className="text-base font-bold text-white">
+                            <AlertCircle className="h-10 w-10 text-red-600 dark:text-amber-400 mx-auto" />
+                            <h3 className="text-base font-bold text-zinc-900 dark:text-white">
                                 Permohonan Tidak Ditemukan
                             </h3>
-                            <p className="text-sm text-zinc-400 max-w-md mx-auto">
-                                Tidak ditemukan data pengajuan surat dengan kode <strong className="text-white">{searchedCode}</strong>. Pastikan Anda memasukkan kode dengan benar.
+                            <p className="text-sm text-zinc-600 dark:text-zinc-400 max-w-md mx-auto">
+                                Tidak ditemukan data pengajuan surat dengan kode <strong className="text-zinc-900 dark:text-white">{searchedCode}</strong>. Pastikan Anda memasukkan kode dengan benar.
                             </p>
                         </CardContent>
                     </Card>
@@ -104,12 +97,12 @@ export default function Track({ searchedCode = '', letter = null }) {
                 {/* Letter Result */}
                 {letter && (
                     <div className="space-y-6 my-6">
-                        <Card className="border-amber-500/40 shadow-xl">
-                            <CardHeader className="border-b border-zinc-800">
+                        <Card className="border-red-500/30 dark:border-amber-500/40 shadow-xl">
+                            <CardHeader className="border-b border-zinc-200 dark:border-zinc-800">
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                     <div>
-                                        <span className="text-xs text-zinc-400">Kode Tracking Surat:</span>
-                                        <p className="text-xl font-bold font-mono text-amber-400">
+                                        <span className="text-xs text-zinc-500 dark:text-zinc-400">Kode Tracking Surat:</span>
+                                        <p className="text-xl font-bold font-mono text-red-600 dark:text-amber-400">
                                             {letter.tracking_code}
                                         </p>
                                     </div>
@@ -121,22 +114,22 @@ export default function Track({ searchedCode = '', letter = null }) {
                                 {/* Details Grid */}
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                                     <div>
-                                        <span className="text-xs text-zinc-400 block">Nama Pemohon:</span>
-                                        <span className="font-semibold text-white">{letter.citizen_name}</span>
+                                        <span className="text-xs text-zinc-500 dark:text-zinc-400 block">Nama Pemohon:</span>
+                                        <span className="font-semibold text-zinc-900 dark:text-white">{letter.citizen_name}</span>
                                     </div>
                                     <div>
-                                        <span className="text-xs text-zinc-400 block">NIK (Disamarkan):</span>
-                                        <span className="font-mono text-zinc-300">
+                                        <span className="text-xs text-zinc-500 dark:text-zinc-400 block">NIK (Disamarkan):</span>
+                                        <span className="font-mono text-zinc-700 dark:text-zinc-300">
                                             {letter.citizen_nik.substring(0, 6)}******{letter.citizen_nik.substring(12)}
                                         </span>
                                     </div>
                                     <div>
-                                        <span className="text-xs text-zinc-400 block">Jenis Surat:</span>
-                                        <span className="font-semibold text-white">{letter.letter_type}</span>
+                                        <span className="text-xs text-zinc-500 dark:text-zinc-400 block">Jenis Surat:</span>
+                                        <span className="font-semibold text-zinc-900 dark:text-white">{letter.letter_type}</span>
                                     </div>
                                     <div>
-                                        <span className="text-xs text-zinc-400 block">Waktu Pengajuan:</span>
-                                        <span className="text-zinc-300">{formatDateIndo(letter.created_at)}</span>
+                                        <span className="text-xs text-zinc-500 dark:text-zinc-400 block">Waktu Pengajuan:</span>
+                                        <span className="text-zinc-700 dark:text-zinc-300">{formatDateIndo(letter.created_at)}</span>
                                     </div>
                                     <div className="sm:col-span-2">
                                         <span className="text-xs text-zinc-400 block">Keperluan:</span>

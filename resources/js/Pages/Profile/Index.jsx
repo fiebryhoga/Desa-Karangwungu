@@ -19,8 +19,6 @@ export default function ProfileIndex({ officials = [], demographics = {} }) {
             />
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <Breadcrumb items={[{ label: 'Profil Desa', url: '/profil' }]} />
-
                 {/* Header Title */}
                 <div className="my-6">
                     <Badge variant="secondary">Pemerintah Desa</Badge>

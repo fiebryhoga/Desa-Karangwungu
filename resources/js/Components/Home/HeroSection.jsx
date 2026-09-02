@@ -13,12 +13,11 @@ export default function HeroSection({ heroImage = '/assets/images/hero.jpg' }) {
                 }}
             />
 
-            {/* 2. Layer Overlay: Bagian Atas Hitam Halus, Bagian Bawah Full Putih Menyatu */}
-            {/* Overlay Atas & Kiri: Hitam transparan halus untuk langit dan kontras teks */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-black/25 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent" />
+            {/* 2. Layer Overlay Sinematik: Gelap di atas & kiri, menyatu ke bawah */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/30 to-black/50" />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent" />
 
-            {/* Overlay Bawah: Menyatu 100% mulus dengan latar belakang halaman (Ramping di Mobile) */}
+            {/* Overlay Bawah: Menyatu mulus dengan latar halaman */}
             <div className="absolute inset-x-0 bottom-0 h-16 sm:h-40 bg-gradient-to-t from-[#fafafa] via-[#fafafa]/80 to-transparent dark:from-[#060608] dark:via-[#060608]/80 dark:to-transparent pointer-events-none" />
 
             {/* Spacer Atas */}
@@ -27,19 +26,27 @@ export default function HeroSection({ heroImage = '/assets/images/hero.jpg' }) {
             {/* 3. Konten Hero Utama */}
             <div className="relative max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-12 my-auto">
                 <div className="max-w-3xl space-y-4 sm:space-y-6">
-                    {/* Grand Title & Clean Subtitle */}
-                    <div className="space-y-16 sm:space-y-5">
+                    {/* Pill Badge & Title with Village Logo Directly Beside It */}
+                    <div className="space-y-4 sm:space-y-5">
                         {/* Sleek Frosted Glass Municipality Pill Badge */}
-                        <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 py-0.5 sm:px-3.5 sm:py-1.5 rounded-full bg-white/10 dark:bg-white/5 backdrop-blur-md border border-white/20 text-[10px] sm:text-xs font-semibold text-zinc-100 tracking-wide shadow-sm">
-                            <span className="h-1.5 w-1.5 rounded-full bg-red-500 shrink-0 animate-pulse" />
+                        <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-black/40 dark:bg-black/50 backdrop-blur-md border border-white/20 text-[11px] sm:text-xs font-semibold text-white tracking-wide shadow-lg">
+                            <span className="h-2 w-2 rounded-full bg-red-500 shrink-0 animate-pulse" />
                             <span className="sm:hidden">Kec. Karanggeneng &bull; Kab. Lamongan</span>
                             <span className="hidden sm:inline">Kecamatan Karanggeneng &bull; Kabupaten Lamongan</span>
                         </div>
 
-                        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-[1.15] drop-shadow-lg">
-                            Website Resmi <br />
-                            Desa Karangwungu
-                        </h1>
+                        {/* Title with Village Logo Directly Beside It */}
+                        <div className="flex items-center gap-4 sm:gap-6">
+                            <img
+                                src="/assets/images/logo.png"
+                                alt="Lambang Resmi Desa Karangwungu"
+                                className="h-20 sm:h-28 lg:h-32 xl:h-36 w-auto object-contain shrink-0 drop-shadow-2xl hover:scale-105 transition-transform"
+                            />
+                            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-[1.15] drop-shadow-xl">
+                                Website Resmi <br />
+                                Desa Karangwungu
+                            </h1>
+                        </div>
                     </div>
 
                     {/* Narrative Description */}
@@ -47,11 +54,11 @@ export default function HeroSection({ heroImage = '/assets/images/hero.jpg' }) {
                         Mewujudkan tata kelola desa yang transparan, pelayanan surat mandiri cepat, masyarakat religius, serta berdaya saing berbasis potensi pertanian dan perikanan tambak modern.
                     </p>
 
-                    {/* Dua Kartu Mini Interaktif (Card-Chips Transparan Tanpa Box Background Ikon) */}
+                    {/* Dua Kartu Mini Interaktif (Frosted Glass Action Chips) */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5 pt-1.5 sm:pt-2 max-w-2xl">
                         <Link
                             href="/layanan/ajukan"
-                            className="group flex items-center justify-between p-3 sm:p-3.5 rounded-lg bg-white/10 hover:bg-white/20 dark:bg-white/5 dark:hover:bg-white/15 backdrop-blur-md border border-white/20 hover:border-red-400/80 shadow-xl transition-all duration-200 hover:-translate-y-0.5"
+                            className="group flex items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-white/10 hover:bg-white/20 dark:bg-black/40 dark:hover:bg-black/60 backdrop-blur-md border border-white/20 hover:border-red-400/80 shadow-xl transition-all duration-200 hover:-translate-y-0.5"
                         >
                             <div className="flex items-center gap-3">
                                 <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-amber-400 shrink-0 group-hover:scale-110 transition-transform" />
@@ -68,8 +75,8 @@ export default function HeroSection({ heroImage = '/assets/images/hero.jpg' }) {
                         </Link>
 
                         <Link
-                            href="/layanan/lacak"
-                            className="group flex items-center justify-between p-3 sm:p-3.5 rounded-lg bg-white/10 hover:bg-white/20 dark:bg-white/5 dark:hover:bg-white/15 backdrop-blur-md border border-white/20 hover:border-amber-400/80 shadow-xl transition-all duration-200 hover:-translate-y-0.5"
+                            href="/layanan/tracking"
+                            className="group flex items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-white/10 hover:bg-white/20 dark:bg-black/40 dark:hover:bg-black/60 backdrop-blur-md border border-white/20 hover:border-amber-400/80 shadow-xl transition-all duration-200 hover:-translate-y-0.5"
                         >
                             <div className="flex items-center gap-3">
                                 <Search className="h-5 w-5 sm:h-6 sm:w-6 text-amber-400 shrink-0 group-hover:scale-110 transition-transform" />
@@ -88,17 +95,32 @@ export default function HeroSection({ heroImage = '/assets/images/hero.jpg' }) {
                 </div>
             </div>
 
-            {/* 4. Bottom Scroll Guide Indicator (Disembunyikan di Mobile) */}
+            {/* 4. Bottom Scroll Guide Indicator (Smooth & Presisi ke Awal Sambutan) */}
             <div className="hidden sm:block relative pb-6 text-center z-10">
                 <a
                     href="#sambutan"
-                    className="inline-flex flex-col items-center gap-1 text-xs font-semibold text-zinc-600 dark:text-zinc-400 hover:text-red-700 dark:hover:text-amber-400 transition-colors group"
+                    onClick={(e) => {
+                        e.preventDefault();
+                        const target = document.getElementById('sambutan');
+                        if (target) {
+                            const navHeight = 70;
+                            const targetPosition =
+                                target.getBoundingClientRect().top +
+                                window.pageYOffset -
+                                navHeight;
+                            window.scrollTo({
+                                top: targetPosition,
+                                behavior: 'smooth',
+                            });
+                        }
+                    }}
+                    className="inline-flex flex-col items-center gap-1 text-xs font-bold text-zinc-800 dark:text-zinc-200 hover:text-red-600 dark:hover:text-amber-400 transition-colors group cursor-pointer"
                 >
-                    <span className="text-[11px] font-semibold opacity-90">
+                    <span className="text-[11px] font-bold tracking-wide drop-shadow-xs">
                         Jelajahi Profil Desa
                     </span>
-                    <div className="h-7 w-4 rounded-full border border-zinc-400 dark:border-zinc-700 flex items-start justify-center p-1 group-hover:border-red-600 dark:group-hover:border-amber-400 transition-colors">
-                        <div className="h-1.5 w-1 rounded-full bg-red-600 dark:bg-amber-400 animate-bounce" />
+                    <div className="h-6 w-3.5 rounded-full border-2 border-zinc-700 dark:border-white/70 flex items-start justify-center p-0.5 group-hover:border-red-600 dark:group-hover:border-amber-400 transition-colors">
+                        <div className="h-1.5 w-1 rounded-full bg-red-600 animate-bounce" />
                     </div>
                 </a>
             </div>

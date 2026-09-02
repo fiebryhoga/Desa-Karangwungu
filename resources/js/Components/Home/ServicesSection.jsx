@@ -63,7 +63,7 @@ export default function ServicesSection() {
     return (
         <section
             id="layanan"
-            className="relative py-12 sm:py-16 lg:py-20 overflow-hidden"
+            className="relative py-8 sm:py-12 lg:py-14 overflow-hidden"
         >
             {/* Ambient Lighting Effects */}
             <div className="ambient-glow-red top-1/4 -left-32 opacity-20 pointer-events-none" />
@@ -137,7 +137,7 @@ export default function ServicesSection() {
                         </div>
                     </div>
 
-                    {/* KOLOM KANAN (7 Cols): 6 Kartu Layanan Ramping (Grid 2 Kolom x 3 Baris) */}
+                    {/* KOLOM KANAN (7 Cols): 6 Kartu Layanan Ramping (Grid 2 Kolom x 3 Baris) dengan Aksen Emas & Merah */}
                     <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5">
                         {services.map((item, idx) => {
                             const IconComponent = item.icon;
@@ -145,14 +145,14 @@ export default function ServicesSection() {
                                 <Link
                                     key={idx}
                                     href={item.href}
-                                    className="group p-3.5 sm:p-4 rounded-2xl bg-white/80 dark:bg-zinc-900/70 backdrop-blur-xl border border-zinc-200/90 dark:border-zinc-800/90 hover:border-red-500/60 dark:hover:border-red-500/50 shadow-xs hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 flex items-center justify-between gap-3 cursor-pointer"
+                                    className="group p-3.5 sm:p-4 rounded-2xl bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl border border-zinc-200/90 dark:border-zinc-800/90 hover:border-amber-500/70 dark:hover:border-amber-400/60 shadow-xs hover:shadow-lg hover:shadow-amber-500/10 transition-all duration-200 hover:-translate-y-0.5 flex items-center justify-between gap-3 cursor-pointer"
                                 >
                                     <div className="flex items-center gap-3 min-w-0">
-                                        <div className="h-10 w-10 rounded-xl bg-red-500/10 dark:bg-red-500/15 border border-red-500/20 text-red-600 dark:text-red-400 flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:bg-red-600 group-hover:text-white transition-all shadow-xs">
+                                        <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-amber-500/15 via-red-500/10 to-amber-500/5 border border-amber-500/30 text-amber-500 dark:text-amber-400 flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:bg-gradient-to-br group-hover:from-red-600 group-hover:to-amber-600 group-hover:text-white group-hover:border-amber-300 transition-all shadow-xs">
                                             <IconComponent className="h-5 w-5" />
                                         </div>
                                         <div className="min-w-0">
-                                            <h3 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-amber-400 transition-colors truncate">
+                                            <h3 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-300 transition-colors truncate">
                                                 {item.title}
                                             </h3>
                                             <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate mt-0.5">
@@ -160,7 +160,7 @@ export default function ServicesSection() {
                                             </p>
                                         </div>
                                     </div>
-                                    <ArrowRight className="h-4 w-4 text-zinc-400 group-hover:text-red-600 dark:group-hover:text-amber-400 group-hover:translate-x-1 transition-all shrink-0" />
+                                    <ArrowRight className="h-4 w-4 text-zinc-400 dark:text-zinc-600 group-hover:text-amber-500 dark:group-hover:text-amber-400 group-hover:translate-x-1 transition-all shrink-0 ml-1" />
                                 </Link>
                             );
                         })}

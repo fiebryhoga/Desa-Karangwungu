@@ -1,11 +1,11 @@
-import React from 'react';
-import AppLayout from '../Layouts/AppLayout';
-import SeoHead from '../Components/SEO/SeoHead';
-import HeroSection from '../Components/Home/HeroSection';
-import WelcomeSection from '../Components/Home/WelcomeSection';
-import OverviewSection from '../Components/Home/OverviewSection';
-import ServicesSection from '../Components/Home/ServicesSection';
-import PotentialsAndNewsSection from '../Components/Home/PotentialsAndNewsSection';
+import React from "react";
+import AppLayout from "../Layouts/AppLayout";
+import SeoHead from "../Components/SEO/SeoHead";
+import HeroSection from "../Components/Home/HeroSection";
+import WelcomeSection from "../Components/Home/WelcomeSection";
+import OverviewSection from "../Components/Home/OverviewSection";
+import ServicesSection from "../Components/Home/ServicesSection";
+import PotentialsAndNewsSection from "../Components/Home/PotentialsAndNewsSection";
 
 export default function Home({
     latestPosts = [],
@@ -13,7 +13,7 @@ export default function Home({
     potentials = [],
     stats = {},
     apbdes_summary = {},
-    heroImage = '/assets/images/hero.jpg',
+    heroImage = "/assets/images/hero.jpg",
 }) {
     return (
         <AppLayout>

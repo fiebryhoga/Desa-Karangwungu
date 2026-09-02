@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link } from '@inertiajs/react';
+import React from "react";
+import { Link } from "@inertiajs/react";
 import {
     Wheat,
     Users,
@@ -11,7 +11,7 @@ import {
     UserCheck,
     Fish,
     LandPlot,
-} from 'lucide-react';
+} from "lucide-react";
 
 function AnimatedNumber({ value, duration = 1500 }) {
     const [count, setCount] = React.useState(0);
@@ -25,7 +25,7 @@ function AnimatedNumber({ value, duration = 1500 }) {
                     setHasAnimated(true);
                 }
             },
-            { threshold: 0.1 }
+            { threshold: 0.1 },
         );
 
         if (ref.current) {
@@ -38,18 +38,26 @@ function AnimatedNumber({ value, duration = 1500 }) {
     React.useEffect(() => {
         if (!hasAnimated) return;
 
-        const target = typeof value === 'number' ? value : parseFloat(value) || 0;
+        const target =
+            typeof value === "number" ? value : parseFloat(value) || 0;
         const isDecimal = !Number.isInteger(target);
         let startTimestamp = null;
 
         const step = (timestamp) => {
             if (!startTimestamp) startTimestamp = timestamp;
-            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            const progress = Math.min(
+                (timestamp - startTimestamp) / duration,
+                1,
+            );
             // Smooth ease out cubic formula
             const easeOut = 1 - Math.pow(1 - progress, 3);
             const current = easeOut * target;
 
-            setCount(isDecimal ? parseFloat(current.toFixed(1)) : Math.floor(current));
+            setCount(
+                isDecimal
+                    ? parseFloat(current.toFixed(1))
+                    : Math.floor(current),
+            );
 
             if (progress < 1) {
                 window.requestAnimationFrame(step);
@@ -63,9 +71,7 @@ function AnimatedNumber({ value, duration = 1500 }) {
 
     return (
         <span ref={ref}>
-            {typeof count === 'number'
-                ? count.toLocaleString('id-ID')
-                : count}
+            {typeof count === "number" ? count.toLocaleString("id-ID") : count}
         </span>
     );
 }
@@ -73,51 +79,51 @@ function AnimatedNumber({ value, duration = 1500 }) {
 export default function OverviewSection({ stats = {} }) {
     const demographicMetrics = [
         {
-            label: 'Kepala Keluarga',
+            label: "Kepala Keluarga",
             value: stats.total_families || 985,
-            suffix: 'KK',
+            suffix: "KK",
             icon: HomeIcon,
         },
         {
-            label: 'Total Jiwa',
+            label: "Total Jiwa",
             value: stats.total_citizens || 3482,
-            suffix: 'Jiwa',
+            suffix: "Jiwa",
             icon: Users,
         },
         {
-            label: 'Laki-Laki',
+            label: "Laki-Laki",
             value: stats.male_citizens || 1724,
-            suffix: 'Jiwa',
+            suffix: "Jiwa",
             icon: User,
         },
         {
-            label: 'Perempuan',
+            label: "Perempuan",
             value: stats.female_citizens || 1758,
-            suffix: 'Jiwa',
+            suffix: "Jiwa",
             icon: UserCheck,
         },
         {
-            label: 'Luas Wilayah',
+            label: "Luas Wilayah",
             value: stats.total_area_ha || 245.8,
-            suffix: 'Ha',
+            suffix: "Ha",
             icon: LandPlot,
         },
         {
-            label: 'Sawah Pertanian',
+            label: "Sawah Pertanian",
             value: stats.agriculture_area_ha || 160.5,
-            suffix: 'Ha',
+            suffix: "Ha",
             icon: Wheat,
         },
         {
-            label: 'Tambak Perikanan',
+            label: "Tambak Perikanan",
             value: stats.fishery_area_ha || 52.3,
-            suffix: 'Ha',
+            suffix: "Ha",
             icon: Fish,
         },
         {
-            label: 'Rukun Tetangga',
+            label: "Rukun Tetangga",
             value: stats.total_rt || 14,
-            suffix: 'RT',
+            suffix: "RT",
             icon: Building2,
         },
     ];
@@ -125,13 +131,9 @@ export default function OverviewSection({ stats = {} }) {
     return (
         <section
             id="selayang-pandang"
-            className="relative py-12 sm:py-16 lg:py-20 overflow-hidden"
+            className="relative py-8 sm:py-12 lg:py-14 overflow-hidden"
         >
-            {/* Ambient Lighting Accents */}
-            <div className="ambient-glow-gold top-1/4 -left-28 opacity-25 pointer-events-none" />
-            <div className="ambient-glow-red bottom-10 -right-28 opacity-25 pointer-events-none" />
-
-            <div className="relative max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 space-y-8 sm:space-y-10">
+            <div className="relative max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 space-y-4 sm:space-y-5">
                 {/* 1. Main 2-Column Split: Editorial Narrative & Bento Gallery */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
                     {/* LEFT COLUMN: Narrative Editorial & Info */}
@@ -143,22 +145,35 @@ export default function OverviewSection({ stats = {} }) {
                                 <span>Selayang Pandang Desa</span>
                             </div>
                             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-zinc-900 dark:text-white tracking-tight leading-tight">
-                                Mengenal Lebih Dekat <br className="hidden sm:inline" />
+                                Mengenal Lebih Dekat{" "}
+                                <br className="hidden sm:inline" />
                                 Desa Karangwungu
                             </h2>
                             <div className="flex items-center gap-2 text-xs font-semibold text-zinc-500 dark:text-zinc-400">
                                 <MapPin className="h-3.5 w-3.5 text-red-600 dark:text-amber-400 shrink-0" />
-                                <span>Kecamatan Karanggeneng, Kabupaten Lamongan</span>
+                                <span>
+                                    Kecamatan Karanggeneng, Kabupaten Lamongan
+                                </span>
                             </div>
                         </div>
 
                         {/* Narrative Paragraph (Justified & Clean) */}
                         <div className="font-normal space-y-2.5 text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed text-justify">
                             <p>
-                                <strong>Desa Karangwungu</strong> adalah salah satu dari 18 desa di Kecamatan Karanggeneng, Kabupaten Lamongan, dengan mayoritas penduduk beragama Islam dan beragam mata pencaharian seperti petani, petambak, pedagang, PNS, hingga wirausaha.
+                                <strong>Desa Karangwungu</strong> adalah salah
+                                satu dari 18 desa di Kecamatan Karanggeneng,
+                                Kabupaten Lamongan, dengan mayoritas penduduk
+                                beragama Islam dan beragam mata pencaharian
+                                seperti petani, petambak, pedagang, PNS, hingga
+                                wirausaha.
                             </p>
                             <p className="text-zinc-600 dark:text-zinc-400">
-                                Wilayah pertaniannya terdiri dari sawah dan tambak yang menghasilkan dua kali panen padi dan satu kali palawija, atau dua kali panen ikan dan satu kali padi setiap tahun. Terletak strategis di jalur jalan kolektor primer Lamongan - Gresik.
+                                Wilayah pertaniannya terdiri dari sawah dan
+                                tambak yang menghasilkan dua kali panen padi dan
+                                satu kali palawija, atau dua kali panen ikan dan
+                                satu kali padi setiap tahun. Terletak strategis
+                                di jalur jalan kolektor primer Lamongan -
+                                Gresik.
                             </p>
                         </div>
 
@@ -234,39 +249,41 @@ export default function OverviewSection({ stats = {} }) {
                     </div>
                 </div>
 
-                {/* 2. Sleek Glassmorphism Demographic Metrics Strip */}
-                <div className="pt-6 sm:pt-8 border-t border-zinc-200/80 dark:border-zinc-800/80 space-y-3">
+                {/* 2. Compact Red Gradient Demographic Metrics Strip */}
+                <div className="pt-3.5 sm:pt-4 border-t border-zinc-200/80 dark:border-zinc-800/80 space-y-2.5">
                     <div className="flex items-center justify-between">
-                        <h3 className="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
+                        <h3 className="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-zinc-900 dark:text-white">
                             Statistik Demografi & Wilayah Desa
                         </h3>
-                        <span className="text-[11px] text-zinc-500 dark:text-zinc-400">
+                        <span className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400">
                             Data Terverifikasi 2026
                         </span>
                     </div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5 sm:gap-3">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 sm:gap-2.5">
                         {demographicMetrics.map((item, idx) => {
                             const IconComponent = item.icon;
                             return (
                                 <div
                                     key={idx}
-                                    className="group relative p-3.5 sm:p-4 rounded-2xl bg-white/80 dark:bg-zinc-900/70 backdrop-blur-xl border border-zinc-200/90 dark:border-zinc-800/90 hover:border-red-500/60 dark:hover:border-red-500/50 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between"
+                                    className="group relative p-2.5 sm:p-3 rounded-lg bg-gradient-to-b from-red-700 via-red-800 to-red-950 dark:from-red-900/90 dark:via-red-950 dark:to-[#1a0507] text-white transition-all duration-200 hover:-translate-y-0.5 flex flex-col justify-between overflow-hidden"
                                 >
-                                    {/* Top Row: Label & Clean Icon */}
+                                    {/* Top Row: Label & Icon */}
                                     <div className="flex items-center justify-between gap-1">
-                                        <span className="text-[10px] sm:text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 truncate">
+                                        <span className="text-[10px] sm:text-[11px] font-semibold text-red-100 truncate">
                                             {item.label}
                                         </span>
-                                        <IconComponent className="h-4 w-4 text-red-600 dark:text-amber-400 shrink-0 group-hover:scale-110 transition-transform" />
+                                        <IconComponent className="h-3.5 w-3.5 text-amber-300 shrink-0 group-hover:scale-110 transition-transform" />
                                     </div>
 
-                                    {/* Bottom Row: Large Number & Suffix */}
-                                    <div className="mt-2.5 flex items-baseline gap-1">
-                                        <span className="text-lg sm:text-xl font-black text-zinc-900 dark:text-white tracking-tight leading-none">
-                                            <AnimatedNumber value={item.value} />
+                                    {/* Bottom Row: Number & Suffix */}
+                                    <div className="mt-1.5 flex items-baseline gap-1">
+                                        <span className="text-base sm:text-lg font-black text-white tracking-tight leading-none">
+                                            <AnimatedNumber
+                                                value={item.value}
+                                            />
                                         </span>
-                                        <span className="text-[10px] sm:text-xs font-bold text-red-600 dark:text-amber-400">
+                                        <span className="text-[10px] font-bold text-amber-300">
                                             {item.suffix}
                                         </span>
                                     </div>

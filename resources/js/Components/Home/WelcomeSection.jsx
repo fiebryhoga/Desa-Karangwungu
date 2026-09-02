@@ -11,7 +11,7 @@ export default function WelcomeSection({ headOfficial }) {
     return (
         <section
             id="sambutan"
-            className="relative min-h-[calc(100vh-64px)] flex items-center justify-center py-8 sm:py-16 lg:py-20 overflow-hidden"
+            className="relative py-8 sm:py-12 lg:py-14 overflow-hidden scroll-mt-16 sm:scroll-mt-20"
         >
             {/* Ambient Lighting Accents */}
             <div className="ambient-glow-red top-1/4 -right-20 opacity-30 pointer-events-none" />
