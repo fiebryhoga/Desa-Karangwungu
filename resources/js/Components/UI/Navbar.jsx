@@ -1,63 +1,72 @@
-import React, { useState, useEffect, useRef } from "react";
-import { createPortal } from "react-dom";
+import React, { useState, useEffect } from "react";
 import { Link, usePage, router } from "@inertiajs/react";
+import { createPortal } from "react-dom";
 import {
-    Home,
-    LayoutGrid,
-    Newspaper,
     Menu,
     X,
     ChevronDown,
-    Shield,
-    FileText,
-    PieChart,
-    Sparkles,
-    Search,
     Building2,
     History as HistoryIcon,
+    Shield,
+    Users,
+    PieChart,
+    FileText,
+    Sparkles,
+    Search,
     DollarSign,
     Store,
     Image,
     MessageSquare,
     Sun,
     Moon,
+    ArrowRight,
+    Home,
+    Newspaper,
+    LayoutGrid,
 } from "lucide-react";
 
 export default function Navbar() {
     const { url } = usePage();
-    const [mounted, setMounted] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
-    const [isDark, setIsDark] = useState(true);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [mobileProfileOpen, setMobileProfileOpen] = useState(false);
-    const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
-    const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
     const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
     const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false);
     const [moreDropdownOpen, setMoreDropdownOpen] = useState(false);
-    const [searchOpen, setSearchOpen] = useState(false);
-    const [searchQuery, setSearchQuery] = useState("");
-    const searchInputRef = useRef(null);
 
-    useEffect(() => {
-        if (searchOpen && searchInputRef.current) {
-            searchInputRef.current.focus();
-        }
-    }, [searchOpen]);
+    // Mobile Accordion States
+    const [mobileProfileOpen, setMobileProfileOpen] = useState(false);
+    const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
+    const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
+
+    // Global Search State
+    const [searchQuery, setSearchQuery] = useState("");
+
+    // Dark Mode Theme State
+    const [isDark, setIsDark] = useState(false);
+    const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
         setMounted(true);
-        // Initialize theme state from DOM
-        const isDarkMode = document.documentElement.classList.contains("dark");
-        setIsDark(isDarkMode);
-
-        const handleScroll = () => {
-            if (window.scrollY > 20) {
-                setIsScrolled(true);
+        const checkTheme = () => {
+            const isDarkMode =
+                document.documentElement.classList.contains("dark") ||
+                localStorage.getItem("theme") === "dark" ||
+                (!("theme" in localStorage) &&
+                    window.matchMedia("(prefers-color-scheme: dark)").matches);
+            setIsDark(isDarkMode);
+            if (isDarkMode) {
+                document.documentElement.classList.add("dark");
             } else {
-                setIsScrolled(false);
+                document.documentElement.classList.remove("dark");
             }
         };
+
+        checkTheme();
+
+        const handleScroll = () => {
+            setIsScrolled(window.scrollY > 20);
+        };
+
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
@@ -65,12 +74,10 @@ export default function Navbar() {
     const toggleTheme = () => {
         if (isDark) {
             document.documentElement.classList.remove("dark");
-            document.documentElement.classList.add("light");
             localStorage.setItem("theme", "light");
             setIsDark(false);
         } else {
             document.documentElement.classList.add("dark");
-            document.documentElement.classList.remove("light");
             localStorage.setItem("theme", "dark");
             setIsDark(true);
         }
@@ -83,8 +90,11 @@ export default function Navbar() {
     };
 
     const isMoreActive = () => {
-        return ["/transparansi", "/potensi", "/galeri", "/kontak"].some((p) =>
-            url.startsWith(p),
+        return (
+            isActive("/transparansi") ||
+            isActive("/potensi") ||
+            isActive("/galeri") ||
+            isActive("/kontak")
         );
     };
 
@@ -96,34 +106,45 @@ export default function Navbar() {
 
     return (
         <header className="sticky top-0 z-50 w-full transition-all duration-200">
-            {/* Main Navigation Bar - Sleek & Compact Padding (Tanpa Border Bawah) */}
+            {/* Main Navigation Bar - Red Gradient & Golden Batik Silhouette Background */}
             <nav
-                className={`w-full bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md transition-all ${
+                className={`relative w-full bg-gradient-to-r from-red-700 via-red-600 to-red-800 dark:from-red-800 dark:via-red-700 dark:to-red-900 text-white border-b border-red-500/50 shadow-lg shadow-red-900/30 transition-all ${
                     isScrolled
-                        ? "shadow-md py-1.5 bg-white/95 dark:bg-zinc-950/95"
+                        ? "shadow-xl py-1.5"
                         : "py-2"
                 }`}
             >
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+                {/* Siluet Motif Batik Parang Emas (Contained) */}
+                <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                    <div
+                        className="absolute inset-0 opacity-[0.16] bg-repeat"
+                        style={{
+                            backgroundImage: `url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 60 Q 30 30, 60 60 T 120 60 M0 0 Q 30 -30, 60 0 T 120 0 M0 120 Q 30 90, 60 120 T 120 120 M-30 30 L 30 90 M30 -30 L 90 30 M90 -30 L 150 30 M-30 90 L 30 150 M30 90 L 90 150 M90 90 L 150 150' stroke='%23fde047' stroke-width='2' fill='none' stroke-linecap='round' stroke-dasharray='1 4'/%3E%3Cpath d='M12 48 Q 30 24, 48 48 Q 66 72, 84 48 Q 102 24, 120 48' stroke='%23fde047' stroke-width='1.8' fill='none'/%3E%3Ccircle cx='30' cy='30' r='4' fill='%23fde047'/%3E%3Ccircle cx='90' cy='90' r='4' fill='%23fde047'/%3E%3Ccircle cx='90' cy='30' r='2' fill='%23fde047'/%3E%3Ccircle cx='30' cy='90' r='2' fill='%23fde047'/%3E%3C/svg%3E")`,
+                            backgroundSize: '90px 90px',
+                        }}
+                    />
+                </div>
+
+                <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
                     {/* Brand Logo & Name */}
                     <Link href="/" className="flex items-center gap-2.5 group">
                         <img
                             src="/assets/images/logo.png"
                             alt="Logo Desa Karangwungu Lamongan"
-                            className="h-11 sm:h-14 w-auto object-contain group-hover:scale-105 transition-transform drop-shadow-sm"
+                            className="h-11 sm:h-14 w-auto object-contain group-hover:scale-105 transition-transform drop-shadow-md"
                             onError={(e) => {
                                 e.target.style.display = "none";
                                 e.target.nextSibling.style.display = "flex";
                             }}
                         />
                         <div className="hidden h-11 w-11 items-center justify-center">
-                            <Shield className="h-7 w-7 text-red-600 dark:text-amber-400" />
+                            <Shield className="h-7 w-7 text-amber-300" />
                         </div>
                         <div className="flex flex-col">
-                            <span className="text-lg font-extrabold text-zinc-900 dark:text-white leading-tight group-hover:text-red-600 dark:group-hover:text-amber-400 transition-colors">
+                            <span className="text-lg font-black text-white leading-tight group-hover:text-amber-300 transition-colors">
                                 Desa Karangwungu
                             </span>
-                            <span className="text-[11px] text-zinc-500 dark:text-zinc-400 leading-tight font-medium">
+                            <span className="text-[11px] text-amber-300 leading-tight font-semibold">
                                 Kec. Karanggeneng, Kab. Lamongan
                             </span>
                         </div>
@@ -135,13 +156,13 @@ export default function Navbar() {
                             href="/"
                             className={`py-1 transition-colors relative ${
                                 isActive("/") && url === "/"
-                                    ? "text-red-600 dark:text-amber-400 font-bold"
-                                    : "text-zinc-700 dark:text-zinc-300 hover:text-red-600 dark:hover:text-amber-300"
+                                    ? "text-amber-300 font-bold"
+                                    : "text-red-100 hover:text-amber-300"
                             }`}
                         >
                             <span>Beranda</span>
                             {isActive("/") && url === "/" && (
-                                <span className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-red-600 dark:bg-amber-400 rounded-full" />
+                                <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-amber-400 rounded-full shadow-xs" />
                             )}
                         </Link>
 
@@ -154,75 +175,73 @@ export default function Navbar() {
                             <button
                                 className={`flex items-center gap-1.5 py-1 transition-colors cursor-pointer relative ${
                                     isActive("/profil")
-                                        ? "text-red-600 dark:text-amber-400 font-bold"
-                                        : "text-zinc-700 dark:text-zinc-300 hover:text-red-600 dark:hover:text-amber-300"
+                                        ? "text-amber-300 font-bold"
+                                        : "text-red-100 hover:text-amber-300"
                                 }`}
                             >
                                 <span>Profil Desa</span>
-                                <ChevronDown className="h-3.5 w-3.5 opacity-70" />
+                                <ChevronDown className="h-3.5 w-3.5 opacity-80 text-amber-300" />
                                 {isActive("/profil") && (
-                                    <span className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-red-600 dark:bg-amber-400 rounded-full" />
+                                    <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-amber-400 rounded-full shadow-xs" />
                                 )}
                             </button>
 
                             {profileDropdownOpen && (
                                 <div className="absolute left-0 top-full pt-2 w-64 animate-in fade-in-50 zoom-in-95 duration-100 z-50">
-                                    <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md p-2 shadow-2xl space-y-1">
+                                    <div className="rounded-xl border border-red-500/40 bg-gradient-to-b from-red-800 via-red-900 to-red-950 text-white backdrop-blur-xl p-2 shadow-2xl space-y-1">
                                         <Link
                                             href="/profil"
-                                            className="flex items-start gap-2.5 rounded-md p-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:text-red-600 dark:hover:text-amber-400 transition-colors"
+                                            className="flex items-start gap-2.5 rounded-lg p-2 text-sm hover:bg-black/30 text-red-100 hover:text-amber-300 transition-colors"
                                         >
-                                            <Building2 className="h-4 w-4 text-red-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                                            <Building2 className="h-4 w-4 text-amber-300 shrink-0 mt-0.5" />
                                             <div>
-                                                <div className="font-semibold text-zinc-900 dark:text-white">
+                                                <div className="font-bold text-white">
                                                     Gambaran Umum
                                                 </div>
-                                                <div className="text-xs text-zinc-500 dark:text-zinc-400">
-                                                    Letak geografis & batas
-                                                    wilayah
+                                                <div className="text-xs text-red-200/80">
+                                                    Letak geografis & batas wilayah
                                                 </div>
                                             </div>
                                         </Link>
                                         <Link
                                             href="/profil/sejarah"
-                                            className="flex items-start gap-2.5 rounded-md p-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:text-red-600 dark:hover:text-amber-400 transition-colors"
+                                            className="flex items-start gap-2.5 rounded-lg p-2 text-sm hover:bg-black/30 text-red-100 hover:text-amber-300 transition-colors"
                                         >
-                                            <HistoryIcon className="h-4 w-4 text-red-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                                            <HistoryIcon className="h-4 w-4 text-amber-300 shrink-0 mt-0.5" />
                                             <div>
-                                                <div className="font-semibold text-zinc-900 dark:text-white">
+                                                <div className="font-bold text-white">
                                                     Sejarah & Visi Misi
                                                 </div>
-                                                <div className="text-xs text-zinc-500 dark:text-zinc-400">
+                                                <div className="text-xs text-red-200/80">
                                                     Asal-usul & arah pembangunan
                                                 </div>
                                             </div>
                                         </Link>
                                         <Link
                                             href="/profil/perangkat-desa"
-                                            className="flex items-start gap-2.5 rounded-md p-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:text-red-600 dark:hover:text-amber-400 transition-colors"
+                                            className="flex items-start gap-2.5 rounded-lg p-2 text-sm hover:bg-black/30 text-red-100 hover:text-amber-300 transition-colors"
                                         >
-                                            <Shield className="h-4 w-4 text-red-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                                            <Shield className="h-4 w-4 text-amber-300 shrink-0 mt-0.5" />
                                             <div>
-                                                <div className="font-semibold text-zinc-900 dark:text-white">
+                                                <div className="font-bold text-white">
                                                     Perangkat Desa
                                                 </div>
-                                                <div className="text-xs text-zinc-500 dark:text-zinc-400">
+                                                <div className="text-xs text-red-200/80">
                                                     Struktur organisasi Pemdes
                                                 </div>
                                             </div>
                                         </Link>
                                         <Link
                                             href="/profil/demografi"
-                                            className="flex items-start gap-2.5 rounded-md p-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:text-red-600 dark:hover:text-amber-400 transition-colors"
+                                            className="flex items-start gap-2.5 rounded-lg p-2 text-sm hover:bg-black/30 text-red-100 hover:text-amber-300 transition-colors"
                                         >
-                                            <PieChart className="h-4 w-4 text-red-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                                            <PieChart className="h-4 w-4 text-amber-300 shrink-0 mt-0.5" />
                                             <div>
-                                                <div className="font-semibold text-zinc-900 dark:text-white">
+                                                <div className="font-bold text-white">
                                                     Data Demografi
                                                 </div>
-                                                <div className="text-xs text-zinc-500 dark:text-zinc-400">
-                                                    Statistik kependudukan per
-                                                    dusun
+                                                <div className="text-xs text-red-200/80">
+                                                    Statistik kependudukan per dusun
                                                 </div>
                                             </div>
                                         </Link>
@@ -240,62 +259,59 @@ export default function Navbar() {
                             <button
                                 className={`flex items-center gap-1.5 py-1 transition-colors cursor-pointer relative ${
                                     isActive("/layanan")
-                                        ? "text-red-600 dark:text-amber-400 font-bold"
-                                        : "text-zinc-700 dark:text-zinc-300 hover:text-red-600 dark:hover:text-amber-300"
+                                        ? "text-amber-300 font-bold"
+                                        : "text-red-100 hover:text-amber-300"
                                 }`}
                             >
                                 <span>Layanan</span>
-                                <ChevronDown className="h-3.5 w-3.5 opacity-70" />
+                                <ChevronDown className="h-3.5 w-3.5 opacity-80 text-amber-300" />
                                 {isActive("/layanan") && (
-                                    <span className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-red-600 dark:bg-amber-400 rounded-full" />
+                                    <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-amber-400 rounded-full shadow-xs" />
                                 )}
                             </button>
 
                             {servicesDropdownOpen && (
                                 <div className="absolute left-0 top-full pt-2 w-72 animate-in fade-in-50 zoom-in-95 duration-100 z-50">
-                                    <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md p-2 shadow-2xl space-y-1">
+                                    <div className="rounded-xl border border-red-500/40 bg-gradient-to-b from-red-800 via-red-900 to-red-950 text-white backdrop-blur-xl p-2 shadow-2xl space-y-1">
                                         <Link
                                             href="/layanan"
-                                            className="flex items-start gap-2.5 rounded-md p-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:text-red-600 dark:hover:text-amber-400 transition-colors"
+                                            className="flex items-start gap-2.5 rounded-lg p-2 text-sm hover:bg-black/30 text-red-100 hover:text-amber-300 transition-colors"
                                         >
-                                            <FileText className="h-4 w-4 text-red-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                                            <FileText className="h-4 w-4 text-amber-300 shrink-0 mt-0.5" />
                                             <div>
-                                                <div className="font-semibold text-zinc-900 dark:text-white">
+                                                <div className="font-bold text-white">
                                                     Katalog Layanan Surat
                                                 </div>
-                                                <div className="text-xs text-zinc-500 dark:text-zinc-400">
-                                                    Persyaratan SKU, Domisili,
-                                                    SKTM, dll
+                                                <div className="text-xs text-red-200/80">
+                                                    Persyaratan SKU, Domisili, SKTM, dll
                                                 </div>
                                             </div>
                                         </Link>
                                         <Link
                                             href="/layanan/ajukan"
-                                            className="flex items-start gap-2.5 rounded-md p-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:text-red-600 dark:hover:text-amber-400 transition-colors"
+                                            className="flex items-start gap-2.5 rounded-lg p-2 text-sm hover:bg-black/30 text-amber-300 hover:text-amber-200 transition-colors"
                                         >
-                                            <Sparkles className="h-4 w-4 text-red-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                                            <Sparkles className="h-4 w-4 text-amber-300 shrink-0 mt-0.5" />
                                             <div>
-                                                <div className="font-bold text-red-600 dark:text-amber-400">
+                                                <div className="font-bold text-amber-300">
                                                     Ajukan Surat Mandiri
                                                 </div>
-                                                <div className="text-xs text-zinc-500 dark:text-zinc-400">
-                                                    Buat permohonan surat secara
-                                                    daring
+                                                <div className="text-xs text-red-200/80">
+                                                    Buat permohonan surat secara daring
                                                 </div>
                                             </div>
                                         </Link>
                                         <Link
                                             href="/layanan/lacak"
-                                            className="flex items-start gap-2.5 rounded-md p-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:text-red-600 dark:hover:text-amber-400 transition-colors"
+                                            className="flex items-start gap-2.5 rounded-lg p-2 text-sm hover:bg-black/30 text-red-100 hover:text-amber-300 transition-colors"
                                         >
-                                            <Search className="h-4 w-4 text-red-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                                            <Search className="h-4 w-4 text-amber-300 shrink-0 mt-0.5" />
                                             <div>
-                                                <div className="font-semibold text-zinc-900 dark:text-white">
+                                                <div className="font-bold text-white">
                                                     Lacak Status Surat
                                                 </div>
-                                                <div className="text-xs text-zinc-500 dark:text-zinc-400">
-                                                    Cek status kode tiket
-                                                    permohonan
+                                                <div className="text-xs text-red-200/80">
+                                                    Cek status kode tiket permohonan
                                                 </div>
                                             </div>
                                         </Link>
@@ -308,13 +324,13 @@ export default function Navbar() {
                             href="/berita"
                             className={`py-1 transition-colors relative ${
                                 isActive("/berita")
-                                    ? "text-red-600 dark:text-amber-400 font-bold"
-                                    : "text-zinc-700 dark:text-zinc-300 hover:text-red-600 dark:hover:text-amber-300"
+                                    ? "text-amber-300 font-bold"
+                                    : "text-red-100 hover:text-amber-300"
                             }`}
                         >
                             <span>Berita</span>
                             {isActive("/berita") && (
-                                <span className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-red-600 dark:bg-amber-400 rounded-full" />
+                                <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-amber-400 rounded-full shadow-xs" />
                             )}
                         </Link>
 
@@ -327,77 +343,73 @@ export default function Navbar() {
                             <button
                                 className={`flex items-center gap-1.5 py-1 transition-colors cursor-pointer relative ${
                                     isMoreActive()
-                                        ? "text-red-600 dark:text-amber-400 font-bold"
-                                        : "text-zinc-700 dark:text-zinc-300 hover:text-red-600 dark:hover:text-amber-300"
+                                        ? "text-amber-300 font-bold"
+                                        : "text-red-100 hover:text-amber-300"
                                 }`}
                             >
                                 <span>Informasi</span>
-                                <ChevronDown className="h-3.5 w-3.5 opacity-70" />
+                                <ChevronDown className="h-3.5 w-3.5 opacity-80 text-amber-300" />
                                 {isMoreActive() && (
-                                    <span className="absolute bottom-0 left-0 right-0 h-[1.5px] bg-red-600 dark:bg-amber-400 rounded-full" />
+                                    <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-amber-400 rounded-full shadow-xs" />
                                 )}
                             </button>
 
                             {moreDropdownOpen && (
                                 <div className="absolute right-0 top-full pt-2 w-72 animate-in fade-in-50 zoom-in-95 duration-100 z-50">
-                                    <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md p-2 shadow-2xl space-y-1">
+                                    <div className="rounded-xl border border-red-500/40 bg-gradient-to-b from-red-800 via-red-900 to-red-950 text-white backdrop-blur-xl p-2 shadow-2xl space-y-1">
                                         <Link
                                             href="/transparansi"
-                                            className="flex items-start gap-2.5 rounded-md p-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:text-red-600 dark:hover:text-amber-400 transition-colors"
+                                            className="flex items-start gap-2.5 rounded-lg p-2 text-sm hover:bg-black/30 text-red-100 hover:text-amber-300 transition-colors"
                                         >
-                                            <DollarSign className="h-4 w-4 text-red-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                                            <DollarSign className="h-4 w-4 text-amber-300 shrink-0 mt-0.5" />
                                             <div>
-                                                <div className="font-semibold text-zinc-900 dark:text-white">
+                                                <div className="font-bold text-white">
                                                     Transparansi APBDes
                                                 </div>
-                                                <div className="text-xs text-zinc-500 dark:text-zinc-400">
-                                                    Realisasi anggaran & dana
-                                                    desa
+                                                <div className="text-xs text-red-200/80">
+                                                    Realisasi anggaran & dana desa
                                                 </div>
                                             </div>
                                         </Link>
                                         <Link
                                             href="/potensi"
-                                            className="flex items-start gap-2.5 rounded-md p-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:text-red-600 dark:hover:text-amber-400 transition-colors"
+                                            className="flex items-start gap-2.5 rounded-lg p-2 text-sm hover:bg-black/30 text-red-100 hover:text-amber-300 transition-colors"
                                         >
-                                            <Store className="h-4 w-4 text-red-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                                            <Store className="h-4 w-4 text-amber-300 shrink-0 mt-0.5" />
                                             <div>
-                                                <div className="font-semibold text-zinc-900 dark:text-white">
+                                                <div className="font-bold text-white">
                                                     Potensi & UMKM
                                                 </div>
-                                                <div className="text-xs text-zinc-500 dark:text-zinc-400">
-                                                    Komoditas tambak, tani &
-                                                    produk warga
+                                                <div className="text-xs text-red-200/80">
+                                                    Komoditas tambak, tani & produk warga
                                                 </div>
                                             </div>
                                         </Link>
                                         <Link
                                             href="/galeri"
-                                            className="flex items-start gap-2.5 rounded-md p-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:text-red-600 dark:hover:text-amber-400 transition-colors"
+                                            className="flex items-start gap-2.5 rounded-lg p-2 text-sm hover:bg-black/30 text-red-100 hover:text-amber-300 transition-colors"
                                         >
-                                            <Image className="h-4 w-4 text-red-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                                            <Image className="h-4 w-4 text-amber-300 shrink-0 mt-0.5" />
                                             <div>
-                                                <div className="font-semibold text-zinc-900 dark:text-white">
+                                                <div className="font-bold text-white">
                                                     Galeri Foto Kegiatan
                                                 </div>
-                                                <div className="text-xs text-zinc-500 dark:text-zinc-400">
-                                                    Dokumentasi pembangunan &
-                                                    acara desa
+                                                <div className="text-xs text-red-200/80">
+                                                    Dokumentasi pembangunan & acara desa
                                                 </div>
                                             </div>
                                         </Link>
                                         <Link
                                             href="/kontak"
-                                            className="flex items-start gap-2.5 rounded-md p-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:text-red-600 dark:hover:text-amber-400 transition-colors"
+                                            className="flex items-start gap-2.5 rounded-lg p-2 text-sm hover:bg-black/30 text-red-100 hover:text-amber-300 transition-colors"
                                         >
-                                            <MessageSquare className="h-4 w-4 text-red-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                                            <MessageSquare className="h-4 w-4 text-amber-300 shrink-0 mt-0.5" />
                                             <div>
-                                                <div className="font-semibold text-zinc-900 dark:text-white">
+                                                <div className="font-bold text-white">
                                                     Kontak & Lapor Warga
                                                 </div>
-                                                <div className="text-xs text-zinc-500 dark:text-zinc-400">
-                                                    Lokasi balai desa & formulir
-                                                    aspirasi
+                                                <div className="text-xs text-red-200/80">
+                                                    Lokasi balai desa & formulir aspirasi
                                                 </div>
                                             </div>
                                         </Link>
@@ -414,20 +426,20 @@ export default function Navbar() {
                             onSubmit={handleSearchSubmit}
                             className="hidden md:flex items-center relative group"
                         >
-                            <div className="flex items-center h-9 w-44 lg:w-56 focus-within:w-64 transition-all duration-300 rounded-full bg-zinc-100/90 dark:bg-zinc-900/90 border border-zinc-200/80 dark:border-zinc-800/80 group-hover:border-zinc-300 dark:group-hover:border-zinc-700 focus-within:border-red-500/80 dark:focus-within:border-amber-400/80 focus-within:ring-2 focus-within:ring-red-500/15 dark:focus-within:ring-amber-400/15 px-3 shadow-xs">
-                                <Search className="h-3.5 w-3.5 text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors shrink-0 mr-2" />
+                            <div className="flex items-center h-9 w-44 lg:w-56 focus-within:w-64 transition-all duration-300 rounded-full bg-black/30 border border-white/20 group-hover:border-amber-400/60 focus-within:border-amber-400 focus-within:ring-2 focus-within:ring-amber-400/20 px-3 shadow-inner">
+                                <Search className="h-3.5 w-3.5 text-amber-300 group-hover:text-amber-200 transition-colors shrink-0 mr-2" />
                                 <input
                                     type="text"
                                     placeholder="Cari informasi..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full bg-transparent text-xs text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none"
+                                    className="w-full bg-transparent text-xs text-white placeholder:text-red-200/70 focus:outline-none"
                                 />
                                 {searchQuery && (
                                     <button
                                         type="button"
                                         onClick={() => setSearchQuery("")}
-                                        className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 p-0.5"
+                                        className="text-red-200 hover:text-white p-0.5"
                                     >
                                         <X className="h-3 w-3" />
                                     </button>
@@ -444,12 +456,12 @@ export default function Navbar() {
                                     ? "Beralih ke Mode Terang (Putih)"
                                     : "Beralih ke Mode Gelap (Hitam)"
                             }
-                            className="h-9 w-9 rounded-full flex items-center justify-center bg-zinc-100/90 hover:bg-zinc-200/90 dark:bg-zinc-900/90 dark:hover:bg-zinc-800 text-zinc-700 dark:text-amber-400 hover:text-red-600 dark:hover:text-amber-300 border border-zinc-200/80 dark:border-zinc-800/80 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all cursor-pointer shadow-xs"
+                            className="h-9 w-9 rounded-full flex items-center justify-center bg-black/30 hover:bg-black/50 text-amber-300 hover:text-amber-200 border border-white/20 hover:border-amber-400 transition-all cursor-pointer shadow-sm"
                         >
                             {isDark ? (
                                 <Sun className="h-4 w-4 text-amber-400 animate-in spin-in-180 duration-200" />
                             ) : (
-                                <Moon className="h-4 w-4 text-zinc-700 animate-in spin-in-180 duration-200" />
+                                <Moon className="h-4 w-4 text-amber-300 animate-in spin-in-180 duration-200" />
                             )}
                         </button>
                     </div>
@@ -457,22 +469,19 @@ export default function Navbar() {
             </nav>
 
             {/* Mobile Bottom Navigation Bar (Modern Native App Dock with Elevated Center Action Button) */}
-            <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-2xl border-t border-zinc-200/80 dark:border-zinc-800/80 shadow-[0_-8px_30px_rgba(0,0,0,0.06)] px-2 pt-1 pb-2 safe-area-pb">
+            <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-gradient-to-r from-red-700 via-red-600 to-red-800 dark:from-red-800 dark:via-red-700 dark:to-red-900 text-white backdrop-blur-2xl border-t border-red-500/40 shadow-2xl px-2 pt-1 pb-2 safe-area-pb">
                 <div className="grid grid-cols-5 items-end justify-around max-w-sm mx-auto">
                     {/* 1. Beranda */}
                     <Link
                         href="/"
                         className={`flex flex-col items-center justify-center py-1 rounded-lg transition-all duration-200 ${
                             isActive("/") && url === "/"
-                                ? "text-red-600 dark:text-red-400 font-bold"
-                                : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 font-medium"
+                                ? "text-amber-300 font-bold"
+                                : "text-red-200/90 hover:text-white font-medium"
                         }`}
                     >
                         <Home className="h-5 w-5 mb-0.5 transition-transform active:scale-90" />
                         <span className="text-[10px] tracking-tight">Beranda</span>
-                        {isActive("/") && url === "/" && (
-                            <span className="h-1 w-1 rounded-full bg-red-600 dark:bg-red-400 mt-0.5 animate-in fade-in zoom-in" />
-                        )}
                     </Link>
 
                     {/* 2. Layanan Online */}
@@ -480,15 +489,12 @@ export default function Navbar() {
                         href="/layanan"
                         className={`flex flex-col items-center justify-center py-1 rounded-lg transition-all duration-200 ${
                             isActive("/layanan")
-                                ? "text-red-600 dark:text-red-400 font-bold"
-                                : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 font-medium"
+                                ? "text-amber-300 font-bold"
+                                : "text-red-200/90 hover:text-white font-medium"
                         }`}
                     >
                         <FileText className="h-5 w-5 mb-0.5 transition-transform active:scale-90" />
                         <span className="text-[10px] tracking-tight">Layanan</span>
-                        {isActive("/layanan") && (
-                            <span className="h-1 w-1 rounded-full bg-red-600 dark:bg-red-400 mt-0.5 animate-in fade-in zoom-in" />
-                        )}
                     </Link>
 
                     {/* 3. Highlighted Floating Center Menu Button */}
@@ -497,10 +503,10 @@ export default function Navbar() {
                         aria-label="Buka semua menu navigasi"
                         className="flex flex-col items-center justify-center group cursor-pointer -mb-0.5"
                     >
-                        <div className="h-11 w-11 -mt-4 rounded-full bg-gradient-to-tr from-red-600 via-red-600 to-rose-500 text-white shadow-lg shadow-red-600/30 ring-4 ring-white dark:ring-zinc-950 flex items-center justify-center transition-all duration-200 group-hover:scale-105 group-active:scale-90">
+                        <div className="h-11 w-11 -mt-4 rounded-full bg-amber-400 text-zinc-950 shadow-xl shadow-red-950/50 ring-4 ring-red-950/80 flex items-center justify-center transition-all duration-200 group-hover:scale-105 group-active:scale-90">
                             <LayoutGrid className="h-5 w-5" />
                         </div>
-                        <span className="text-[10px] font-bold text-zinc-800 dark:text-zinc-200 mt-0.5 tracking-tight">
+                        <span className="text-[10px] font-bold text-amber-300 mt-0.5 tracking-tight">
                             Menu
                         </span>
                     </button>
@@ -510,15 +516,12 @@ export default function Navbar() {
                         href="/berita"
                         className={`flex flex-col items-center justify-center py-1 rounded-lg transition-all duration-200 ${
                             isActive("/berita")
-                                ? "text-red-600 dark:text-red-400 font-bold"
-                                : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 font-medium"
+                                ? "text-amber-300 font-bold"
+                                : "text-red-200/90 hover:text-white font-medium"
                         }`}
                     >
                         <Newspaper className="h-5 w-5 mb-0.5 transition-transform active:scale-90" />
                         <span className="text-[10px] tracking-tight">Warta</span>
-                        {isActive("/berita") && (
-                            <span className="h-1 w-1 rounded-full bg-red-600 dark:bg-red-400 mt-0.5 animate-in fade-in zoom-in" />
-                        )}
                     </Link>
 
                     {/* 5. Kontak & Lapor */}
@@ -526,15 +529,12 @@ export default function Navbar() {
                         href="/kontak"
                         className={`flex flex-col items-center justify-center py-1 rounded-lg transition-all duration-200 ${
                             isActive("/kontak")
-                                ? "text-red-600 dark:text-red-400 font-bold"
-                                : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 font-medium"
+                                ? "text-amber-300 font-bold"
+                                : "text-red-200/90 hover:text-white font-medium"
                         }`}
                     >
                         <MessageSquare className="h-5 w-5 mb-0.5 transition-transform active:scale-90" />
                         <span className="text-[10px] tracking-tight">Kontak</span>
-                        {isActive("/kontak") && (
-                            <span className="h-1 w-1 rounded-full bg-red-600 dark:bg-red-400 mt-0.5 animate-in fade-in zoom-in" />
-                        )}
                     </Link>
                 </div>
             </div>
@@ -549,9 +549,9 @@ export default function Navbar() {
                     />
 
                     {/* 2. Side Drawer Container (Full Height 100vh - Muncul dari Kiri) */}
-                    <div className="fixed inset-y-0 left-0 w-[82%] sm:w-80 h-full bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 border-r border-zinc-200 dark:border-zinc-800 shadow-2xl flex flex-col z-[10000] animate-in slide-in-from-left duration-300 ease-out">
+                    <div className="fixed inset-y-0 left-0 w-[82%] sm:w-80 h-full bg-gradient-to-b from-red-800 via-red-900 to-red-950 text-white border-r border-red-500/40 shadow-2xl flex flex-col z-[10000] animate-in slide-in-from-left duration-300 ease-out">
                         {/* Drawer Header */}
-                        <div className="p-4 py-2 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between shrink-0 bg-white dark:bg-zinc-950">
+                        <div className="p-4 py-2 border-b border-red-500/30 flex items-center justify-between shrink-0 bg-black/20">
                             <div className="flex items-center gap-2.5">
                                 <img
                                     src="/assets/images/logo.png"
@@ -559,10 +559,10 @@ export default function Navbar() {
                                     className="h-11 w-auto object-contain drop-shadow-sm"
                                 />
                                 <div className="flex flex-col">
-                                    <span className="text-lg font-extrabold text-zinc-900 dark:text-white leading-tight">
+                                    <span className="text-lg font-black text-white leading-tight">
                                         Desa Karangwungu
                                     </span>
-                                    <span className="text-[11px] text-zinc-500 dark:text-zinc-400 leading-tight font-medium">
+                                    <span className="text-[11px] text-amber-300 leading-tight font-semibold">
                                         Kec. Karanggeneng, Kab. Lamongan
                                     </span>
                                 </div>
@@ -570,7 +570,7 @@ export default function Navbar() {
                             <button
                                 onClick={() => setMobileMenuOpen(false)}
                                 aria-label="Tutup menu"
-                                className="h-8 w-8 rounded-full flex items-center justify-center text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white bg-zinc-100 dark:bg-zinc-900 transition-colors cursor-pointer"
+                                className="h-8 w-8 rounded-full flex items-center justify-center text-amber-300 hover:text-white bg-black/30 border border-white/20 transition-colors cursor-pointer"
                             >
                                 <X className="h-4 w-4" />
                             </button>
@@ -590,249 +590,173 @@ export default function Navbar() {
                                     type="text"
                                     placeholder="Cari informasi..."
                                     value={searchQuery}
-                                    onChange={(e) =>
-                                        setSearchQuery(e.target.value)
-                                    }
-                                    className="w-full pl-9 pr-4 py-2 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-red-500 dark:focus:ring-amber-400"
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="w-full rounded-xl bg-black/30 border border-white/20 text-white text-xs pl-9 pr-4 py-2.5 focus:outline-none focus:border-amber-400 placeholder:text-red-200/70 shadow-inner"
                                 />
-                                <Search className="absolute left-3 top-2.5 h-4 w-4 text-zinc-400" />
+                                <Search className="absolute left-3 top-3 h-3.5 w-3.5 text-amber-300" />
                             </form>
 
-                            {/* Nav Links */}
-                            <div className="space-y-1">
+                            {/* Navigation Links Accordion */}
+                            <div className="space-y-1 text-sm font-medium">
                                 <Link
                                     href="/"
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-semibold transition-colors ${
+                                    className={`flex items-center justify-between px-3 py-2 rounded-lg transition-colors ${
                                         isActive("/") && url === "/"
-                                            ? "bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-amber-400 font-bold"
-                                            : "text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+                                            ? "bg-black/30 text-amber-300 font-bold"
+                                            : "text-red-100 hover:bg-black/20"
                                     }`}
                                 >
                                     <span>Beranda</span>
+                                    <ArrowRight className="h-3.5 w-3.5 opacity-60 text-amber-300" />
                                 </Link>
 
-                                {/* Accordion: Profil Desa */}
+                                {/* Accordion 1: Profil Desa */}
                                 <div>
                                     <button
-                                        onClick={() =>
-                                            setMobileProfileOpen(
-                                                !mobileProfileOpen,
-                                            )
-                                        }
-                                        className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-semibold transition-colors cursor-pointer ${
-                                            isActive("/profil")
-                                                ? "text-red-600 dark:text-amber-400 font-bold"
-                                                : "text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-900"
-                                        }`}
+                                        onClick={() => setMobileProfileOpen(!mobileProfileOpen)}
+                                        className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-red-100 hover:bg-black/20 transition-colors"
                                     >
-                                        <span>Profil Desa</span>
+                                        <span className="font-medium">Profil Desa</span>
                                         <ChevronDown
-                                            className={`h-4 w-4 transition-transform duration-200 ${
-                                                mobileProfileOpen
-                                                    ? "rotate-180 text-red-600 dark:text-amber-500"
-                                                    : ""
+                                            className={`h-3.5 w-3.5 text-amber-300 transition-transform ${
+                                                mobileProfileOpen ? "rotate-180" : ""
                                             }`}
                                         />
                                     </button>
                                     {mobileProfileOpen && (
-                                        <div className="pl-4 py-1 space-y-1 border-l-2 border-red-500/40 dark:border-amber-500/40 ml-4 my-1">
+                                        <div className="pl-4 space-y-1 pt-1">
                                             <Link
                                                 href="/profil"
-                                                onClick={() =>
-                                                    setMobileMenuOpen(false)
-                                                }
-                                                className="block py-1.5 px-2 text-xs text-zinc-600 dark:text-zinc-400 hover:text-red-600 dark:hover:text-amber-400 font-medium"
+                                                onClick={() => setMobileMenuOpen(false)}
+                                                className="block px-3 py-1.5 rounded-md text-xs text-red-100 hover:text-amber-300 hover:bg-black/20"
                                             >
-                                                Gambaran Umum & Wilayah
+                                                Gambaran Umum
                                             </Link>
                                             <Link
                                                 href="/profil/sejarah"
-                                                onClick={() =>
-                                                    setMobileMenuOpen(false)
-                                                }
-                                                className="block py-1.5 px-2 text-xs text-zinc-600 dark:text-zinc-400 hover:text-red-600 dark:hover:text-amber-400 font-medium"
+                                                onClick={() => setMobileMenuOpen(false)}
+                                                className="block px-3 py-1.5 rounded-md text-xs text-red-100 hover:text-amber-300 hover:bg-black/20"
                                             >
                                                 Sejarah & Visi Misi
                                             </Link>
                                             <Link
                                                 href="/profil/perangkat-desa"
-                                                onClick={() =>
-                                                    setMobileMenuOpen(false)
-                                                }
-                                                className="block py-1.5 px-2 text-xs text-zinc-600 dark:text-zinc-400 hover:text-red-600 dark:hover:text-amber-400 font-medium"
+                                                onClick={() => setMobileMenuOpen(false)}
+                                                className="block px-3 py-1.5 rounded-md text-xs text-red-100 hover:text-amber-300 hover:bg-black/20"
                                             >
-                                                Struktur Perangkat Desa
+                                                Perangkat Desa
                                             </Link>
                                             <Link
                                                 href="/profil/demografi"
-                                                onClick={() =>
-                                                    setMobileMenuOpen(false)
-                                                }
-                                                className="block py-1.5 px-2 text-xs text-zinc-600 dark:text-zinc-400 hover:text-red-600 dark:hover:text-amber-400 font-medium"
+                                                onClick={() => setMobileMenuOpen(false)}
+                                                className="block px-3 py-1.5 rounded-md text-xs text-red-100 hover:text-amber-300 hover:bg-black/20"
                                             >
-                                                Data Demografi Kependudukan
+                                                Data Demografi
                                             </Link>
                                         </div>
                                     )}
                                 </div>
 
-                                {/* Accordion: Layanan */}
+                                {/* Accordion 2: Layanan */}
                                 <div>
                                     <button
-                                        onClick={() =>
-                                            setMobileServicesOpen(
-                                                !mobileServicesOpen,
-                                            )
-                                        }
-                                        className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-semibold transition-colors cursor-pointer ${
-                                            isActive("/layanan")
-                                                ? "text-red-600 dark:text-amber-400 font-bold"
-                                                : "text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-900"
-                                        }`}
+                                        onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
+                                        className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-red-100 hover:bg-black/20 transition-colors"
                                     >
-                                        <span>Layanan</span>
+                                        <span className="font-medium">Layanan</span>
                                         <ChevronDown
-                                            className={`h-4 w-4 transition-transform duration-200 ${
-                                                mobileServicesOpen
-                                                    ? "rotate-180 text-red-600 dark:text-amber-500"
-                                                    : ""
+                                            className={`h-3.5 w-3.5 text-amber-300 transition-transform ${
+                                                mobileServicesOpen ? "rotate-180" : ""
                                             }`}
                                         />
                                     </button>
                                     {mobileServicesOpen && (
-                                        <div className="pl-4 py-1 space-y-1 border-l-2 border-red-500/40 dark:border-amber-500/40 ml-4 my-1">
+                                        <div className="pl-4 space-y-1 pt-1">
                                             <Link
                                                 href="/layanan"
-                                                onClick={() =>
-                                                    setMobileMenuOpen(false)
-                                                }
-                                                className="block py-1.5 px-2 text-xs text-zinc-600 dark:text-zinc-400 hover:text-red-600 dark:hover:text-amber-400 font-medium"
+                                                onClick={() => setMobileMenuOpen(false)}
+                                                className="block px-3 py-1.5 rounded-md text-xs text-red-100 hover:text-amber-300 hover:bg-black/20"
                                             >
-                                                Katalog Surat Administrasi
+                                                Katalog Surat
                                             </Link>
                                             <Link
                                                 href="/layanan/ajukan"
-                                                onClick={() =>
-                                                    setMobileMenuOpen(false)
-                                                }
-                                                className="block py-1.5 px-2 text-xs text-red-600 dark:text-amber-400 font-bold"
+                                                onClick={() => setMobileMenuOpen(false)}
+                                                className="block px-3 py-1.5 rounded-md text-xs font-bold text-amber-300 hover:bg-black/20"
                                             >
                                                 Ajukan Surat Mandiri
                                             </Link>
                                             <Link
                                                 href="/layanan/lacak"
-                                                onClick={() =>
-                                                    setMobileMenuOpen(false)
-                                                }
-                                                className="block py-1.5 px-2 text-xs text-zinc-600 dark:text-zinc-400 hover:text-red-600 dark:hover:text-amber-400 font-medium"
+                                                onClick={() => setMobileMenuOpen(false)}
+                                                className="block px-3 py-1.5 rounded-md text-xs text-red-100 hover:text-amber-300 hover:bg-black/20"
                                             >
-                                                Lacak Status Permohonan
+                                                Lacak Surat
                                             </Link>
                                         </div>
                                     )}
                                 </div>
 
-                                {/* Berita */}
                                 <Link
                                     href="/berita"
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-semibold transition-colors ${
+                                    className={`flex items-center justify-between px-3 py-2 rounded-lg transition-colors ${
                                         isActive("/berita")
-                                            ? "bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-amber-400 font-bold"
-                                            : "text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+                                            ? "bg-black/30 text-amber-300 font-bold"
+                                            : "text-red-100 hover:bg-black/20"
                                     }`}
                                 >
                                     <span>Berita</span>
+                                    <ArrowRight className="h-3.5 w-3.5 opacity-60 text-amber-300" />
                                 </Link>
 
-                                {/* Accordion: Informasi */}
+                                {/* Accordion 3: Informasi */}
                                 <div>
                                     <button
-                                        onClick={() =>
-                                            setMobileMoreOpen(!mobileMoreOpen)
-                                        }
-                                        className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-semibold transition-colors cursor-pointer ${
-                                            isMoreActive()
-                                                ? "text-red-600 dark:text-amber-400 font-bold"
-                                                : "text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-900"
-                                        }`}
+                                        onClick={() => setMobileMoreOpen(!mobileMoreOpen)}
+                                        className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-red-100 hover:bg-black/20 transition-colors"
                                     >
-                                        <span>Informasi</span>
+                                        <span className="font-medium">Informasi</span>
                                         <ChevronDown
-                                            className={`h-4 w-4 transition-transform duration-200 ${
-                                                mobileMoreOpen
-                                                    ? "rotate-180 text-red-600 dark:text-amber-500"
-                                                    : ""
+                                            className={`h-3.5 w-3.5 text-amber-300 transition-transform ${
+                                                mobileMoreOpen ? "rotate-180" : ""
                                             }`}
                                         />
                                     </button>
                                     {mobileMoreOpen && (
-                                        <div className="pl-4 py-1 space-y-1 border-l-2 border-red-500/40 dark:border-amber-500/40 ml-4 my-1">
+                                        <div className="pl-4 space-y-1 pt-1">
                                             <Link
                                                 href="/transparansi"
-                                                onClick={() =>
-                                                    setMobileMenuOpen(false)
-                                                }
-                                                className="block py-1.5 px-2 text-xs text-zinc-600 dark:text-zinc-400 hover:text-red-600 dark:hover:text-amber-400 font-medium"
+                                                onClick={() => setMobileMenuOpen(false)}
+                                                className="block px-3 py-1.5 rounded-md text-xs text-red-100 hover:text-amber-300 hover:bg-black/20"
                                             >
                                                 Transparansi APBDes
                                             </Link>
                                             <Link
                                                 href="/potensi"
-                                                onClick={() =>
-                                                    setMobileMenuOpen(false)
-                                                }
-                                                className="block py-1.5 px-2 text-xs text-zinc-600 dark:text-zinc-400 hover:text-red-600 dark:hover:text-amber-400 font-medium"
+                                                onClick={() => setMobileMenuOpen(false)}
+                                                className="block px-3 py-1.5 rounded-md text-xs text-red-100 hover:text-amber-300 hover:bg-black/20"
                                             >
-                                                Potensi & UMKM Desa
+                                                Potensi & UMKM
                                             </Link>
                                             <Link
                                                 href="/galeri"
-                                                onClick={() =>
-                                                    setMobileMenuOpen(false)
-                                                }
-                                                className="block py-1.5 px-2 text-xs text-zinc-600 dark:text-zinc-400 hover:text-red-600 dark:hover:text-amber-400 font-medium"
+                                                onClick={() => setMobileMenuOpen(false)}
+                                                className="block px-3 py-1.5 rounded-md text-xs text-red-100 hover:text-amber-300 hover:bg-black/20"
                                             >
-                                                Galeri Foto Kegiatan
+                                                Galeri Foto
                                             </Link>
                                             <Link
                                                 href="/kontak"
-                                                onClick={() =>
-                                                    setMobileMenuOpen(false)
-                                                }
-                                                className="block py-1.5 px-2 text-xs text-zinc-600 dark:text-zinc-400 hover:text-red-600 dark:hover:text-amber-400 font-medium"
+                                                onClick={() => setMobileMenuOpen(false)}
+                                                className="block px-3 py-1.5 rounded-md text-xs text-red-100 hover:text-amber-300 hover:bg-black/20"
                                             >
-                                                Kontak & Balai Desa
+                                                Kontak & Lapor
                                             </Link>
                                         </div>
                                     )}
                                 </div>
-                            </div>
-                        </div>
-
-                        {/* Drawer Footer */}
-                        <div className="p-4 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/80 space-y-3 shrink-0">
-                            <div className="flex items-center justify-between">
-                                <span className="text-xs text-zinc-500 dark:text-zinc-400 font-medium">
-                                    Tema Tampilan
-                                </span>
-                                <button
-                                    onClick={toggleTheme}
-                                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-xs font-semibold text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors cursor-pointer shadow-xs"
-                                >
-                                    {isDark ? (
-                                        <>
-                                            <Sun className="h-3.5 w-3.5 text-amber-400" />
-                                            <span>Mode Terang</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Moon className="h-3.5 w-3.5 text-zinc-700" />
-                                            <span>Mode Gelap</span>
-                                        </>
-                                    )}
-                                </button>
                             </div>
                         </div>
                     </div>

@@ -24,12 +24,12 @@ export default function HeroSection({ heroImage = '/assets/images/hero.jpg' }) {
             <div className="hidden sm:block sm:h-6" />
 
             {/* 3. Konten Hero Utama */}
-            <div className="relative max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-12 my-auto">
+            <div className="relative max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16 lg:pt-20 pb-8 sm:pb-12 my-auto">
                 <div className="max-w-3xl space-y-4 sm:space-y-6">
                     {/* Pill Badge & Title with Village Logo Directly Beside It */}
-                    <div className="space-y-4 sm:space-y-5">
+                    <div className="space-y-4 sm:space-y-6 lg:space-y-8">
                         {/* Sleek Frosted Glass Municipality Pill Badge */}
-                        <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-black/40 dark:bg-black/50 backdrop-blur-md border border-white/20 text-[11px] sm:text-xs font-semibold text-white tracking-wide shadow-lg">
+                        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 lg:py-2.5 rounded-full bg-black/40 dark:bg-black/50 backdrop-blur-md border border-white/20 text-[11px] sm:text-xs font-semibold text-white tracking-wide shadow-lg">
                             <span className="h-2 w-2 rounded-full bg-red-500 shrink-0 animate-pulse" />
                             <span className="sm:hidden">Kec. Karanggeneng &bull; Kab. Lamongan</span>
                             <span className="hidden sm:inline">Kecamatan Karanggeneng &bull; Kabupaten Lamongan</span>
