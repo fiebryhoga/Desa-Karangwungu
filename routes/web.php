@@ -103,6 +103,14 @@ Route::prefix($adminPath)->middleware(['auth', \App\Http\Middleware\AdminSecurit
     Route::get('/settings/dashboard', [\App\Http\Controllers\Admin\DashboardSettingController::class, 'index'])->name('admin.settings.dashboard');
     Route::post('/settings/dashboard', [\App\Http\Controllers\Admin\DashboardSettingController::class, 'update'])->name('admin.settings.dashboard.update');
 
+    // Konfigurasi Umum & Kontak Balai Desa
+    Route::get('/settings/general', [\App\Http\Controllers\Admin\GeneralSettingController::class, 'index'])->name('admin.settings.general');
+    Route::post('/settings/general', [\App\Http\Controllers\Admin\GeneralSettingController::class, 'update'])->name('admin.settings.general.update');
+
+    // Konfigurasi Gambaran Umum & Peta Spasial Desa
+    Route::get('/settings/overview', [\App\Http\Controllers\Admin\OverviewSettingController::class, 'index'])->name('admin.settings.overview');
+    Route::post('/settings/overview', [\App\Http\Controllers\Admin\OverviewSettingController::class, 'update'])->name('admin.settings.overview.update');
+
     // Profile & Ganti Password Mandiri
     Route::get('/profile', [\App\Http\Controllers\Admin\AdminProfileController::class, 'edit'])->name('admin.profile.edit');
     Route::patch('/profile', [\App\Http\Controllers\Admin\AdminProfileController::class, 'update'])->name('admin.profile.update');

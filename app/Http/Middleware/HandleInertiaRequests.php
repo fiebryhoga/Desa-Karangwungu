@@ -55,16 +55,21 @@ class HandleInertiaRequests extends Middleware
             'admin_notifications' => fn () => $request->user()
                 ? \App\Models\AdminActivityLog::latest('id')->take(15)->get(['id', 'username', 'action', 'ip_address', 'details', 'created_at'])
                 : [],
-            'village_info' => [
-                'name' => 'Desa Karangwungu',
-                'subdistrict' => 'Kecamatan Karanggeneng',
-                'regency' => 'Kabupaten Lamongan',
-                'province' => 'Jawa Timur',
-                'postal_code' => '62254',
-                'phone' => '+62 812-3456-7890',
-                'email' => 'pemdes@karangwungu-lamongan.desa.id',
-                'address' => 'Jl. Raya Karangwungu No. 01, Kec. Karanggeneng, Kab. Lamongan, Jawa Timur 62254',
-            ],
+            'general_settings' => fn () => \App\Models\SiteSetting::getGroup('general'),
+            'village_info' => function () {
+                $general = \App\Models\SiteSetting::getGroup('general');
+                return [
+                    'name' => $general['site_name'] ?? 'Desa Karangwungu',
+                    'subdistrict' => $general['site_subdistrict'] ?? 'Kecamatan Karanggeneng',
+                    'regency' => $general['site_regency'] ?? 'Kabupaten Lamongan',
+                    'province' => $general['site_province'] ?? 'Jawa Timur',
+                    'postal_code' => $general['site_postal_code'] ?? '62254',
+                    'phone' => $general['contact_phone'] ?? '(0812) 3456-7890',
+                    'email' => $general['contact_email'] ?? 'pemdes@karangwungu-lamongan.desa.id',
+                    'address' => $general['contact_address'] ?? 'Jl. Raya Karangwungu No. 01, Karanggeneng, Lamongan 62254',
+                    'tagline' => $general['site_tagline'] ?? 'Portal resmi informasi publik dan pelayanan administrasi daring Pemerintah Desa Karangwungu dalam mewujudkan tata kelola desa yang transparan, maju, agamis, dan melayani.',
+                ];
+            },
         ];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\SiteSetting;
 use App\Models\VillageOfficial;
 use Inertia\Inertia;
 
@@ -10,6 +11,15 @@ class ProfileController extends Controller
     public function index()
     {
         $officials = VillageOfficial::orderBy('order', 'asc')->get();
+        $overviewSettings = SiteSetting::getGroup('overview');
+
+        // Parse map_points JSON
+        if (isset($overviewSettings['map_points']) && is_string($overviewSettings['map_points'])) {
+            $decoded = json_decode($overviewSettings['map_points'], true);
+            $overviewSettings['map_points_data'] = is_array($decoded) ? $decoded : [];
+        } else {
+            $overviewSettings['map_points_data'] = [];
+        }
 
         $demographics = [
             'total_citizens' => 3482,
@@ -42,6 +52,7 @@ class ProfileController extends Controller
         return Inertia::render('Profile/Index', [
             'officials' => $officials,
             'demographics' => $demographics,
+            'overview' => $overviewSettings,
         ]);
     }
 

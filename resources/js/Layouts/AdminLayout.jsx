@@ -32,6 +32,8 @@ import {
     Clock,
     RefreshCw,
     Sliders,
+    Building2,
+    Compass,
 } from 'lucide-react';
 
 const BATIK_DARK = `data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 60 Q 30 30, 60 60 T 120 60 M0 0 Q 30 -30, 60 0 T 120 0 M0 120 Q 30 90, 60 120 T 120 120 M-30 30 L 30 90 M30 -30 L 90 30 M90 -30 L 150 30 M-30 90 L 30 150 M30 90 L 90 150 M90 90 L 150 150' stroke='%23fde047' stroke-width='2' fill='none' stroke-linecap='round' stroke-dasharray='1 4'/%3E%3Cpath d='M12 48 Q 30 24, 48 48 Q 66 72, 84 48 Q 102 24, 120 48' stroke='%23fde047' stroke-width='1.8' fill='none'/%3E%3Ccircle cx='30' cy='30' r='4' fill='%23fde047'/%3E%3Ccircle cx='90' cy='90' r='4' fill='%23fde047'/%3E%3Ccircle cx='90' cy='30' r='2' fill='%23fde047'/%3E%3Ccircle cx='30' cy='90' r='2' fill='%23fde047'/%3E%3C/svg%3E`;
@@ -185,6 +187,18 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
             icon: Sliders,
             active: currentUrl ? currentUrl.startsWith(`/${adminPath}/settings/dashboard`) : false,
         },
+        {
+            name: 'Konfigurasi Umum / Kontak',
+            href: `/${adminPath}/settings/general`,
+            icon: Building2,
+            active: currentUrl ? currentUrl.startsWith(`/${adminPath}/settings/general`) : false,
+        },
+        {
+            name: 'Konfigurasi Gambaran Umum',
+            href: `/${adminPath}/settings/overview`,
+            icon: Compass,
+            active: currentUrl ? currentUrl.startsWith(`/${adminPath}/settings/overview`) : false,
+        },
     ];
 
     const publicModules = [
@@ -281,11 +295,11 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
             {/* SIDEBAR NAVIGATION (Collapsible on Desktop & Drawer on Mobile) */}
             {/* ========================================================= */}
             <aside
-                className={`fixed inset-y-0 left-0 z-50 flex flex-col transition-all duration-300 ease-in-out md:static md:inset-auto ${
+                className={`fixed inset-y-0 left-0 z-50 md:z-30 flex flex-col transition-all duration-300 ease-in-out h-screen ${
                     sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
                 } ${
-                    sidebarCollapsed ? 'md:w-20' : 'md:w-64 lg:w-72'
-                } w-72 ${
+                    sidebarCollapsed ? 'w-20' : 'w-72 md:w-64 lg:w-72'
+                } ${
                     isDark
                         ? 'bg-zinc-900 border-r border-zinc-800 shadow-2xl'
                         : 'bg-white border-r border-zinc-200 shadow-lg'
@@ -543,7 +557,7 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
                 </div>
 
                 {/* Sidebar Desktop Collapse Toggle Button */}
-                <div className={`hidden md:flex items-center justify-center p-2 border-t relative group ${
+                <div className={`hidden md:flex items-center justify-center p-2 border-t relative group shrink-0 ${
                     isDark ? 'border-zinc-800 bg-zinc-950/50' : 'border-zinc-200 bg-zinc-50'
                 }`}>
                     <button
@@ -575,7 +589,7 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
                 </div>
 
                 {/* Admin User Footer & Logout */}
-                <div className={`p-3.5 border-t space-y-2.5 relative ${
+                <div className={`p-3.5 border-t space-y-2.5 relative shrink-0 ${
                     isDark ? 'border-zinc-800 bg-zinc-950/60' : 'border-zinc-200 bg-white'
                 }`}>
                     <div
@@ -641,7 +655,9 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
             {/* ========================================================= */}
             {/* MAIN CONTENT AREA */}
             {/* ========================================================= */}
-            <div className="flex-1 flex flex-col min-w-0 relative z-10">
+            <div className={`flex-1 flex flex-col min-w-0 relative z-10 transition-all duration-300 ${
+                sidebarCollapsed ? 'md:ml-20' : 'md:ml-64 lg:ml-72'
+            }`}>
                 {/* Topbar Header (Sinkron & Sejajar Siluet Batik dgn Sidebar Brand Header) */}
                 <header className={`h-16 border-b px-4 sm:px-6 lg:px-8 flex items-center justify-between sticky top-0 z-40 transition-colors duration-300 relative shrink-0 ${
                     isDark

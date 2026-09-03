@@ -1,5 +1,5 @@
 import React from 'react';
-import { useForm } from '@inertiajs/react';
+import { useForm, usePage } from '@inertiajs/react';
 import AppLayout from '../Layouts/AppLayout';
 import SeoHead from '../Components/SEO/SeoHead';
 import PageHeader from '../Components/UI/PageHeader';
@@ -9,6 +9,16 @@ import { formatDateIndo } from '../Utils/format';
 import { MapPin, Phone, Mail, Clock, Send, MessageSquare, CheckCircle2 } from 'lucide-react';
 
 export default function Contact({ feedbacks = [] }) {
+    const { props } = usePage();
+    const general = props?.general_settings || {};
+    const village = props?.village_info || {};
+
+    const address = general.contact_address || village.address || 'Jl. Raya Karangwungu No. 01, Kecamatan Karanggeneng, Kabupaten Lamongan, Jawa Timur 62254';
+    const phone = general.contact_phone || village.phone || '(0812) 3456-7890';
+    const email = general.contact_email || village.email || 'pemdes@karangwungu-lamongan.desa.id';
+    const workingHours = general.contact_working_hours || 'Senin – Jumat: 08.00 – 15.30 WIB';
+    const mapsUrl = general.contact_maps_url || 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15838.293417724128!2d112.355112!3d-7.039615!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e778fc33246f48f%3A0xbca12a8421d00c3b!2sKarangwungu%2C%20Kec.%20Karang%20Geneng%2C%20Kabupaten%20Lamongan%2C%20Jawa%20Timur!5e0!3m2!1sid!2sid!4v1700000000000!5m2!1sid!2sid';
+
     const { data, setData, post, processing, errors, reset } = useForm({
         name: '',
         contact_info: '',
@@ -55,7 +65,7 @@ export default function Contact({ feedbacks = [] }) {
                                     <div>
                                         <span className="font-semibold text-white block">Alamat Resmi:</span>
                                         <p className="text-red-100/80 mt-0.5 leading-relaxed">
-                                            Jl. Raya Karangwungu No. 01, Kecamatan Karanggeneng, Kabupaten Lamongan, Jawa Timur 62254
+                                            {address}
                                         </p>
                                     </div>
                                 </div>
@@ -66,8 +76,8 @@ export default function Contact({ feedbacks = [] }) {
                                     </div>
                                     <div>
                                         <span className="font-semibold text-white block">Telepon / WhatsApp:</span>
-                                        <p className="text-red-100/80 mt-0.5">
-                                            (0812) 3456-7890
+                                        <p className="text-red-100/80 mt-0.5 font-bold">
+                                            {phone}
                                         </p>
                                     </div>
                                 </div>
@@ -79,7 +89,7 @@ export default function Contact({ feedbacks = [] }) {
                                     <div>
                                         <span className="font-semibold text-white block">Email Resmi:</span>
                                         <p className="text-red-100/80 mt-0.5">
-                                            pemdes@karangwungu-lamongan.desa.id
+                                            {email}
                                         </p>
                                     </div>
                                 </div>
@@ -90,9 +100,8 @@ export default function Contact({ feedbacks = [] }) {
                                     </div>
                                     <div>
                                         <span className="font-semibold text-white block">Jam Operasional Pelayanan:</span>
-                                        <p className="text-red-100/80 mt-0.5">
-                                            Senin - Kamis: 08.00 - 15.30 WIB<br />
-                                            Jumat: 08.00 - 14.30 WIB
+                                        <p className="text-red-100/80 mt-0.5 whitespace-pre-line">
+                                            {workingHours}
                                         </p>
                                     </div>
                                 </div>
@@ -107,7 +116,7 @@ export default function Contact({ feedbacks = [] }) {
                             <div className="p-0 h-56 bg-zinc-950">
                                 <iframe
                                     title="Peta Lokasi Desa Karangwungu Karanggeneng"
-                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15838.293417724128!2d112.355112!3d-7.039615!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e778fc33246f48f%3A0xbca12a8421d00c3b!2sKarangwungu%2C%20Kec.%20Karang%20Geneng%2C%20Kabupaten%20Lamongan%2C%20Jawa%20Timur!5e0!3m2!1sid!2sid!4v1700000000000!5m2!1sid!2sid"
+                                    src={mapsUrl}
                                     width="100%"
                                     height="100%"
                                     style={{ border: 0 }}

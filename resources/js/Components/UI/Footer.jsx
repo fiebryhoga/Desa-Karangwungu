@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import {
     Shield,
     MapPin,
@@ -11,9 +11,27 @@ import {
     Sparkles,
     MessageCircle,
 } from 'lucide-react';
+import {
+    InstagramIcon,
+    FacebookIcon,
+    YoutubeIcon,
+    TiktokIcon,
+    TwitterIcon,
+} from '@/Components/UI/SocialIcons';
 
 export default function Footer() {
     const currentYear = new Date().getFullYear();
+    const { props } = usePage();
+    const general = props?.general_settings || {};
+    const village = props?.village_info || {};
+
+    const address = general.contact_address || village.address || 'Jl. Raya Karangwungu No. 01, Karanggeneng, Lamongan 62254';
+    const phone = general.contact_phone || village.phone || '(0812) 3456-7890';
+    const email = general.contact_email || village.email || 'pemdes@karangwungu-lamongan.desa.id';
+    const workingHours = general.contact_working_hours || 'Senin – Jumat: 08.00 – 15.30 WIB';
+    const tagline = general.site_tagline || village.tagline || 'Portal resmi informasi publik dan pelayanan administrasi daring Pemerintah Desa Karangwungu dalam mewujudkan tata kelola desa yang transparan, maju, agamis, dan melayani.';
+    const rawWa = general.contact_whatsapp ? general.contact_whatsapp.replace(/[^0-9]/g, '') : '6281234567890';
+    const waUrl = general.social_whatsapp_url || `https://wa.me/${rawWa}?text=Halo%20Admin%20Desa%20Karangwungu`;
 
     return (
         <footer className="relative bg-gradient-to-b from-red-700 via-red-800 to-red-900 dark:from-red-800 dark:via-red-850 dark:to-red-950 text-red-100 border-t border-red-500/50 shadow-2xl transition-colors overflow-hidden">
@@ -44,7 +62,7 @@ export default function Footer() {
                     </div>
 
                     <a
-                        href="https://wa.me/6281234567890?text=Halo%20Admin%20Desa%20Karangwungu"
+                        href={waUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white text-xs font-bold shadow-md transition-all cursor-pointer shrink-0"
@@ -75,17 +93,87 @@ export default function Footer() {
                             </div>
                             <div>
                                 <h3 className="text-sm sm:text-base lg:text-lg font-black text-white leading-tight">
-                                    Pemerintah Desa Karangwungu
+                                    {general.site_name || 'Pemerintah Desa Karangwungu'}
                                 </h3>
                                 <p className="text-[11px] sm:text-xs text-amber-300 font-semibold mt-0.5">
-                                    Kec. Karanggeneng, Kab. Lamongan
+                                    {general.site_subdistrict || 'Kec. Karanggeneng'}, {general.site_regency || 'Kab. Lamongan'}
                                 </p>
                             </div>
                         </div>
 
                         <p className="hidden sm:block text-xs sm:text-sm text-red-100/90 leading-relaxed font-normal">
-                            Portal resmi informasi publik dan pelayanan administrasi daring Pemerintah Desa Karangwungu dalam mewujudkan tata kelola desa yang transparan, maju, agamis, dan melayani.
+                            {tagline}
                         </p>
+
+                        {/* Social Media Links Active List */}
+                        <div className="flex items-center gap-2 pt-1 flex-wrap">
+                            {general.social_whatsapp_active === '1' && (
+                                <a
+                                    href={general.social_whatsapp_url || waUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    title="WhatsApp Desa"
+                                    className="h-8 w-8 rounded-lg bg-emerald-600/30 hover:bg-emerald-600 border border-emerald-400/30 text-white flex items-center justify-center transition-all hover:scale-105"
+                                >
+                                    <MessageCircle className="h-4 w-4" />
+                                </a>
+                            )}
+                            {general.social_instagram_active === '1' && general.social_instagram_url && (
+                                <a
+                                    href={general.social_instagram_url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    title="Instagram Desa"
+                                    className="h-8 w-8 rounded-lg bg-pink-600/30 hover:bg-pink-600 border border-pink-400/30 text-white flex items-center justify-center transition-all hover:scale-105"
+                                >
+                                    <InstagramIcon className="h-4 w-4" />
+                                </a>
+                            )}
+                            {general.social_facebook_active === '1' && general.social_facebook_url && (
+                                <a
+                                    href={general.social_facebook_url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    title="Facebook Desa"
+                                    className="h-8 w-8 rounded-lg bg-blue-600/30 hover:bg-blue-600 border border-blue-400/30 text-white flex items-center justify-center transition-all hover:scale-105"
+                                >
+                                    <FacebookIcon className="h-4 w-4" />
+                                </a>
+                            )}
+                            {general.social_youtube_active === '1' && general.social_youtube_url && (
+                                <a
+                                    href={general.social_youtube_url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    title="YouTube Desa"
+                                    className="h-8 w-8 rounded-lg bg-red-600/30 hover:bg-red-600 border border-red-400/30 text-white flex items-center justify-center transition-all hover:scale-105"
+                                >
+                                    <YoutubeIcon className="h-4 w-4" />
+                                </a>
+                            )}
+                            {general.social_tiktok_active === '1' && general.social_tiktok_url && (
+                                <a
+                                    href={general.social_tiktok_url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    title="TikTok Desa"
+                                    className="h-8 w-8 rounded-lg bg-zinc-900/50 hover:bg-zinc-900 border border-white/20 text-white flex items-center justify-center transition-all hover:scale-105"
+                                >
+                                    <TiktokIcon className="h-4 w-4" />
+                                </a>
+                            )}
+                            {general.social_twitter_active === '1' && general.social_twitter_url && (
+                                <a
+                                    href={general.social_twitter_url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    title="X (Twitter) Desa"
+                                    className="h-8 w-8 rounded-lg bg-sky-600/30 hover:bg-sky-600 border border-sky-400/30 text-white flex items-center justify-center transition-all hover:scale-105"
+                                >
+                                    <TwitterIcon className="h-4 w-4" />
+                                </a>
+                            )}
+                        </div>
                     </div>
 
                     {/* Navigasi Links: 2 Kolom Berdampingan di Mobile (Jelajah Desa & Layanan Publik) */}
@@ -196,43 +284,58 @@ export default function Footer() {
                             <div className="flex items-start gap-2">
                                 <MapPin className="h-3.5 w-3.5 text-amber-300 shrink-0 mt-0.5" />
                                 <span className="leading-tight text-[11px] sm:text-xs">
-                                    Jl. Raya Karangwungu No. 01, Karanggeneng, Lamongan 62254
+                                    {address}
                                 </span>
                             </div>
                             <div className="flex items-center gap-2">
                                 <Phone className="h-3.5 w-3.5 text-amber-300 shrink-0" />
-                                <span className="text-white font-bold text-xs">(0812) 3456-7890</span>
+                                <span className="text-white font-bold text-xs">{phone}</span>
                             </div>
                             <div className="flex items-center gap-2">
                                 <Mail className="h-3.5 w-3.5 text-amber-300 shrink-0" />
-                                <span className="truncate text-xs text-red-200">pemdes@karangwungu-lamongan.desa.id</span>
+                                <span className="truncate text-xs text-red-200">{email}</span>
                             </div>
                             <div className="flex items-center gap-2 text-[11px] text-red-200/90 pt-0.5">
                                 <Clock className="h-3.5 w-3.5 text-amber-300 shrink-0" />
-                                <span>Senin – Jumat: 08.00 – 15.30 WIB</span>
+                                <span>{workingHours}</span>
                             </div>
                         </div>
 
                         {/* External Portal Links */}
-                        <div className="flex items-center gap-2 pt-1 text-[11px]">
-                            <a
-                                href="https://lamongankab.go.id"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="px-2.5 py-1 rounded-md bg-black/30 hover:bg-black/50 text-amber-300 border border-white/15 inline-flex items-center gap-1 transition-colors shadow-xs"
-                            >
-                                <span>Pemkab Lamongan</span>
-                                <ExternalLink className="h-2.5 w-2.5 text-amber-400" />
-                            </a>
-                            <a
-                                href="https://kemendesa.go.id"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="px-2.5 py-1 rounded-md bg-black/30 hover:bg-black/50 text-amber-300 border border-white/15 inline-flex items-center gap-1 transition-colors shadow-xs"
-                            >
-                                <span>Kemendesa</span>
-                                <ExternalLink className="h-2.5 w-2.5 text-amber-400" />
-                            </a>
+                        <div className="flex items-center gap-2 pt-1 text-[11px] flex-wrap">
+                            {general.related_link_1_active === '1' && general.related_link_1_url && (
+                                <a
+                                    href={general.related_link_1_url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="px-2.5 py-1 rounded-md bg-black/30 hover:bg-black/50 text-amber-300 border border-white/15 inline-flex items-center gap-1 transition-colors shadow-xs"
+                                >
+                                    <span>{general.related_link_1_name || 'Pemkab Lamongan'}</span>
+                                    <ExternalLink className="h-2.5 w-2.5 text-amber-400" />
+                                </a>
+                            )}
+                            {general.related_link_2_active === '1' && general.related_link_2_url && (
+                                <a
+                                    href={general.related_link_2_url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="px-2.5 py-1 rounded-md bg-black/30 hover:bg-black/50 text-amber-300 border border-white/15 inline-flex items-center gap-1 transition-colors shadow-xs"
+                                >
+                                    <span>{general.related_link_2_name || 'Kemendesa'}</span>
+                                    <ExternalLink className="h-2.5 w-2.5 text-amber-400" />
+                                </a>
+                            )}
+                            {general.related_link_3_active === '1' && general.related_link_3_url && (
+                                <a
+                                    href={general.related_link_3_url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="px-2.5 py-1 rounded-md bg-black/30 hover:bg-black/50 text-amber-300 border border-white/15 inline-flex items-center gap-1 transition-colors shadow-xs"
+                                >
+                                    <span>{general.related_link_3_name || 'Kemendagri'}</span>
+                                    <ExternalLink className="h-2.5 w-2.5 text-amber-400" />
+                                </a>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -242,7 +345,7 @@ export default function Footer() {
             <div className="relative z-10 border-t border-red-500/30 bg-black/35 py-4 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2 text-[11px] text-red-200/90 text-center sm:text-left">
                     <p>
-                        &copy; {currentYear} <strong className="text-white">Pemerintah Desa Karangwungu</strong>, Kec. Karanggeneng, Kab. Lamongan.
+                        &copy; {currentYear} <strong className="text-white">{general.site_name || 'Pemerintah Desa Karangwungu'}</strong>, {general.site_subdistrict || 'Kec. Karanggeneng'}, {general.site_regency || 'Kab. Lamongan'}.
                     </p>
                     <p className="flex items-center justify-center gap-2.5">
                         <Link href="/kontak" className="hover:text-amber-300 text-red-200 transition-colors">
