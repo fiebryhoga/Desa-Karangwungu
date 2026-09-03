@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import AppLayout from '../../Layouts/AppLayout';
 import SeoHead from '../../Components/SEO/SeoHead';
 import PageHeader from '../../Components/UI/PageHeader';
@@ -17,11 +17,30 @@ import {
     CheckCircle2,
     ExternalLink,
     Search,
+    ChevronDown,
+    Check,
 } from 'lucide-react';
 
 export default function Facilities() {
     const [selectedCategory, setSelectedCategory] = useState('Semua');
     const [searchQuery, setSearchQuery] = useState('');
+    const [isOtherOpen, setIsOtherOpen] = useState(false);
+    const otherDropdownRef = useRef(null);
+
+    // Close dropdown on click outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (otherDropdownRef.current && !otherDropdownRef.current.contains(event.target)) {
+                setIsOtherOpen(false);
+            }
+        };
+        if (isOtherOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isOtherOpen]);
 
     const categories = [
         'Semua',
@@ -32,6 +51,11 @@ export default function Facilities() {
         'Olahraga & Publik',
         'Pertanian & Ekonomi',
     ];
+
+    // Tampilkan 5 pill utama, sisanya masuk ke 'Lainnya'
+    const primaryCategories = categories.slice(0, 5);
+    const otherCategories = categories.slice(5);
+    const isOtherSelected = otherCategories.includes(selectedCategory);
 
     const facilitiesData = [
         {
@@ -155,10 +179,10 @@ export default function Facilities() {
                 />
 
                 {/* 2. FILTER & SEARCH TOOLBAR */}
-                <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
-                    {/* Category Filter Pills */}
+                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                    {/* Category Filter Pills (5 Utama + 1 Lainnya Dropdown) */}
                     <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
-                        {categories.map((cat) => (
+                        {primaryCategories.map((cat) => (
                             <button
                                 key={cat}
                                 onClick={() => setSelectedCategory(cat)}
@@ -171,6 +195,60 @@ export default function Facilities() {
                                 {cat}
                             </button>
                         ))}
+
+                        {/* Tombol ke-6: Lainnya + Dropdown Menu */}
+                        {otherCategories.length > 0 && (
+                            <div className="relative" ref={otherDropdownRef}>
+                                <button
+                                    type="button"
+                                    onClick={() => setIsOtherOpen(!isOtherOpen)}
+                                    className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer inline-flex items-center gap-1.5 ${
+                                        isOtherSelected
+                                            ? 'bg-gradient-to-r from-red-700 via-red-800 to-red-950 text-amber-300 border border-amber-400/40 shadow-xs'
+                                            : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:text-red-600 dark:hover:text-amber-400 border border-zinc-200 dark:border-zinc-700'
+                                    }`}
+                                >
+                                    <span>{isOtherSelected ? selectedCategory : 'Lainnya'}</span>
+                                    <ChevronDown
+                                        className={`h-3.5 w-3.5 transition-transform duration-200 ${
+                                            isOtherOpen ? 'rotate-180' : ''
+                                        }`}
+                                    />
+                                </button>
+
+                                {/* Dropdown Menu */}
+                                {isOtherOpen && (
+                                    <div className="absolute left-0 mt-2 w-48 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 shadow-2xl p-1.5 z-50 space-y-0.5 animate-in fade-in-50 slide-in-from-top-1 duration-150">
+                                        <div className="px-2.5 py-1 text-[10px] font-bold text-zinc-400 uppercase tracking-wider border-b border-zinc-100 dark:border-zinc-800 mb-1">
+                                            Kategori Lainnya
+                                        </div>
+                                        {otherCategories.map((cat) => {
+                                            const isCatActive = selectedCategory === cat;
+                                            return (
+                                                <button
+                                                    key={cat}
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setSelectedCategory(cat);
+                                                        setIsOtherOpen(false);
+                                                    }}
+                                                    className={`w-full text-left px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer ${
+                                                        isCatActive
+                                                            ? 'bg-gradient-to-r from-red-700 via-red-800 to-red-950 text-amber-300 font-bold'
+                                                            : 'text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-red-600 dark:hover:text-amber-400'
+                                                    }`}
+                                                >
+                                                    <span>{cat}</span>
+                                                    {isCatActive && (
+                                                        <Check className="h-3.5 w-3.5 text-amber-400 shrink-0" />
+                                                    )}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
 
                     {/* Search Box */}
@@ -181,7 +259,7 @@ export default function Facilities() {
                             placeholder="Cari fasilitas umum..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-9 pr-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-amber-400"
+                            className="w-full pl-9 pr-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-amber-400"
                         />
                     </div>
                 </div>
@@ -245,18 +323,16 @@ export default function Facilities() {
                                             </div>
                                         </div>
 
-                                        {/* Features Badges */}
-                                        <div className="pt-2">
-                                            <span className="text-[10px] font-bold text-amber-300/60 uppercase tracking-wider block mb-1.5">
+                                        {/* Features List */}
+                                        <div className="pt-2 border-t border-white/10">
+                                            <span className="text-[10px] font-bold text-amber-300/80 uppercase tracking-wider block mb-1.5">
                                                 Sarana Tersedia
                                             </span>
-                                            <div className="flex flex-wrap gap-1.5">
+                                            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-red-100/90">
                                                 {item.features.map((feat, idx) => (
-                                                    <span
-                                                        key={idx}
-                                                        className="px-2 py-0.5 rounded-md bg-black/30 text-red-100 text-[10px] font-medium border border-white/10"
-                                                    >
-                                                        {feat}
+                                                    <span key={idx} className="inline-flex items-center gap-1.5">
+                                                        <span className="h-1 w-1 rounded-full bg-amber-400 shrink-0" />
+                                                        <span>{feat}</span>
                                                     </span>
                                                 ))}
                                             </div>

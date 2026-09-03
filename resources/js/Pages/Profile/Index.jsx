@@ -17,6 +17,7 @@ import {
     Fish,
     HeartHandshake,
     Target,
+    Users,
 } from 'lucide-react';
 import VillageMap from '../../Components/Profile/VillageMap';
 
@@ -33,6 +34,12 @@ export default function ProfileIndex({ officials = [], demographics = {} }) {
             icon: Shield,
             title: 'Struktur Perangkat Desa',
             desc: 'Bagan organisasi & pamong desa',
+        },
+        {
+            href: '/profil/lembaga',
+            icon: Users,
+            title: 'Lembaga & Organisasi Desa',
+            desc: 'BPD, PKK, Karang Taruna, LPM & RT/RW',
         },
         {
             href: '/profil/demografi',

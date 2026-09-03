@@ -115,6 +115,12 @@ export default function Footer() {
                                     </Link>
                                 </li>
                                 <li>
+                                    <Link href="/profil/lembaga" className="text-red-100 hover:text-amber-300 flex items-center gap-1 transition-colors">
+                                        <ChevronRight className="h-3 w-3 text-amber-400 shrink-0" />
+                                        <span>Lembaga Desa</span>
+                                    </Link>
+                                </li>
+                                <li>
                                     <Link href="/profil/demografi" className="text-red-100 hover:text-amber-300 flex items-center gap-1 transition-colors">
                                         <ChevronRight className="h-3 w-3 text-amber-400 shrink-0" />
                                         <span>Data Demografi</span>

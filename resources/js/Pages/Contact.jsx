@@ -4,10 +4,9 @@ import AppLayout from '../Layouts/AppLayout';
 import SeoHead from '../Components/SEO/SeoHead';
 import PageHeader from '../Components/UI/PageHeader';
 import Button from '../Components/UI/Button';
-import Badge from '../Components/UI/Badge';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../Components/UI/Card';
 import { formatDateIndo } from '../Utils/format';
-import { MapPin, Phone, Mail, Clock, Send, MessageSquare, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Send, MessageSquare, CheckCircle2 } from 'lucide-react';
 
 export default function Contact({ feedbacks = [] }) {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -213,41 +212,7 @@ export default function Contact({ feedbacks = [] }) {
                             </CardContent>
                         </Card>
 
-                        {/* Recent Feedback Feed */}
-                        {feedbacks.length > 0 && (
-                            <div className="space-y-4 pt-4">
-                                <h3 className="text-base font-bold text-white flex items-center gap-2">
-                                    <ShieldCheck className="h-4 w-4 text-amber-400" />
-                                    <span>Aspirasi & Respon Pemerintah Desa</span>
-                                </h3>
 
-                                <div className="space-y-3">
-                                    {feedbacks.map((fb) => (
-                                        <Card key={fb.id} className="border-zinc-800 bg-zinc-900/90">
-                                            <CardContent className="p-4 space-y-2">
-                                                <div className="flex items-center justify-between text-xs">
-                                                    <span className="font-semibold text-amber-400">{fb.name}</span>
-                                                    <Badge variant="secondary" className="text-[10px] text-zinc-300 border-zinc-700">{fb.category}</Badge>
-                                                </div>
-                                                <p className="text-xs text-zinc-300 italic">
-                                                    &ldquo;{fb.message}&rdquo;
-                                                </p>
-                                                {fb.response && (
-                                                    <div className="pt-2 border-t border-zinc-800">
-                                                        <span className="text-[11px] font-semibold text-amber-400 block mb-0.5">
-                                                            Tanggapan Pemdes:
-                                                        </span>
-                                                        <p className="text-xs text-zinc-300">
-                                                            {fb.response}
-                                                        </p>
-                                                    </div>
-                                                )}
-                                            </CardContent>
-                                        </Card>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
                     </div>
                 </div>
             </div>

@@ -85,4 +85,9 @@ class ProfileController extends Controller
     {
         return Inertia::render('Profile/Facilities');
     }
+
+    public function organizations()
+    {
+        return Inertia::render('Profile/Organizations');
+    }
 }

@@ -25,12 +25,14 @@ Route::prefix('profil')->group(function () {
     Route::get('/visi-misi', [ProfileController::class, 'visionMission'])->name('profile.vision-mission');
     Route::get('/kepemimpinan', [ProfileController::class, 'leadership'])->name('profile.leadership');
     Route::get('/perangkat-desa', [ProfileController::class, 'officials'])->name('profile.officials');
+    Route::get('/lembaga', [ProfileController::class, 'organizations'])->name('profile.organizations');
     Route::get('/demografi', [ProfileController::class, 'demographics'])->name('profile.demographics');
     Route::get('/fasilitas', [ProfileController::class, 'facilities'])->name('profile.facilities');
 });
 
-// Fasilitas Umum Alias
+// Fasilitas Umum & Lembaga Alias
 Route::get('/fasilitas', [ProfileController::class, 'facilities'])->name('facilities.index');
+Route::get('/lembaga', [ProfileController::class, 'organizations'])->name('organizations.index');
 
 // Layanan Warga & Persuratan Online
 Route::prefix('layanan')->group(function () {
