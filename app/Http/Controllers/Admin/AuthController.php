@@ -29,16 +29,24 @@ class AuthController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $credentials = $request->validate([
-            'email' => ['required', 'string', 'email'],
+        $request->validate([
+            'username' => ['required', 'string'],
             'password' => ['required', 'string'],
+        ], [
+            'username.required' => 'Username administrator wajib diisi.',
+            'password.required' => 'Kata sandi wajib diisi.',
         ]);
+
+        $credentials = [
+            'username' => $request->username,
+            'password' => $request->password,
+        ];
 
         $remember = $request->boolean('remember');
 
         if (!Auth::attempt($credentials, $remember)) {
             throw ValidationException::withMessages([
-                'email' => __('Kombinasi email atau kata sandi tidak cocok dengan data administrator.'),
+                'username' => __('Username atau kata sandi tidak cocok dengan data administrator.'),
             ]);
         }
 
@@ -51,7 +59,7 @@ class AuthController extends Controller
             $request->session()->regenerateToken();
 
             throw ValidationException::withMessages([
-                'email' => __('Akun administrator Anda saat ini dinonaktifkan. Silakan hubungi Superadmin.'),
+                'username' => __('Akun administrator Anda saat ini dinonaktifkan. Silakan hubungi Superadmin.'),
             ]);
         }
 

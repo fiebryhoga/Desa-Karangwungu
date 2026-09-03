@@ -25,7 +25,7 @@ class AdminProfileController extends Controller
             'user' => [
                 'id' => $user->id,
                 'name' => $user->name,
-                'email' => $user->email,
+                'username' => $user->username,
                 'role' => $user->role,
                 'created_at' => $user->created_at,
             ],
@@ -41,10 +41,13 @@ class AdminProfileController extends Controller
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'username' => ['required', 'string', 'max:50', 'alpha_dash', Rule::unique('users')->ignore($user->id)],
         ]);
 
-        $user->update($validated);
+        $user->update([
+            'name' => $validated['name'],
+            'username' => strtolower($validated['username']),
+        ]);
 
         return back()->with('success', 'Profil Anda berhasil diperbarui.');
     }

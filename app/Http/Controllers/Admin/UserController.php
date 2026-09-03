@@ -25,7 +25,7 @@ class UserController extends Controller
         $users = User::query()
             ->when($search, function ($query, $search) {
                 $query->where('name', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('username', 'like', "%{$search}%")
                     ->orWhere('role', 'like', "%{$search}%");
             })
             ->latest()
@@ -47,7 +47,7 @@ class UserController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+            'username' => ['required', 'string', 'max:50', 'alpha_dash', 'unique:users,username'],
             'password' => ['required', 'string', 'min:6'],
             'role' => ['required', 'string', Rule::in(['superadmin', 'admin', 'operator'])],
             'is_active' => ['boolean'],
@@ -55,11 +55,10 @@ class UserController extends Controller
 
         User::create([
             'name' => $validated['name'],
-            'email' => $validated['email'],
+            'username' => strtolower($validated['username']),
             'password' => Hash::make($validated['password']),
             'role' => $validated['role'],
             'is_active' => $request->boolean('is_active', true),
-            'email_verified_at' => now(),
         ]);
 
         return redirect()->route('admin.users.index')
@@ -73,7 +72,7 @@ class UserController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'username' => ['required', 'string', 'max:50', 'alpha_dash', Rule::unique('users')->ignore($user->id)],
             'role' => ['required', 'string', Rule::in(['superadmin', 'admin', 'operator'])],
             'is_active' => ['boolean'],
         ]);
@@ -85,7 +84,7 @@ class UserController extends Controller
 
         $user->update([
             'name' => $validated['name'],
-            'email' => $validated['email'],
+            'username' => strtolower($validated['username']),
             'role' => $validated['role'],
             'is_active' => $request->boolean('is_active', true),
         ]);

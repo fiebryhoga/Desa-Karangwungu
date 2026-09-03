@@ -32,7 +32,7 @@ export default function UsersIndex({ users = { data: [] }, filters = {} }) {
     // Form: Create Admin
     const createForm = useForm({
         name: '',
-        email: '',
+        username: '',
         password: '',
         role: 'admin',
         is_active: true,
@@ -41,7 +41,7 @@ export default function UsersIndex({ users = { data: [] }, filters = {} }) {
     // Form: Edit Admin
     const editForm = useForm({
         name: '',
-        email: '',
+        username: '',
         role: 'admin',
         is_active: true,
     });
@@ -62,7 +62,7 @@ export default function UsersIndex({ users = { data: [] }, filters = {} }) {
         setEditModalUser(user);
         editForm.setData({
             name: user.name,
-            email: user.email,
+            username: user.username || '',
             role: user.role,
             is_active: Boolean(user.is_active),
         });
@@ -154,7 +154,7 @@ export default function UsersIndex({ users = { data: [] }, filters = {} }) {
                         <Search className="absolute left-3 top-2.5 h-4 w-4 text-zinc-500" />
                         <input
                             type="text"
-                            placeholder="Cari nama atau email..."
+                            placeholder="Cari nama atau username..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             className="w-full pl-9 pr-3 py-2 rounded-xl bg-zinc-950 border border-zinc-700 text-xs text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-red-600"
@@ -204,8 +204,8 @@ export default function UsersIndex({ users = { data: [] }, filters = {} }) {
                                                                     </span>
                                                                 )}
                                                             </div>
-                                                            <span className="text-zinc-400 text-[11px] block">
-                                                                {user.email}
+                                                            <span className="font-mono text-amber-400 text-[11px] font-bold block mt-0.5">
+                                                                @{user.username || 'admin'}
                                                             </span>
                                                         </div>
                                                     </div>
@@ -290,7 +290,22 @@ export default function UsersIndex({ users = { data: [] }, filters = {} }) {
                             <form onSubmit={handleCreateSubmit} className="space-y-3.5">
                                 <div>
                                     <label className="block text-xs font-semibold text-zinc-300 mb-1">
-                                        Nama Lengkap
+                                        Username Login <span className="text-amber-400">*</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        required
+                                        value={createForm.data.username}
+                                        onChange={(e) => createForm.setData('username', e.target.value)}
+                                        placeholder="Contoh: admin_desa (tanpa spasi)"
+                                        className="w-full px-3 py-2 rounded-xl bg-zinc-950 border border-zinc-700 text-xs text-white focus:outline-none focus:ring-2 focus:ring-red-600 font-mono"
+                                    />
+                                    {createForm.errors.username && <p className="text-[11px] text-red-400 mt-0.5">{createForm.errors.username}</p>}
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-semibold text-zinc-300 mb-1">
+                                        Nama Lengkap <span className="text-amber-400">*</span>
                                     </label>
                                     <input
                                         type="text"
@@ -301,21 +316,6 @@ export default function UsersIndex({ users = { data: [] }, filters = {} }) {
                                         className="w-full px-3 py-2 rounded-xl bg-zinc-950 border border-zinc-700 text-xs text-white focus:outline-none focus:ring-2 focus:ring-red-600"
                                     />
                                     {createForm.errors.name && <p className="text-[11px] text-red-400 mt-0.5">{createForm.errors.name}</p>}
-                                </div>
-
-                                <div>
-                                    <label className="block text-xs font-semibold text-zinc-300 mb-1">
-                                        Alamat Email
-                                    </label>
-                                    <input
-                                        type="email"
-                                        required
-                                        value={createForm.data.email}
-                                        onChange={(e) => createForm.setData('email', e.target.value)}
-                                        placeholder="aparatur@karangwungu.desa.id"
-                                        className="w-full px-3 py-2 rounded-xl bg-zinc-950 border border-zinc-700 text-xs text-white focus:outline-none focus:ring-2 focus:ring-red-600"
-                                    />
-                                    {createForm.errors.email && <p className="text-[11px] text-red-400 mt-0.5">{createForm.errors.email}</p>}
                                 </div>
 
                                 <div>
@@ -411,7 +411,21 @@ export default function UsersIndex({ users = { data: [] }, filters = {} }) {
                             <form onSubmit={handleEditSubmit} className="space-y-3.5">
                                 <div>
                                     <label className="block text-xs font-semibold text-zinc-300 mb-1">
-                                        Nama Lengkap
+                                        Username Login <span className="text-amber-400">*</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        required
+                                        value={editForm.data.username}
+                                        onChange={(e) => editForm.setData('username', e.target.value)}
+                                        className="w-full px-3 py-2 rounded-xl bg-zinc-950 border border-zinc-700 text-xs text-white focus:outline-none focus:ring-2 focus:ring-red-600 font-mono"
+                                    />
+                                    {editForm.errors.username && <p className="text-[11px] text-red-400 mt-0.5">{editForm.errors.username}</p>}
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-semibold text-zinc-300 mb-1">
+                                        Nama Lengkap <span className="text-amber-400">*</span>
                                     </label>
                                     <input
                                         type="text"
@@ -421,20 +435,6 @@ export default function UsersIndex({ users = { data: [] }, filters = {} }) {
                                         className="w-full px-3 py-2 rounded-xl bg-zinc-950 border border-zinc-700 text-xs text-white focus:outline-none focus:ring-2 focus:ring-red-600"
                                     />
                                     {editForm.errors.name && <p className="text-[11px] text-red-400 mt-0.5">{editForm.errors.name}</p>}
-                                </div>
-
-                                <div>
-                                    <label className="block text-xs font-semibold text-zinc-300 mb-1">
-                                        Alamat Email
-                                    </label>
-                                    <input
-                                        type="email"
-                                        required
-                                        value={editForm.data.email}
-                                        onChange={(e) => editForm.setData('email', e.target.value)}
-                                        className="w-full px-3 py-2 rounded-xl bg-zinc-950 border border-zinc-700 text-xs text-white focus:outline-none focus:ring-2 focus:ring-red-600"
-                                    />
-                                    {editForm.errors.email && <p className="text-[11px] text-red-400 mt-0.5">{editForm.errors.email}</p>}
                                 </div>
 
                                 <div>
@@ -504,7 +504,7 @@ export default function UsersIndex({ users = { data: [] }, filters = {} }) {
                             </div>
 
                             <p className="text-xs text-zinc-400">
-                                Tetapkan kata sandi baru untuk administrator <strong className="text-white">{passwordModalUser.name}</strong> ({passwordModalUser.email}).
+                                Tetapkan kata sandi baru untuk administrator <strong className="text-white">{passwordModalUser.name}</strong> (@{passwordModalUser.username || 'admin'}).
                             </p>
 
                             <form onSubmit={handlePasswordSubmit} className="space-y-4">

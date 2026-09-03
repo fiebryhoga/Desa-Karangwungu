@@ -21,7 +21,7 @@ export default function Profile({ user = {} }) {
     // Profile form
     const profileForm = useForm({
         name: user.name || '',
-        email: user.email || '',
+        username: user.username || '',
     });
 
     // Password form
@@ -75,7 +75,23 @@ export default function Profile({ user = {} }) {
                         <form onSubmit={handleProfileSubmit} className="space-y-4">
                             <div>
                                 <label className="block text-xs font-semibold text-zinc-300 mb-1">
-                                    Nama Lengkap
+                                    Username Login <span className="text-amber-400">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    required
+                                    value={profileForm.data.username}
+                                    onChange={(e) => profileForm.setData('username', e.target.value)}
+                                    className="w-full px-3 py-2.5 rounded-xl bg-zinc-950 border border-zinc-700 text-xs text-white focus:outline-none focus:ring-2 focus:ring-red-600 font-mono"
+                                />
+                                {profileForm.errors.username && (
+                                    <p className="text-[11px] text-red-400 mt-1">{profileForm.errors.username}</p>
+                                )}
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-semibold text-zinc-300 mb-1">
+                                    Nama Lengkap <span className="text-amber-400">*</span>
                                 </label>
                                 <input
                                     type="text"
@@ -86,22 +102,6 @@ export default function Profile({ user = {} }) {
                                 />
                                 {profileForm.errors.name && (
                                     <p className="text-[11px] text-red-400 mt-1">{profileForm.errors.name}</p>
-                                )}
-                            </div>
-
-                            <div>
-                                <label className="block text-xs font-semibold text-zinc-300 mb-1">
-                                    Alamat Email
-                                </label>
-                                <input
-                                    type="email"
-                                    required
-                                    value={profileForm.data.email}
-                                    onChange={(e) => profileForm.setData('email', e.target.value)}
-                                    className="w-full px-3 py-2.5 rounded-xl bg-zinc-950 border border-zinc-700 text-xs text-white focus:outline-none focus:ring-2 focus:ring-red-600"
-                                />
-                                {profileForm.errors.email && (
-                                    <p className="text-[11px] text-red-400 mt-1">{profileForm.errors.email}</p>
                                 )}
                             </div>
 

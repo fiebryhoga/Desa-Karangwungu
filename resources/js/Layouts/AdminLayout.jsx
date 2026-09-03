@@ -27,7 +27,7 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
 
     const currentUser = auth?.user || {
         name: 'Administrator',
-        email: 'admin@karangwungu.desa.id',
+        username: 'admin',
         role: 'superadmin',
     };
 
@@ -86,18 +86,11 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
                 {/* Brand Header */}
                 <div className="h-16 px-5 flex items-center justify-between border-b border-zinc-800/80 bg-zinc-900/90">
                     <Link href="/admin/dashboard" className="flex items-center gap-3">
-                        <div className="h-9 w-9 rounded-xl bg-gradient-to-b from-red-700 via-red-800 to-red-950 border border-amber-400/40 flex items-center justify-center shadow-md shadow-red-950/40">
-                            <img
-                                src="/images/logo-desa.png"
-                                alt="Logo Karangwungu"
-                                className="h-6 w-6 object-contain"
-                                onError={(e) => {
-                                    e.target.style.display = 'none';
-                                    e.target.nextSibling.style.display = 'block';
-                                }}
-                            />
-                            <ShieldCheck className="h-5 w-5 text-amber-300 hidden" />
-                        </div>
+                        <img
+                            src="/assets/images/logo.png"
+                            alt="Logo Karangwungu"
+                            className="h-9 w-auto object-contain shrink-0"
+                        />
                         <div>
                             <span className="text-sm font-black text-white tracking-tight block">
                                 Panel Admin
@@ -183,9 +176,14 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
                             <p className="text-xs font-bold text-white truncate">
                                 {currentUser.name}
                             </p>
-                            <span className="inline-block px-1.5 py-0.2 rounded text-[9.5px] font-semibold bg-amber-400/10 text-amber-400 border border-amber-400/20 uppercase tracking-wider">
-                                {currentUser.role}
-                            </span>
+                            <div className="flex items-center gap-1.5 mt-0.5">
+                                <span className="font-mono text-[10px] text-amber-400 font-bold">
+                                    @{currentUser.username || 'admin'}
+                                </span>
+                                <span className="inline-block px-1.5 py-0.2 rounded text-[9px] font-semibold bg-amber-400/10 text-amber-400/90 border border-amber-400/20 uppercase tracking-wider">
+                                    {currentUser.role}
+                                </span>
+                            </div>
                         </div>
                     </div>
 

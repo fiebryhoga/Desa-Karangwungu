@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useForm, Head, Link } from '@inertiajs/react';
-import { ShieldCheck, Eye, EyeOff, Lock, Mail, ArrowLeft, LogIn } from 'lucide-react';
+import { ShieldCheck, Eye, EyeOff, Lock, User, ArrowLeft, LogIn } from 'lucide-react';
 
 export default function Login() {
     const [showPassword, setShowPassword] = useState(false);
 
     const { data, setData, post, processing, errors, reset } = useForm({
-        email: '',
+        username: '',
         password: '',
         remember: false,
     });
@@ -19,7 +19,7 @@ export default function Login() {
     };
 
     return (
-        <div className="min-h-screen bg-zinc-950 text-white flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden selection:bg-red-600 selection:text-white">
+        <div className="min-h-screen bg-zinc-950 text-white flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden selection:bg-red-600 selection:text-white">
             <Head title="Masuk Portal Administrator - Desa Karangwungu" />
 
             {/* Ambient Background Glows */}
@@ -37,20 +37,15 @@ export default function Login() {
                 </Link>
             </div>
 
-            <div className="sm:mx-auto sm:w-full sm:max-w-md px-4 z-10">
+            <div className="w-full max-w-md mx-auto z-10">
                 {/* Header Branding */}
                 <div className="text-center space-y-3">
-                    <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-gradient-to-b from-red-700 via-red-800 to-red-950 border border-amber-400/40 shadow-xl shadow-red-950/50">
+                    <div className="flex justify-center">
                         <img
-                            src="/images/logo-desa.png"
+                            src="/assets/images/logo.png"
                             alt="Logo Desa Karangwungu"
-                            className="h-12 w-12 object-contain drop-shadow-md"
-                            onError={(e) => {
-                                e.target.style.display = 'none';
-                                e.target.nextSibling.style.display = 'block';
-                            }}
+                            className="h-20 w-auto object-contain drop-shadow-xl"
                         />
-                        <ShieldCheck className="h-12 w-12 text-amber-300 hidden" />
                     </div>
 
                     <div>
@@ -71,31 +66,31 @@ export default function Login() {
                                 Autentikasi Pengguna
                             </span>
                             <p className="text-xs text-zinc-400 mt-0.5">
-                                Masukkan email dan kata sandi resmi administrator Anda.
+                                Masukkan username dan kata sandi resmi administrator Anda.
                             </p>
                         </div>
 
-                        {errors.email && (
+                        {errors.username && (
                             <div className="p-3 rounded-xl bg-red-950/80 border border-red-800 text-xs text-red-200 font-medium animate-in fade-in duration-200">
-                                {errors.email}
+                                {errors.username}
                             </div>
                         )}
 
                         <form onSubmit={handleSubmit} className="space-y-4">
-                            {/* Email */}
+                            {/* Username */}
                             <div className="space-y-1.5">
                                 <label className="block text-xs font-semibold text-zinc-300">
-                                    Alamat Email Administrator
+                                    Username Administrator
                                 </label>
                                 <div className="relative">
-                                    <Mail className="absolute left-3 top-3 h-4 w-4 text-zinc-500" />
+                                    <User className="absolute left-3 top-3 h-4 w-4 text-zinc-500" />
                                     <input
-                                        type="email"
+                                        type="text"
                                         required
                                         autoFocus
-                                        value={data.email}
-                                        onChange={(e) => setData('email', e.target.value)}
-                                        placeholder="nama@karangwungu.desa.id"
+                                        value={data.username}
+                                        onChange={(e) => setData('username', e.target.value)}
+                                        placeholder="Contoh: admin"
                                         className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-zinc-700 bg-zinc-950/60 text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600 transition-all"
                                     />
                                 </div>
