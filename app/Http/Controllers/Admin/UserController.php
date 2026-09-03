@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\AdminActivityLog;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -53,13 +53,20 @@ class UserController extends Controller
             'is_active' => ['boolean'],
         ]);
 
-        User::create([
+        $newUser = User::create([
             'name' => $validated['name'],
             'username' => strtolower($validated['username']),
             'password' => Hash::make($validated['password']),
             'role' => $validated['role'],
             'is_active' => $request->boolean('is_active', true),
         ]);
+
+        AdminActivityLog::record(
+            'admin_created',
+            Auth::user()->username,
+            Auth::id(),
+            "Menambahkan admin baru: {$newUser->name} (@{$newUser->username}) dengan role {$newUser->role}."
+        );
 
         return redirect()->route('admin.users.index')
             ->with('success', 'Akun administrator baru berhasil ditambahkan.');
@@ -89,6 +96,13 @@ class UserController extends Controller
             'is_active' => $request->boolean('is_active', true),
         ]);
 
+        AdminActivityLog::record(
+            'admin_updated',
+            Auth::user()->username,
+            Auth::id(),
+            "Memperbarui akun admin: {$user->name} (@{$user->username})."
+        );
+
         return redirect()->route('admin.users.index')
             ->with('success', 'Data administrator berhasil diperbarui.');
     }
@@ -106,6 +120,13 @@ class UserController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
+        AdminActivityLog::record(
+            'admin_password_reset',
+            Auth::user()->username,
+            Auth::id(),
+            "Mereset kata sandi akun admin: {$user->name} (@{$user->username})."
+        );
+
         return redirect()->route('admin.users.index')
             ->with('success', 'Kata sandi untuk ' . $user->name . ' berhasil diperbarui.');
     }
@@ -120,7 +141,15 @@ class UserController extends Controller
         }
 
         $userName = $user->name;
+        $userUsername = $user->username;
         $user->delete();
+
+        AdminActivityLog::record(
+            'admin_deleted',
+            Auth::user()->username,
+            Auth::id(),
+            "Menghapus akun admin: {$userName} (@{$userUsername})."
+        );
 
         return redirect()->route('admin.users.index')
             ->with('success', 'Akun administrator ' . $userName . ' berhasil dihapus.');

@@ -51,6 +51,7 @@ class HandleInertiaRequests extends Middleware
                 'error' => fn () => $request->session()->get('error'),
             ],
             'app_url' => config('app.url'),
+            'admin_path' => config('app.admin_path', 'portal-karangwungu'),
             'village_info' => [
                 'name' => 'Desa Karangwungu',
                 'subdistrict' => 'Kecamatan Karanggeneng',

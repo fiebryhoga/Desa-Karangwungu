@@ -3,18 +3,25 @@ import { useForm, usePage } from '@inertiajs/react';
 import AdminLayout from '../../Layouts/AdminLayout';
 import { formatDateIndo } from '../../Utils/format';
 import {
-    User,
     KeyRound,
+    User,
     Lock,
-    Mail,
     Shield,
     CheckCircle2,
+    AlertCircle,
     Eye,
     EyeOff,
     Save,
+    Clock,
+    Activity,
+    ShieldAlert,
+    Laptop,
 } from 'lucide-react';
 
-export default function Profile({ user = {} }) {
+export default function Profile({ user = {}, activityLogs = [] }) {
+    const { admin_path } = usePage().props;
+    const adminPath = admin_path || 'portal-karangwungu';
+
     const [showCurrentPass, setShowCurrentPass] = useState(false);
     const [showNewPass, setShowNewPass] = useState(false);
 
@@ -33,30 +40,91 @@ export default function Profile({ user = {} }) {
 
     const handleProfileSubmit = (e) => {
         e.preventDefault();
-        profileForm.patch('/admin/profile', {
+        profileForm.patch(`/${adminPath}/profile`, {
             preserveScroll: true,
         });
     };
 
     const handlePasswordSubmit = (e) => {
         e.preventDefault();
-        passwordForm.put('/admin/profile/password', {
+        passwordForm.put(`/${adminPath}/profile/password`, {
             preserveScroll: true,
             onSuccess: () => passwordForm.reset(),
         });
     };
 
+    const getActionBadge = (action) => {
+        switch (action) {
+            case 'login_success':
+                return (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-400/10 text-emerald-400 border border-emerald-400/20">
+                        Login Berhasil
+                    </span>
+                );
+            case 'login_failed_bad_credentials':
+            case 'login_failed_invalid_pin':
+                return (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-400/10 text-red-400 border border-red-400/20">
+                        Percobaan Gagal
+                    </span>
+                );
+            case 'login_rate_limited':
+            case 'session_hijack_blocked':
+                return (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40">
+                        Diblokir Keamanan
+                    </span>
+                );
+            case 'password_changed':
+            case 'admin_password_reset':
+                return (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-400/10 text-amber-400 border border-amber-400/20">
+                        Ganti Kata Sandi
+                    </span>
+                );
+            case 'admin_created':
+                return (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-400/10 text-blue-400 border border-blue-400/20">
+                        Tambah Admin
+                    </span>
+                );
+            default:
+                return (
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-zinc-700/50 text-zinc-300 border border-zinc-600">
+                        {action}
+                    </span>
+                );
+        }
+    };
+
     return (
-        <AdminLayout title="Profil & Kata Sandi">
+        <AdminLayout title="Profil & Keamanan Akun">
             <div className="max-w-4xl space-y-8">
                 <div>
                     <h1 className="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
                         <KeyRound className="h-6 w-6 text-amber-400" />
-                        <span>Pengaturan Akun & Keamanan</span>
+                        <span>Pengaturan Akun & Keamanan Berlapis</span>
                     </h1>
                     <p className="text-xs sm:text-sm text-zinc-400 mt-1">
-                        Perbarui informasi profil dan ganti kata sandi akun administrator Anda secara berkala.
+                        Kelola data profil, ganti kata sandi berkala, dan pantau log audit keamanan sesi Anda.
                     </p>
+                </div>
+
+                {/* Security Advisory Alert */}
+                <div className="p-4 rounded-2xl bg-amber-950/40 border border-amber-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                        <div className="p-2 rounded-xl bg-amber-500/20 text-amber-400 shrink-0">
+                            <ShieldAlert className="h-5 w-5" />
+                        </div>
+                        <div>
+                            <h4 className="text-xs font-bold text-amber-300">
+                                Portal Terproteksi dengan Jalur URL Rahasia & Anti Brute-Force
+                            </h4>
+                            <p className="text-[11px] text-zinc-400 mt-0.5">
+                                Akses panel dialihkan ke <code className="text-amber-400 font-mono font-bold">/{adminPath}</code> dan jalur standar <code className="text-zinc-500 font-mono">/admin</code> telah diblokir menjadi 404.
+                            </p>
+                        </div>
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -118,37 +186,28 @@ export default function Profile({ user = {} }) {
                                 </span>
                             </div>
 
-                            <div>
-                                <label className="block text-xs font-semibold text-zinc-400 mb-1">
-                                    Terdaftar Pada
-                                </label>
-                                <div className="px-3 py-2 rounded-xl bg-zinc-950/60 border border-zinc-800 text-xs text-zinc-400">
-                                    {formatDateIndo(user.created_at)}
-                                </div>
-                            </div>
-
                             <div className="pt-2">
                                 <button
                                     type="submit"
                                     disabled={profileForm.processing}
-                                    className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-md transition-all cursor-pointer disabled:opacity-50"
+                                    className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-red-700 hover:bg-red-600 text-white font-bold text-xs shadow-md transition-all cursor-pointer disabled:opacity-50"
                                 >
                                     <Save className="h-3.5 w-3.5" />
-                                    <span>{profileForm.processing ? 'Menyimpan...' : 'Perbarui Profil'}</span>
+                                    <span>{profileForm.processing ? 'Menyimpan...' : 'Simpan Profil'}</span>
                                 </button>
                             </div>
                         </form>
                     </div>
 
-                    {/* Form 2: Ganti Password Pribadi */}
+                    {/* Form 2: Ganti Password Mandiri */}
                     <div className="rounded-2xl bg-zinc-900 border border-zinc-800 p-6 space-y-5">
                         <div className="border-b border-zinc-800 pb-3">
                             <h2 className="text-sm font-bold text-white flex items-center gap-2">
                                 <Lock className="h-4 w-4 text-amber-400" />
-                                <span>Ganti Kata Sandi Pribadi</span>
+                                <span>Ganti Kata Sandi</span>
                             </h2>
                             <p className="text-xs text-zinc-400 mt-0.5">
-                                Amankan akun Anda dengan kata sandi yang kuat
+                                Disarankan mengganti kata sandi secara berkala
                             </p>
                         </div>
 
@@ -156,7 +215,7 @@ export default function Profile({ user = {} }) {
                             {/* Current Password */}
                             <div>
                                 <label className="block text-xs font-semibold text-zinc-300 mb-1">
-                                    Kata Sandi Saat Ini
+                                    Kata Sandi Saat Ini <span className="text-amber-400">*</span>
                                 </label>
                                 <div className="relative">
                                     <input
@@ -164,7 +223,7 @@ export default function Profile({ user = {} }) {
                                         required
                                         value={passwordForm.data.current_password}
                                         onChange={(e) => passwordForm.setData('current_password', e.target.value)}
-                                        placeholder="••••••••"
+                                        placeholder="Ketik kata sandi saat ini"
                                         className="w-full px-3 pr-9 py-2.5 rounded-xl bg-zinc-950 border border-zinc-700 text-xs text-white focus:outline-none focus:ring-2 focus:ring-amber-500"
                                     />
                                     <button
@@ -183,7 +242,7 @@ export default function Profile({ user = {} }) {
                             {/* New Password */}
                             <div>
                                 <label className="block text-xs font-semibold text-zinc-300 mb-1">
-                                    Kata Sandi Baru
+                                    Kata Sandi Baru <span className="text-amber-400">*</span>
                                 </label>
                                 <div className="relative">
                                     <input
@@ -233,6 +292,58 @@ export default function Profile({ user = {} }) {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+
+                {/* Audit Trail: Log Aktivitas Keamanan */}
+                <div className="rounded-2xl bg-zinc-900 border border-zinc-800 p-6 space-y-4">
+                    <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+                        <div className="flex items-center gap-2">
+                            <Activity className="h-4 w-4 text-emerald-400" />
+                            <h3 className="text-sm font-bold text-white">
+                                Catatan Audit Keamanan Sesi Terbaru
+                            </h3>
+                        </div>
+                        <span className="text-[11px] text-zinc-500">10 Entri Terakhir</span>
+                    </div>
+
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left text-xs">
+                            <thead className="text-[10px] uppercase font-bold text-zinc-500 border-b border-zinc-800">
+                                <tr>
+                                    <th className="py-2.5 px-3">Aktivitas</th>
+                                    <th className="py-2.5 px-3">Alamat IP</th>
+                                    <th className="py-2.5 px-3">Keterangan</th>
+                                    <th className="py-2.5 px-3 text-right">Waktu</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-zinc-800/60">
+                                {activityLogs.length === 0 ? (
+                                    <tr>
+                                        <td colSpan="4" className="py-6 text-center text-zinc-500">
+                                            Belum ada catatan aktivitas keamanan.
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    activityLogs.map((log) => (
+                                        <tr key={log.id} className="hover:bg-zinc-800/30 transition-colors">
+                                            <td className="py-3 px-3">
+                                                {getActionBadge(log.action)}
+                                            </td>
+                                            <td className="py-3 px-3 font-mono text-zinc-300 text-[11px]">
+                                                {log.ip_address}
+                                            </td>
+                                            <td className="py-3 px-3 text-zinc-400 text-[11px]">
+                                                {log.details || '-'}
+                                            </td>
+                                            <td className="py-3 px-3 text-right text-zinc-400 text-[11px] whitespace-nowrap">
+                                                {formatDateIndo(log.created_at)}
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>

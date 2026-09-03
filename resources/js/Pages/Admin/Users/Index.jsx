@@ -19,7 +19,8 @@ import {
 } from 'lucide-react';
 
 export default function UsersIndex({ users = { data: [] }, filters = {} }) {
-    const { auth } = usePage().props;
+    const { auth, admin_path } = usePage().props;
+    const adminPath = admin_path || 'portal-karangwungu';
     const currentUserId = auth?.user?.id;
 
     const [search, setSearch] = useState(filters.search || '');
@@ -54,7 +55,7 @@ export default function UsersIndex({ users = { data: [] }, filters = {} }) {
     // Search filter
     const handleSearch = (e) => {
         e.preventDefault();
-        router.get('/admin/users', { search }, { preserveState: true });
+        router.get(`/${adminPath}/users`, { search }, { preserveState: true });
     };
 
     // Open Edit Modal
@@ -71,7 +72,7 @@ export default function UsersIndex({ users = { data: [] }, filters = {} }) {
     // Submit Create
     const handleCreateSubmit = (e) => {
         e.preventDefault();
-        createForm.post('/admin/users', {
+        createForm.post(`/${adminPath}/users`, {
             onSuccess: () => {
                 setCreateModalOpen(false);
                 createForm.reset();
@@ -83,7 +84,7 @@ export default function UsersIndex({ users = { data: [] }, filters = {} }) {
     const handleEditSubmit = (e) => {
         e.preventDefault();
         if (!editModalUser) return;
-        editForm.patch(`/admin/users/${editModalUser.id}`, {
+        editForm.patch(`/${adminPath}/users/${editModalUser.id}`, {
             onSuccess: () => {
                 setEditModalUser(null);
                 editForm.reset();
@@ -95,7 +96,7 @@ export default function UsersIndex({ users = { data: [] }, filters = {} }) {
     const handlePasswordSubmit = (e) => {
         e.preventDefault();
         if (!passwordModalUser) return;
-        passwordForm.put(`/admin/users/${passwordModalUser.id}/password`, {
+        passwordForm.put(`/${adminPath}/users/${passwordModalUser.id}/password`, {
             onSuccess: () => {
                 setPasswordModalUser(null);
                 passwordForm.reset();
@@ -106,7 +107,7 @@ export default function UsersIndex({ users = { data: [] }, filters = {} }) {
     // Submit Delete
     const handleDeleteSubmit = () => {
         if (!deleteModalUser) return;
-        router.delete(`/admin/users/${deleteModalUser.id}`, {
+        router.delete(`/${adminPath}/users/${deleteModalUser.id}`, {
             onSuccess: () => setDeleteModalUser(null),
         });
     };

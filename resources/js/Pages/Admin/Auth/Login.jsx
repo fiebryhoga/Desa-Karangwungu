@@ -1,20 +1,22 @@
 import React, { useState } from 'react';
 import { useForm, Head, Link } from '@inertiajs/react';
-import { ShieldCheck, Eye, EyeOff, Lock, User, ArrowLeft, LogIn } from 'lucide-react';
+import { ShieldCheck, Eye, EyeOff, Lock, User, ArrowLeft, LogIn, KeyRound } from 'lucide-react';
 
-export default function Login() {
+export default function Login({ adminPath = 'portal-karangwungu' }) {
     const [showPassword, setShowPassword] = useState(false);
+    const [showPin, setShowPin] = useState(false);
 
     const { data, setData, post, processing, errors, reset } = useForm({
         username: '',
         password: '',
+        security_pin: '',
         remember: false,
     });
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post('/admin/login', {
-            onFinish: () => reset('password'),
+        post(`/${adminPath}/login`, {
+            onFinish: () => reset('password', 'security_pin'),
         });
     };
 
@@ -63,10 +65,10 @@ export default function Login() {
                     <div className="bg-zinc-900/90 backdrop-blur-xl py-8 px-6 sm:px-10 shadow-2xl rounded-2xl border border-zinc-800 space-y-6">
                         <div className="border-b border-zinc-800/80 pb-4">
                             <span className="text-xs font-bold text-amber-400 uppercase tracking-wider block">
-                                Autentikasi Pengguna
+                                Autentikasi Pengguna & Keamanan Berlapis
                             </span>
                             <p className="text-xs text-zinc-400 mt-0.5">
-                                Masukkan username dan kata sandi resmi administrator Anda.
+                                Masukkan username, kata sandi, dan PIN pengaman resmi aparatur desa.
                             </p>
                         </div>
 
@@ -91,7 +93,7 @@ export default function Login() {
                                         value={data.username}
                                         onChange={(e) => setData('username', e.target.value)}
                                         placeholder="Contoh: admin"
-                                        className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-zinc-700 bg-zinc-950/60 text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600 transition-all"
+                                        className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-zinc-700 bg-zinc-950/60 text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600 transition-all font-mono"
                                     />
                                 </div>
                             </div>
@@ -128,6 +130,42 @@ export default function Login() {
                                 )}
                             </div>
 
+                            {/* Security PIN / Passkey */}
+                            <div className="space-y-1.5">
+                                <div className="flex items-center justify-between">
+                                    <label className="block text-xs font-semibold text-amber-400">
+                                        Token / PIN Keamanan Sistem
+                                    </label>
+                                    <span className="text-[10px] text-zinc-500">6 Digit Rahasia</span>
+                                </div>
+                                <div className="relative">
+                                    <KeyRound className="absolute left-3 top-3 h-4 w-4 text-amber-400/80" />
+                                    <input
+                                        type={showPin ? 'text' : 'password'}
+                                        required
+                                        maxLength={10}
+                                        value={data.security_pin}
+                                        onChange={(e) => setData('security_pin', e.target.value)}
+                                        placeholder="Contoh: 622540"
+                                        className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-amber-500/40 bg-zinc-950/80 text-sm text-amber-300 placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all font-mono tracking-wider"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPin(!showPin)}
+                                        className="absolute right-3 top-3 text-zinc-500 hover:text-zinc-300 transition-colors"
+                                    >
+                                        {showPin ? (
+                                            <EyeOff className="h-4 w-4" />
+                                        ) : (
+                                            <Eye className="h-4 w-4" />
+                                        )}
+                                    </button>
+                                </div>
+                                {errors.security_pin && (
+                                    <p className="text-xs text-red-400">{errors.security_pin}</p>
+                                )}
+                            </div>
+
                             {/* Remember Me */}
                             <div className="flex items-center pt-1">
                                 <label className="flex items-center gap-2 cursor-pointer select-none">
@@ -157,7 +195,7 @@ export default function Login() {
                         {/* Security Notice */}
                         <div className="pt-4 border-t border-zinc-800/80 text-center">
                             <p className="text-[11px] text-zinc-500 leading-relaxed">
-                                Sistem ini hanya dapat diakses oleh aparatur dan pengelola resmi Pemerintah Desa Karangwungu. Pendaftaran akun baru dan penggantian kredensial dikelola terpusat di dalam panel sistem.
+                                Dilindungi dengan enkripsi berlapis, pembatasan brute-force, dan pengikatan sidik jari perangkat sesi.
                             </p>
                         </div>
                     </div>

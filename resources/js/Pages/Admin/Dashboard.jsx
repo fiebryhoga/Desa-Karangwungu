@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import AdminLayout from '../../Layouts/AdminLayout';
 import { formatDateIndo } from '../../Utils/format';
 import {
@@ -17,6 +17,9 @@ import {
 } from 'lucide-react';
 
 export default function Dashboard({ stats = {}, recentLetters = [], recentPosts = [] }) {
+    const { props } = usePage();
+    const adminPath = props?.admin_path || 'portal-karangwungu';
+
     const statCards = [
         {
             title: 'Permohonan Surat',
@@ -48,7 +51,7 @@ export default function Dashboard({ stats = {}, recentLetters = [], recentPosts 
             badge: 'Pengelola Sistem',
             badgeColor: 'bg-red-400/10 text-red-400 border-red-400/30',
             icon: Users,
-            link: '/admin/users',
+            link: `/${adminPath}/users`,
         },
     ];
 
@@ -242,7 +245,7 @@ export default function Dashboard({ stats = {}, recentLetters = [], recentPosts 
                         </div>
                     </div>
                     <Link
-                        href="/admin/users"
+                        href={`/${adminPath}/users`}
                         className="px-4 py-2 rounded-xl bg-gradient-to-r from-red-700 to-red-800 hover:from-red-600 hover:to-red-700 text-amber-300 text-xs font-bold border border-amber-400/30 transition-all shadow-md cursor-pointer"
                     >
                         Kelola Administrator

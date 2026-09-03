@@ -3,23 +3,29 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\AdminActivityLog;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class AdminProfileController extends Controller
 {
     /**
-     * Show the profile edit form for the logged-in admin.
+     * Show the profile edit form for the logged-in admin with security audit logs.
      */
     public function edit(): Response
     {
         $user = Auth::user();
+
+        $activityLogs = AdminActivityLog::where('user_id', $user->id)
+            ->orWhere('username', $user->username)
+            ->latest('id')
+            ->take(10)
+            ->get(['id', 'action', 'ip_address', 'details', 'created_at']);
 
         return Inertia::render('Admin/Profile', [
             'user' => [
@@ -29,6 +35,7 @@ class AdminProfileController extends Controller
                 'role' => $user->role,
                 'created_at' => $user->created_at,
             ],
+            'activityLogs' => $activityLogs,
         ]);
     }
 
@@ -44,10 +51,19 @@ class AdminProfileController extends Controller
             'username' => ['required', 'string', 'max:50', 'alpha_dash', Rule::unique('users')->ignore($user->id)],
         ]);
 
+        $oldUsername = $user->username;
+
         $user->update([
             'name' => $validated['name'],
             'username' => strtolower($validated['username']),
         ]);
+
+        AdminActivityLog::record(
+            'profile_updated',
+            $user->username,
+            $user->id,
+            "Informasi profil diperbarui (nama: {$user->name}, username: {$user->username})"
+        );
 
         return back()->with('success', 'Profil Anda berhasil diperbarui.');
     }
@@ -59,15 +75,25 @@ class AdminProfileController extends Controller
     {
         $user = Auth::user();
 
-        $validated = $request->validate([
+        $request->validate([
             'current_password' => ['required', 'string', 'current_password'],
             'password' => ['required', 'string', 'min:6', 'confirmed'],
+        ], [
+            'current_password.current_password' => 'Kata sandi saat ini tidak cocok.',
+            'password.confirmed' => 'Konfirmasi kata sandi baru tidak sesuai.',
         ]);
 
         $user->update([
-            'password' => Hash::make($validated['password']),
+            'password' => Hash::make($request->password),
         ]);
 
-        return back()->with('success', 'Kata sandi Anda berhasil diubah.');
+        AdminActivityLog::record(
+            'password_changed',
+            $user->username,
+            $user->id,
+            'Kata sandi administrator berhasil diubah secara mandiri.'
+        );
+
+        return back()->with('success', 'Kata sandi Anda berhasil diperbarui.');
     }
 }

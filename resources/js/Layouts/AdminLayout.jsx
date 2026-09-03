@@ -22,8 +22,12 @@ import {
 } from 'lucide-react';
 
 export default function AdminLayout({ children, title = 'Panel Administrator' }) {
-    const { auth, flash, url } = usePage().props;
+    const { url, props } = usePage();
+    const { auth, flash, admin_path } = props || {};
+    const adminPath = admin_path || 'portal-karangwungu';
     const [sidebarOpen, setSidebarOpen] = useState(false);
+
+    const currentUrl = url || (typeof window !== 'undefined' ? window.location.pathname : '');
 
     const currentUser = auth?.user || {
         name: 'Administrator',
@@ -32,27 +36,27 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
     };
 
     const handleLogout = () => {
-        router.post('/admin/logout');
+        router.post(`/${adminPath}/logout`);
     };
 
     const navItems = [
         {
             name: 'Dashboard Ikhtisar',
-            href: '/admin/dashboard',
+            href: `/${adminPath}/dashboard`,
             icon: LayoutDashboard,
-            active: url === '/admin/dashboard' || url === '/admin',
+            active: currentUrl === `/${adminPath}/dashboard` || currentUrl === `/${adminPath}`,
         },
         {
             name: 'Manajemen Administrator',
-            href: '/admin/users',
+            href: `/${adminPath}/users`,
             icon: Users,
-            active: url.startsWith('/admin/users'),
+            active: currentUrl ? currentUrl.startsWith(`/${adminPath}/users`) : false,
         },
         {
             name: 'Profil & Kata Sandi',
-            href: '/admin/profile',
+            href: `/${adminPath}/profile`,
             icon: KeyRound,
-            active: url.startsWith('/admin/profile'),
+            active: currentUrl ? currentUrl.startsWith(`/${adminPath}/profile`) : false,
         },
     ];
 
@@ -85,7 +89,7 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
             >
                 {/* Brand Header */}
                 <div className="h-16 px-5 flex items-center justify-between border-b border-zinc-800/80 bg-zinc-900/90">
-                    <Link href="/admin/dashboard" className="flex items-center gap-3">
+                    <Link href={`/${adminPath}/dashboard`} className="flex items-center gap-3">
                         <img
                             src="/assets/images/logo.png"
                             alt="Logo Karangwungu"
@@ -227,7 +231,7 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
                         </a>
 
                         <Link
-                            href="/admin/profile"
+                            href={`/${adminPath}/profile`}
                             className="flex items-center gap-2 px-2.5 py-1 rounded-xl hover:bg-zinc-800/80 transition-colors"
                         >
                             <div className="h-7 w-7 rounded-lg bg-gradient-to-b from-red-700 to-red-900 text-amber-300 flex items-center justify-center font-bold text-xs border border-amber-400/30">

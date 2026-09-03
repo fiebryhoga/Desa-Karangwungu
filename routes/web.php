@@ -61,33 +61,38 @@ Route::get('/kontak', [ContactController::class, 'index'])->name('contact.index'
 Route::post('/kontak', [ContactController::class, 'store'])->name('contact.store');
 
 // ==========================================
-// BACKEND & ADMINISTRATOR ROUTES
+// BACKEND & ADMINISTRATOR ROUTES (HARDENED)
 // ==========================================
 
-// Redirect shortcuts: /admin and /administrator
-Route::get('/admin', function () {
-    return auth()->check()
-        ? redirect()->route('admin.dashboard')
-        : redirect()->route('admin.login');
-});
-Route::get('/administrator', function () {
+// Honeypot & Scanner Blocker: Return 404 for commonly scanned paths
+Route::any('/admin', fn () => abort(404));
+Route::any('/administrator', fn () => abort(404));
+Route::any('/wp-admin', fn () => abort(404));
+Route::any('/wp-login.php', fn () => abort(404));
+Route::any('/cpanel', fn () => abort(404));
+Route::any('/panel', fn () => abort(404));
+
+// Dynamic Secret Admin Path (Configurable via ADMIN_PATH in .env)
+$adminPath = config('app.admin_path', 'portal-karangwungu');
+
+// Secret Entrance Root
+Route::get("/{$adminPath}", function () use ($adminPath) {
     return auth()->check()
         ? redirect()->route('admin.dashboard')
         : redirect()->route('admin.login');
 });
 
 // Admin Guest Authentication (No Public Register, No Forgot Password)
-Route::prefix('admin')->group(function () {
+Route::prefix($adminPath)->group(function () {
     Route::get('/login', [\App\Http\Controllers\Admin\AuthController::class, 'create'])->name('admin.login');
-    Route::get('/masuk', [\App\Http\Controllers\Admin\AuthController::class, 'create']);
     Route::post('/login', [\App\Http\Controllers\Admin\AuthController::class, 'store'])->name('admin.login.store');
 });
 
-// Named route 'login' so Laravel's default Auth middleware redirects here
+// Default Laravel auth middleware fallback
 Route::get('/login', fn () => redirect()->route('admin.login'))->name('login');
 
-// Protected Admin System (auth middleware)
-Route::prefix('admin')->middleware(['auth'])->group(function () {
+// Protected Admin System (auth + AdminSecurityMiddleware)
+Route::prefix($adminPath)->middleware(['auth', \App\Http\Middleware\AdminSecurityMiddleware::class])->group(function () {
     // Logout
     Route::post('/logout', [\App\Http\Controllers\Admin\AuthController::class, 'destroy'])->name('admin.logout');
 

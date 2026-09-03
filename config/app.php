@@ -123,4 +123,12 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Portal Administrator Security Configuration
+    |--------------------------------------------------------------------------
+    */
+    'admin_path' => env('ADMIN_PATH', 'portal-karangwungu'),
+    'admin_security_pin' => env('ADMIN_SECURITY_PIN', '622540'),
+
 ];
