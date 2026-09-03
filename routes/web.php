@@ -111,6 +111,18 @@ Route::prefix($adminPath)->middleware(['auth', \App\Http\Middleware\AdminSecurit
     Route::get('/settings/overview', [\App\Http\Controllers\Admin\OverviewSettingController::class, 'index'])->name('admin.settings.overview');
     Route::post('/settings/overview', [\App\Http\Controllers\Admin\OverviewSettingController::class, 'update'])->name('admin.settings.overview.update');
 
+    // Konfigurasi Visi, Misi & Kepemimpinan
+    Route::get('/settings/vision-mission', [\App\Http\Controllers\Admin\VisionMissionSettingController::class, 'index'])->name('admin.settings.vision-mission');
+    Route::post('/settings/vision-mission', [\App\Http\Controllers\Admin\VisionMissionSettingController::class, 'update'])->name('admin.settings.vision-mission.update');
+
+    // Konfigurasi Perangkat Desa & SOTK
+    Route::get('/settings/officials', [\App\Http\Controllers\Admin\OfficialSettingController::class, 'index'])->name('admin.settings.officials');
+    Route::post('/settings/officials', [\App\Http\Controllers\Admin\OfficialSettingController::class, 'update'])->name('admin.settings.officials.update');
+
+    // Konfigurasi Demografi & Statistik Kependudukan
+    Route::get('/settings/demographics', [\App\Http\Controllers\Admin\DemographicSettingController::class, 'index'])->name('admin.settings.demographics');
+    Route::post('/settings/demographics', [\App\Http\Controllers\Admin\DemographicSettingController::class, 'update'])->name('admin.settings.demographics.update');
+
     // Profile & Ganti Password Mandiri
     Route::get('/profile', [\App\Http\Controllers\Admin\AdminProfileController::class, 'edit'])->name('admin.profile.edit');
     Route::patch('/profile', [\App\Http\Controllers\Admin\AdminProfileController::class, 'update'])->name('admin.profile.update');

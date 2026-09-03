@@ -11,9 +11,9 @@ import {
     Landmark,
 } from 'lucide-react';
 
-export default function Leadership() {
+export default function Leadership({ leadership = {} }) {
     // 8 Silsilah Resmi Kepala Desa Karangwungu (1912 - Sekarang)
-    const leaders = [
+    const defaultLeaders = [
         {
             order: 1,
             name: 'H. ALI SARIBAN',
@@ -79,6 +79,11 @@ export default function Leadership() {
             isCurrent: true,
         },
     ];
+
+    const leaders =
+        leadership.leaders_data && leadership.leaders_data.length > 0
+            ? [...leadership.leaders_data].sort((a, b) => (a.order || 0) - (b.order || 0))
+            : defaultLeaders;
 
     return (
         <AppLayout>

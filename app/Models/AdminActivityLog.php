@@ -46,4 +46,16 @@ class AdminActivityLog extends Model
             'created_at' => now(),
         ]);
     }
+
+    /**
+     * Alias helper for convenience: AdminActivityLog::log('action', 'details').
+     */
+    public static function log(string $action, ?string $details = null, ?string $username = null, ?int $userId = null): self
+    {
+        $user = request()->user();
+        $username = $username ?? ($user->username ?? 'admin');
+        $userId = $userId ?? ($user->id ?? null);
+
+        return self::record($action, $username, $userId, $details);
+    }
 }

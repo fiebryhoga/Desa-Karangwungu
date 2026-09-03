@@ -40,14 +40,17 @@ class OverviewSettingController extends Controller
             // 1. 3 Foto Bentang Alam
             'overview_photo_1' => ['nullable', 'string'],
             'overview_photo_1_label' => ['nullable', 'string', 'max:255'],
+            'overview_photo_1_icon' => ['nullable', 'string', 'max:100'],
             'overview_photo_1_file' => ['nullable', 'image', 'max:5120'],
 
             'overview_photo_2' => ['nullable', 'string'],
             'overview_photo_2_label' => ['nullable', 'string', 'max:255'],
+            'overview_photo_2_icon' => ['nullable', 'string', 'max:100'],
             'overview_photo_2_file' => ['nullable', 'image', 'max:5120'],
 
             'overview_photo_3' => ['nullable', 'string'],
             'overview_photo_3_label' => ['nullable', 'string', 'max:255'],
+            'overview_photo_3_icon' => ['nullable', 'string', 'max:100'],
             'overview_photo_3_file' => ['nullable', 'image', 'max:5120'],
 
             // 2. Deskripsi Narasi
@@ -116,10 +119,13 @@ class OverviewSettingController extends Controller
         // Save to SiteSetting
         SiteSetting::setGroup('overview', $validated);
 
-        // Activity log
-        AdminActivityLog::log(
-            'update_overview_settings',
-            'Memperbarui konfigurasi gambaran umum wilayah, 3 foto bentang alam, 3 point potensi, batas wilayah, dan titik koordinat peta spasial desa.'
+        // Record audit activity
+        $user = $request->user();
+        AdminActivityLog::record(
+            action: 'update_overview_settings',
+            username: $user->username ?? 'admin',
+            userId: $user->id ?? null,
+            details: 'Memperbarui konfigurasi gambaran umum wilayah, 3 foto bentang alam, 3 point potensi, batas wilayah, dan titik koordinat peta spasial desa.'
         );
 
         return back()->with('success', 'Konfigurasi gambaran umum dan titik peta berhasil disimpan.');

@@ -21,10 +21,11 @@ import {
     UserCheck,
     Sparkles,
 } from 'lucide-react';
+import { getIconComponent } from '@/Utils/iconRegistry';
 
-export default function VisionMission() {
+export default function VisionMission({ visionMission = {} }) {
     // 8 Silsilah Resmi Kepala Desa Karangwungu (Urutan Terbaru di Atas - Tema Merah Hitam Kuning/Emas)
-    const leaders = [
+    const defaultLeaders = [
         {
             order: 8,
             name: 'Sunarto',
@@ -84,36 +85,67 @@ export default function VisionMission() {
     ];
 
     // 4 Misi Resmi Pembangunan Desa Karangwungu
-    const missions = [
+    const defaultMissions = [
         {
             number: '01',
             category: 'Sosial & Keagamaan',
             title: 'Kehidupan Beragama & Sosial',
             desc: 'Meningkatkan Kualitas Kehidupan Beragama, Sosial Budaya dan Ketentraman Masyarakat;',
-            icon: HeartHandshake,
+            icon: 'HeartHandshake',
+            badge: 'Prioritas Strategis',
         },
         {
             number: '02',
             category: 'Pendidikan & Kesehatan',
             title: 'Pendidikan & Kesehatan SDM',
             desc: 'Meningkatkan Kualitas Pendidikan, Kesehatan dan Sumberdaya Manusia;',
-            icon: GraduationCap,
+            icon: 'GraduationCap',
+            badge: 'Prioritas Strategis',
         },
         {
             number: '03',
             category: 'Ekonomi Pedesaan',
             title: 'Pembangunan Ekonomi Pedesaan',
             desc: 'Meningkatkan Pembangunan Ekonomi Pedesaan, dan Kesejahteraan Masyarakat;',
-            icon: TrendingUp,
+            icon: 'TrendingUp',
+            badge: 'Prioritas Strategis',
         },
         {
             number: '04',
             category: 'Tata Kelola Pemerintahan',
             title: 'Profesionalisme Aparatur',
             desc: 'Meningkatkan Kualitas dan Profesionalisme Aparatur dalam Tata Kelola Pemerintahan, Pembangunan dan Pelayanan pada Masyarakat;',
-            icon: Building2,
+            icon: 'Building2',
+            badge: 'Prioritas Strategis',
         },
     ];
+
+    const visionBadge = visionMission.vision_badge || 'Visi Resmi Pemerintah Desa Karangwungu';
+    const visionText =
+        visionMission.vision_text ||
+        'Terwujudnya Masyarakat Desa Karangwungu Yang Berakhlak Mulia, Sehat, Sejahtera dan Bermartabat Dalam Naungan Pemerintah Desa Yang Demokratis dan Amanah';
+
+    const Pillar1Icon = getIconComponent(visionMission.vision_pillar_1_icon, Award);
+    const pillar1Text = visionMission.vision_pillar_1_text || 'Berakhlak Mulia';
+
+    const Pillar2Icon = getIconComponent(visionMission.vision_pillar_2_icon, HeartPulse);
+    const pillar2Text = visionMission.vision_pillar_2_text || 'Sehat & Bugar';
+
+    const Pillar3Icon = getIconComponent(visionMission.vision_pillar_3_icon, ShieldCheck);
+    const pillar3Text = visionMission.vision_pillar_3_text || 'Masyarakat Sejahtera';
+
+    const Pillar4Icon = getIconComponent(visionMission.vision_pillar_4_icon, UserCheck);
+    const pillar4Text = visionMission.vision_pillar_4_text || 'Demokratis & Amanah';
+
+    const missions =
+        visionMission.missions_data && visionMission.missions_data.length > 0
+            ? visionMission.missions_data
+            : defaultMissions;
+
+    const leaders =
+        visionMission.leaders_data && visionMission.leaders_data.length > 0
+            ? visionMission.leaders_data
+            : defaultLeaders;
 
     return (
         <AppLayout>
@@ -157,46 +189,46 @@ export default function VisionMission() {
                     <div className="w-full rounded-lg overflow-hidden border border-red-500/40 bg-gradient-to-r from-red-800 via-red-900 to-zinc-950 text-white shadow-xl p-6 sm:p-8 space-y-4 text-center relative">
                         <div className="flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold text-amber-300">
                             <Target className="h-4 w-4 text-amber-400 shrink-0 aspect-square" />
-                            <span>Visi Resmi Pemerintah Desa Karangwungu</span>
+                            <span>{visionBadge}</span>
                         </div>
 
                         <blockquote className="text-sm sm:text-base md:text-lg font-bold leading-relaxed text-white max-w-4xl mx-auto drop-shadow-sm">
-                            &ldquo;Terwujudnya Masyarakat Desa Karangwungu Yang Berakhlak Mulia, Sehat, Sejahtera dan Bermartabat Dalam Naungan Pemerintah Desa Yang Demokratis dan Amanah&rdquo;
+                            &ldquo;{visionText}&rdquo;
                         </blockquote>
 
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 max-w-3xl mx-auto">
                             <div className="flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-black/35 border border-white/15 text-[11px] font-bold text-amber-300">
-                                <Award className="h-3.5 w-3.5 text-amber-400" />
-                                <span>Berakhlak Mulia</span>
+                                <Pillar1Icon className="h-3.5 w-3.5 text-amber-400" />
+                                <span>{pillar1Text}</span>
                             </div>
                             <div className="flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-black/35 border border-white/15 text-[11px] font-bold text-amber-300">
-                                <HeartPulse className="h-3.5 w-3.5 text-amber-400" />
-                                <span>Sehat & Bugar</span>
+                                <Pillar2Icon className="h-3.5 w-3.5 text-amber-400" />
+                                <span>{pillar2Text}</span>
                             </div>
                             <div className="flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-black/35 border border-white/15 text-[11px] font-bold text-amber-300">
-                                <ShieldCheck className="h-3.5 w-3.5 text-amber-400" />
-                                <span>Masyarakat Sejahtera</span>
+                                <Pillar3Icon className="h-3.5 w-3.5 text-amber-400" />
+                                <span>{pillar3Text}</span>
                             </div>
                             <div className="flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-black/35 border border-white/15 text-[11px] font-bold text-amber-300">
-                                <UserCheck className="h-3.5 w-3.5 text-amber-400" />
-                                <span>Demokratis & Amanah</span>
+                                <Pillar4Icon className="h-3.5 w-3.5 text-amber-400" />
+                                <span>{pillar4Text}</span>
                             </div>
                         </div>
                     </div>
 
-                    {/* 4 Misi Strategis (4-Column Balanced Grid) */}
+                    {/* 4 Misi Strategis (Dynamic Responsive Grid) */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        {missions.map((m) => {
-                            const IconComponent = m.icon;
+                        {missions.map((m, idx) => {
+                            const IconComponent = getIconComponent(m.icon, Target);
                             return (
                                 <div
-                                    key={m.number}
+                                    key={m.id || m.number || idx}
                                     className="p-4 sm:p-5 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 hover:border-red-500/50 dark:hover:border-amber-400/50 transition-all flex flex-col justify-between space-y-3 shadow-xs group"
                                 >
                                     <div className="space-y-2.5">
                                         <div className="flex items-center justify-between">
                                             <span className="h-7 w-7 rounded-lg bg-gradient-to-r from-red-700 via-red-800 to-red-950 text-amber-300 border border-red-500/40 font-bold text-xs flex items-center justify-center shadow-xs">
-                                                {m.number}
+                                                {m.number || String(idx + 1).padStart(2, '0')}
                                             </span>
                                             <div className="h-7 w-7 rounded-lg bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-amber-400 flex items-center justify-center group-hover:scale-110 transition-transform">
                                                 <IconComponent className="h-3.5 w-3.5" />
@@ -219,7 +251,7 @@ export default function VisionMission() {
 
                                     <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800 flex items-center gap-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
                                         <CheckCircle2 className="h-3 w-3" />
-                                        <span>Prioritas Strategis</span>
+                                        <span>{m.badge || 'Prioritas Strategis'}</span>
                                     </div>
                                 </div>
                             );
@@ -249,12 +281,15 @@ export default function VisionMission() {
 
                     {/* Timeline List (Cards in Red-Black-Gold Gradient Theme) */}
                     <div className="max-w-3xl mx-auto px-3 sm:px-6">
-                        <div className="relative pl-8 sm:pl-10 border-l-2 border-red-500/50 dark:border-red-500/40 space-y-5 sm:space-y-6">
-                            {leaders.map((leader) => (
-                                <div key={leader.order} className="relative group">
-                                    {/* Circular Number Node on the Line */}
+                        <div className="relative space-y-5 sm:space-y-6">
+                            {/* Garis Vertikal Timeline Presisi di Tengah (Pancer Sejajar) */}
+                            <div className="absolute left-[16px] sm:left-[18px] top-6 bottom-6 w-0.5 bg-red-500/50 dark:bg-red-500/40 -translate-x-1/2 pointer-events-none" />
+
+                            {leaders.map((leader, idx) => (
+                                <div key={leader.id || leader.order || idx} className="relative flex items-center gap-3.5 sm:gap-5 group">
+                                    {/* Circular Number Node on the Line (Presisi Pancer Sejajar) */}
                                     <div
-                                        className={`absolute -left-[49px] sm:-left-[57px] top-1/2 -translate-y-1/2 h-8 w-8 sm:h-9 sm:w-9 rounded-full flex items-center justify-center transition-all duration-200 shadow-md ${
+                                        className={`shrink-0 h-8 w-8 sm:h-9 sm:w-9 rounded-full flex items-center justify-center transition-all duration-200 shadow-md z-10 ${
                                             leader.isCurrent
                                                 ? 'bg-amber-400 text-zinc-950 border-2 border-red-600 ring-4 ring-amber-400/30 scale-110 font-black'
                                                 : 'bg-gradient-to-br from-red-700 via-red-800 to-red-950 border-2 border-red-500/80 text-amber-300 group-hover:scale-110 group-hover:border-amber-400 font-bold'
@@ -267,7 +302,7 @@ export default function VisionMission() {
 
                                     {/* Leader Card (Signature Royal Red & Gold Gradient) */}
                                     <div
-                                        className={`p-3.5 sm:p-5 rounded-xl border transition-all duration-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 shadow-md ${
+                                        className={`flex-1 min-w-0 p-3.5 sm:p-5 rounded-xl border transition-all duration-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 shadow-md ${
                                             leader.isCurrent
                                                 ? 'bg-gradient-to-r from-red-700 via-red-800 to-red-950 border-2 border-amber-400 shadow-xl shadow-red-950/30'
                                                 : 'bg-gradient-to-r from-red-800 via-red-900 to-red-950 border-red-500/40 hover:border-amber-400/70 hover:shadow-lg hover:shadow-red-950/20'

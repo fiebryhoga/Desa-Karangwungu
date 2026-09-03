@@ -58,37 +58,105 @@ class ProfileController extends Controller
 
     public function visionMission()
     {
-        return Inertia::render('Profile/VisionMission');
+        $settings = SiteSetting::getGroup('vision_mission');
+        if (isset($settings['missions']) && is_string($settings['missions'])) {
+            $settings['missions_data'] = json_decode($settings['missions'], true) ?: [];
+        }
+        if (isset($settings['leaders']) && is_string($settings['leaders'])) {
+            $settings['leaders_data'] = json_decode($settings['leaders'], true) ?: [];
+        }
+
+        return Inertia::render('Profile/VisionMission', [
+            'visionMission' => $settings,
+        ]);
     }
 
     public function leadership()
     {
-        return Inertia::render('Profile/Leadership');
+        $settings = SiteSetting::getGroup('vision_mission');
+        if (isset($settings['leaders']) && is_string($settings['leaders'])) {
+            $settings['leaders_data'] = json_decode($settings['leaders'], true) ?: [];
+        }
+
+        return Inertia::render('Profile/Leadership', [
+            'leadership' => $settings,
+        ]);
     }
 
     public function history()
     {
-        return Inertia::render('Profile/VisionMission');
+        return $this->visionMission();
     }
 
     public function officials()
     {
+        $settings = SiteSetting::getGroup('officials');
+
+        // Parse JSON fields
+        if (isset($settings['kades_tasks']) && is_string($settings['kades_tasks'])) {
+            $settings['kades_tasks_data'] = json_decode($settings['kades_tasks'], true) ?: [];
+        } else {
+            $settings['kades_tasks_data'] = is_array($settings['kades_tasks'] ?? null) ? $settings['kades_tasks'] : [];
+        }
+
+        if (isset($settings['bpd_tasks']) && is_string($settings['bpd_tasks'])) {
+            $settings['bpd_tasks_data'] = json_decode($settings['bpd_tasks'], true) ?: [];
+        } else {
+            $settings['bpd_tasks_data'] = is_array($settings['bpd_tasks'] ?? null) ? $settings['bpd_tasks'] : [];
+        }
+
+        if (isset($settings['officials_list']) && is_string($settings['officials_list'])) {
+            $settings['officials_list_data'] = json_decode($settings['officials_list'], true) ?: [];
+        } else {
+            $settings['officials_list_data'] = is_array($settings['officials_list'] ?? null) ? $settings['officials_list'] : [];
+        }
+
         $officials = VillageOfficial::orderBy('order', 'asc')->get();
+
         return Inertia::render('Profile/Officials', [
             'officials' => $officials,
+            'officialsSettings' => $settings,
         ]);
     }
 
     public function demographics()
     {
+        $settings = SiteSetting::getGroup('demographics');
+
+        // Parse JSON lists
+        if (isset($settings['land_use_list']) && is_string($settings['land_use_list'])) {
+            $settings['land_use_list_data'] = json_decode($settings['land_use_list'], true) ?: [];
+        } else {
+            $settings['land_use_list_data'] = is_array($settings['land_use_list'] ?? null) ? $settings['land_use_list'] : [];
+        }
+
+        if (isset($settings['professions_list']) && is_string($settings['professions_list'])) {
+            $settings['professions_list_data'] = json_decode($settings['professions_list'], true) ?: [];
+        } else {
+            $settings['professions_list_data'] = is_array($settings['professions_list'] ?? null) ? $settings['professions_list'] : [];
+        }
+
+        if (isset($settings['age_groups_list']) && is_string($settings['age_groups_list'])) {
+            $settings['age_groups_list_data'] = json_decode($settings['age_groups_list'], true) ?: [];
+        } else {
+            $settings['age_groups_list_data'] = is_array($settings['age_groups_list'] ?? null) ? $settings['age_groups_list'] : [];
+        }
+
+        if (isset($settings['education_list']) && is_string($settings['education_list'])) {
+            $settings['education_list_data'] = json_decode($settings['education_list'], true) ?: [];
+        } else {
+            $settings['education_list_data'] = is_array($settings['education_list'] ?? null) ? $settings['education_list'] : [];
+        }
+
         return Inertia::render('Profile/Demographics', [
+            'demographicsSettings' => $settings,
             'data' => [
-                'total_citizens' => 3482,
-                'male' => 1724,
-                'female' => 1758,
-                'families' => 985,
-                'area_ha' => 245.8,
-            ]
+                'total_citizens' => (int)($settings['total_citizens'] ?? 3482),
+                'male' => (int)($settings['male_citizens'] ?? 1724),
+                'female' => (int)($settings['female_citizens'] ?? 1758),
+                'families' => (int)($settings['total_families'] ?? 985),
+                'area_ha' => (float)($settings['area_ha'] ?? 123),
+            ],
         ]);
     }
 

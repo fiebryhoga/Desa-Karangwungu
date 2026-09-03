@@ -18,183 +18,221 @@ import {
     Scale,
 } from 'lucide-react';
 
-export default function Officials() {
+import { getIconComponent } from '@/Utils/iconRegistry';
+
+export default function Officials({ officials = [], officialsSettings = {} }) {
     const [viewMode, setViewMode] = useState('chart'); // 'chart' or 'tupoksi'
 
     // Helper: generate placeholder avatar URL
     const avatarUrl = (name) =>
-        `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=7f1d1d&color=fcd34d&size=256&bold=true&font-size=0.35`;
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'Aparatur')}&background=7f1d1d&color=fcd34d&size=256&bold=true&font-size=0.35`;
+
+    const kadesName = officialsSettings.kades_name || 'H. SUNARTO';
+    const kadesPos = officialsSettings.kades_position || 'Kepala Desa';
+    const kadesCategory = officialsSettings.kades_category || 'Pimpinan Eksekutif';
+    const kadesPhoto = officialsSettings.kades_photo || null;
+    const kadesRoleDesc = officialsSettings.kades_role_desc || 'Pimpinan penyelenggaraan pemerintahan, pembangunan, pembinaan, dan pemberdayaan masyarakat desa.';
+
+    const bpdName = officialsSettings.bpd_name || 'ALI NASIHIN, SH';
+    const bpdPos = officialsSettings.bpd_position || 'Ketua BPD';
+    const bpdCategory = officialsSettings.bpd_category || 'Badan Permusyawaratan Desa';
+    const bpdPhoto = officialsSettings.bpd_photo || null;
+    const bpdRoleDesc = officialsSettings.bpd_role_desc || 'Mitra kerja strategis pemerintah desa dalam pengawasan, legislasi peraturan desa, dan penampung aspirasi warga.';
+
+    const rawBawahan = officialsSettings.officials_list_data || [];
+    const bawahanKades = rawBawahan.length > 0 ? rawBawahan.map((b) => ({
+        position: b.position,
+        name: b.name,
+        category: b.category || 'Perangkat Desa',
+        photo: b.photo || null,
+        icon: getIconComponent(b.icon, Briefcase),
+        roleDesc: b.role_desc || b.summary || 'Aparatur pelayan masyarakat desa.',
+    })) : [
+        {
+            position: 'Sekretaris Desa',
+            name: 'RIDUWAN HADI P',
+            category: 'Sekretariat Desa',
+            photo: null,
+            icon: Briefcase,
+            roleDesc: 'Koordinator administrasi umum, keuangan, kepegawaian, dan pelayanan perkantoran desa.',
+        },
+        {
+            position: 'Kaur Kesra',
+            name: 'AINUN NAJIB',
+            category: 'Perangkat Desa',
+            photo: null,
+            icon: HeartHandshake,
+            roleDesc: 'Pengelolaan urusan kesejahteraan rakyat, bantuan sosial, dan layanan kemasyarakatan.',
+        },
+        {
+            position: 'Ketua LPM',
+            name: 'SUNARTO',
+            category: 'Lembaga Pemberdayaan',
+            photo: null,
+            icon: Building2,
+            roleDesc: 'Perencanaan pembangunan partisipatif dan pemberdayaan ekonomi masyarakat desa.',
+        },
+        {
+            position: 'Ketua Linmas',
+            name: 'ISMAIL EFENDI',
+            category: 'Ketenteraman & Ketertiban',
+            photo: null,
+            icon: ShieldAlert,
+            roleDesc: 'Perlindungan masyarakat, keamanan lingkungan, dan penanggulangan bencana desa.',
+        },
+        {
+            position: 'Kasun Karangwungu',
+            name: 'SUJIANTO',
+            category: 'Pelaksana Kewilayahan',
+            photo: null,
+            icon: MapPin,
+            roleDesc: 'Kepala Dusun pengampu wilayah administrasi dan pelayanan masyarakat Dusun Karangwungu.',
+        },
+    ];
 
     // Data Resmi SOTK
     const structureData = {
         kades: {
-            position: 'Kepala Desa',
-            name: 'H. SUNARTO',
-            category: 'Pimpinan Eksekutif',
-            photo: null,
-            roleDesc: 'Pimpinan penyelenggaraan pemerintahan, pembangunan, pembinaan, dan pemberdayaan masyarakat desa.',
+            position: kadesPos,
+            name: kadesName,
+            category: kadesCategory,
+            photo: kadesPhoto,
+            roleDesc: kadesRoleDesc,
         },
         bpd: {
-            position: 'Ketua BPD',
-            name: 'ALI NASIHIN, SH',
-            category: 'Badan Permusyawaratan Desa',
-            photo: null,
-            roleDesc: 'Mitra kerja strategis pemerintah desa dalam pengawasan, legislasi peraturan desa, dan penampung aspirasi warga.',
+            position: bpdPos,
+            name: bpdName,
+            category: bpdCategory,
+            photo: bpdPhoto,
+            roleDesc: bpdRoleDesc,
         },
-        // Di bawah Kepala Desa
-        bawahanKades: [
-            {
-                position: 'Sekretaris Desa',
-                name: 'RIDUWAN HADI P',
-                category: 'Sekretariat Desa',
-                photo: null,
-                icon: Briefcase,
-                roleDesc: 'Koordinator administrasi umum, keuangan, kepegawaian, dan pelayanan perkantoran desa.',
-            },
-            {
-                position: 'Kaur Kesra',
-                name: 'AINUN NAJIB',
-                category: 'Perangkat Desa',
-                photo: null,
-                icon: HeartHandshake,
-                roleDesc: 'Pengelolaan urusan kesejahteraan rakyat, bantuan sosial, dan layanan kemasyarakatan.',
-            },
-            {
-                position: 'Ketua LPM',
-                name: 'SUNARTO',
-                category: 'Lembaga Pemberdayaan',
-                photo: null,
-                icon: Building2,
-                roleDesc: 'Perencanaan pembangunan partisipatif dan pemberdayaan ekonomi masyarakat desa.',
-            },
-            {
-                position: 'Ketua Linmas',
-                name: 'ISMAIL EFENDI',
-                category: 'Ketenteraman & Ketertiban',
-                photo: null,
-                icon: ShieldAlert,
-                roleDesc: 'Perlindungan masyarakat, keamanan lingkungan, dan penanggulangan bencana desa.',
-            },
-            {
-                position: 'Kasun Karangwungu',
-                name: 'SUJIANTO',
-                category: 'Pelaksana Kewilayahan',
-                photo: null,
-                icon: MapPin,
-                roleDesc: 'Kepala Dusun pengampu wilayah administrasi dan pelayanan masyarakat Dusun Karangwungu.',
-            },
-        ],
+        bawahanKades,
     };
 
     // Data Rincian Tupoksi Resmi (Permendagri No. 84/2015 & UU Desa No. 6/2014)
     const tupoksiList = [
         {
-            position: 'Kepala Desa',
-            name: 'H. SUNARTO',
-            category: 'Pimpinan Eksekutif Desa',
-            basis: 'UU No. 6/2014 & Permendagri No. 84/2015',
+            position: kadesPos,
+            name: kadesName,
+            category: kadesCategory,
+            basis: officialsSettings.kades_basis || 'UU No. 6/2014 & Permendagri No. 84/2015',
             icon: Award,
             accent: true,
-            summary: 'Pimpinan tertinggi pemerintah desa yang bertugas menyelenggarakan Pemerintahan Desa, melaksanakan Pembangunan, Pembinaan Kemasyarakatan, dan Pemberdayaan Masyarakat.',
-            tasks: [
-                'Memimpin penyelenggaraan pemerintahan desa berdasarkan kebijakan yang ditetapkan bersama BPD.',
-                'Mengajukan rancangan dan menetapkan Peraturan Desa (Perdes) yang telah disepakati.',
-                'Menyusun dan mengajukan rancangan APBDes untuk dibahas dan ditetapkan bersama BPD.',
-                'Membina ketenteraman, ketertiban masyarakat, dan kerukunan warga desa.',
-                'Mewakili desa di dalam dan di luar pengadilan atau menunjuk kuasa hukum sesuai ketentuan perundang-undangan.',
-            ],
-            authorities: 'Menetapkan kebijakan desa, mengelola keuangan & aset desa, serta mengangkat dan memberhentikan perangkat desa.',
+            summary: officialsSettings.kades_summary || 'Pimpinan tertinggi pemerintah desa yang bertugas menyelenggarakan Pemerintahan Desa, melaksanakan Pembangunan, Pembinaan Kemasyarakatan, dan Pemberdayaan Masyarakat.',
+            tasks: Array.isArray(officialsSettings.kades_tasks_data) && officialsSettings.kades_tasks_data.length > 0
+                ? officialsSettings.kades_tasks_data
+                : [
+                    'Memimpin penyelenggaraan pemerintahan desa berdasarkan kebijakan yang ditetapkan bersama BPD.',
+                    'Mengajukan rancangan dan menetapkan Peraturan Desa (Perdes) yang telah disepakati.',
+                    'Menyusun dan mengajukan rancangan APBDes untuk dibahas dan ditetapkan bersama BPD.',
+                    'Membina ketenteraman, ketertiban masyarakat, dan kerukunan warga desa.',
+                    'Mewakili desa di dalam dan di luar pengadilan atau menunjuk kuasa hukum sesuai ketentuan perundang-undangan.',
+                ],
+            authorities: officialsSettings.kades_authorities || 'Menetapkan kebijakan desa, mengelola keuangan & aset desa, serta mengangkat dan memberhentikan perangkat desa.',
         },
         {
-            position: 'Ketua BPD',
-            name: 'ALI NASIHIN, SH',
-            category: 'Badan Permusyawaratan Desa',
-            basis: 'Permendagri No. 110/2016',
+            position: bpdPos,
+            name: bpdName,
+            category: bpdCategory,
+            basis: officialsSettings.bpd_basis || 'Permendagri No. 110/2016',
             icon: Landmark,
-            summary: 'Lembaga perwakilan permusyawaratan warga desa yang berkedudukan sebagai mitra kerja sejajar Pemerintah Desa dalam fungsi legislasi dan pengawasan.',
-            tasks: [
-                'Membahas dan menyepakati rancangan Peraturan Desa bersama Kepala Desa.',
-                'Menampung, menghimpun, mengelola, dan menyalurkan aspirasi masyarakat desa secara objektif.',
-                'Melakukan pengawasan kinerja Kepala Desa dalam pelaksanaan APBDes dan kebijakan desa.',
-                'Menyelenggarakan Musyawarah Desa (Musdes) tahunan dan musyawarah perencanaan pembangunan.',
-            ],
-            authorities: 'Mengawasi pelaksanaan peraturan desa & APBDes, serta meminta keterangan penyelenggaraan pemerintahan desa.',
+            summary: officialsSettings.bpd_summary || 'Lembaga perwakilan permusyawaratan warga desa yang berkedudukan sebagai mitra kerja sejajar Pemerintah Desa dalam fungsi legislasi dan pengawasan.',
+            tasks: Array.isArray(officialsSettings.bpd_tasks_data) && officialsSettings.bpd_tasks_data.length > 0
+                ? officialsSettings.bpd_tasks_data
+                : [
+                    'Membahas dan menyepakati rancangan Peraturan Desa bersama Kepala Desa.',
+                    'Menampung, menghimpun, mengelola, dan menyalurkan aspirasi masyarakat desa secara objektif.',
+                    'Melakukan pengawasan kinerja Kepala Desa dalam pelaksanaan APBDes dan kebijakan desa.',
+                    'Menyelenggarakan Musyawarah Desa (Musdes) tahunan dan musyawarah perencanaan pembangunan.',
+                ],
+            authorities: officialsSettings.bpd_authorities || 'Mengawasi pelaksanaan peraturan desa & APBDes, serta meminta keterangan penyelenggaraan pemerintahan desa.',
         },
-        {
-            position: 'Sekretaris Desa',
-            name: 'RIDUWAN HADI P',
-            category: 'Pimpinan Sekretariat Desa',
-            basis: 'Permendagri No. 84/2015 Pasal 7',
-            icon: Briefcase,
-            summary: 'Koordinator administrasi desa yang membantu Kepala Desa dalam bidang ketatausahaan, keuangan, kepegawaian, dan pelayanan perkantoran.',
-            tasks: [
-                'Mengoordinasikan penyusunan kebijakan perencanaan dan program kerja pemerintah desa.',
-                'Mengoordinasikan urusan ketatausahaan, surat-menyurat, arsip dokumen resmi, dan ekspedisi desa.',
-                'Mengoordinasikan pengelolaan keuangan desa dan penyusunan laporan pertanggungjawaban realisasi APBDes (LPJ).',
-                'Mengoordinasikan urusan umum, perlengkapan inventaris, dan rumah tangga kantor desa.',
-            ],
-            authorities: 'Memverifikasi kelengkapan administrasi dan mengendalikan pelaksanaan kegiatan perangkat kesekretariatan.',
-        },
-        {
-            position: 'Kaur Kesejahteraan Rakyat (Kesra)',
-            name: 'AINUN NAJIB',
-            category: 'Perangkat Desa / Urusan Staf',
-            basis: 'Permendagri No. 84/2015 Pasal 9',
-            icon: HeartHandshake,
-            summary: 'Unsur staf sekretariat yang bertugas membantu Sekretaris Desa dalam pelaksanaan urusan pelayanan sosial dan kesejahteraan masyarakat.',
-            tasks: [
-                'Melaksanakan pelayanan bidang keagamaan, sosial budaya, pendidikan, dan pembinaan kepemudaan.',
-                'Pencatatan dan pendataan keluarga pra-sejahtera, bantuan sosial (PKH, BLT, BPNT), dan data kesehatan warga.',
-                'Memfasilitasi kegiatan kemasyarakatan, posyandu balita & lansia, serta bantuan tanggap darurat sosial.',
-                'Menyiapkan bahan laporan pelaksanaan urusan kesejahteraan masyarakat desa.',
-            ],
-            authorities: 'Verifikasi usulan bantuan sosial kemasyarakatan dan fasilitasi program jaminan kesejahteraan warga.',
-        },
-        {
-            position: 'Ketua LPM',
-            name: 'SUNARTO',
-            category: 'Lembaga Kemasyarakatan Desa (LKD)',
-            basis: 'Permendagri No. 18/2018',
-            icon: Building2,
-            summary: 'Wadah partisipasi masyarakat yang bertugas merencanakan pembangunan secara partisipatif dan menggerakkan swadaya gotong royong warga.',
-            tasks: [
-                'Menyusun rencana pembangunan secara partisipatif bersama warga dalam Musrenbangdes.',
-                'Menggerakkan swadaya dan semangat gotong royong masyarakat dalam pembangunan fisik desa.',
-                'Meningkatkan kualitas sumber daya manusia dan memfasilitasi pemberdayaan ekonomi lokal.',
-                'Menampung aspirasi masyarakat dalam bidang pembangunan infrastruktur dan lingkungan.',
-            ],
-            authorities: 'Memberikan masukan teknis perencanaan pembangunan dan memobilisasi gotong royong swadaya masyarakat.',
-        },
-        {
-            position: 'Ketua Satlinmas',
-            name: 'ISMAIL EFENDI',
-            category: 'Satuan Perlindungan Masyarakat',
-            basis: 'Permendagri No. 26/2020',
-            icon: ShieldAlert,
-            summary: 'Satuan tugas garda terdepan perlindungan masyarakat dalam memelihara ketenteraman, ketertiban umum, dan kesiapsiagaan bencana desa.',
-            tasks: [
-                'Membantu penanganan ketenteraman, ketertiban umum, dan keamanan lingkungan desa.',
-                'Membantu penanggulangan dan evakuasi dini saat terjadi bencana alam atau keadaan darurat.',
-                'Mendukung pengamanan kegiatan sosial warga, pengajian, hajatan, dan agenda Pemilu/Pilkades.',
-                'Mengkoordinasikan pos ronda malam (siskamling) bersama warga masyarakat.',
-            ],
-            authorities: 'Tindakan pengamanan preventif awal dan koordinasi penanganan situasi darurat bersama Babinsa & Bhabinkamtibmas.',
-        },
-        {
-            position: 'Kepala Dusun (Kasun) Karangwungu',
-            name: 'SUJIANTO',
-            category: 'Pelaksana Kewilayahan',
-            basis: 'Permendagri No. 84/2015 Pasal 10',
-            icon: MapPin,
-            summary: 'Unsur pembantu Kepala Desa sebagai satuan tugas kewilayahan yang mengampu wilayah Dusun Karangwungu.',
-            tasks: [
-                'Membina ketenteraman, ketertiban, dan perlindungan warga di tingkat dusun.',
-                'Mengkoordinasikan pelaksanaan pembangunan dan pemeliharaan sarana prasarana dusun.',
-                'Menjadi jembatan pelayanan administrasi warga dusun ke balai desa.',
-                'Mendorong keaktifan warga dusun dalam kegiatan gotong royong dan musyawarah.',
-            ],
-            authorities: 'Pengawasan ketertiban wilayah dusun dan mediasi musyawarah kekeluargaan antarwarga dusun.',
-        },
+        ...(rawBawahan.length > 0 ? rawBawahan.map((item) => ({
+            position: item.position,
+            name: item.name,
+            category: item.category || 'Perangkat Desa',
+            basis: item.basis || 'Permendagri No. 84/2015',
+            icon: getIconComponent(item.icon, Briefcase),
+            summary: item.summary || item.role_desc || 'Aparatur pelaksana urusan pemerintah desa.',
+            tasks: Array.isArray(item.tasks) ? item.tasks : [],
+            authorities: item.authorities || 'Melaksanakan urusan kedinasan dan pelayanan masyarakat sesuai bidang tugasnya.',
+        })) : [
+            {
+                position: 'Sekretaris Desa',
+                name: 'RIDUWAN HADI P',
+                category: 'Pimpinan Sekretariat Desa',
+                basis: 'Permendagri No. 84/2015 Pasal 7',
+                icon: Briefcase,
+                summary: 'Koordinator administrasi desa yang membantu Kepala Desa dalam bidang ketatausahaan, keuangan, kepegawaian, dan pelayanan perkantoran.',
+                tasks: [
+                    'Mengoordinasikan penyusunan kebijakan perencanaan dan program kerja pemerintah desa.',
+                    'Mengoordinasikan urusan ketatausahaan, surat-menyurat, arsip dokumen resmi, dan ekspedisi desa.',
+                    'Mengoordinasikan pengelolaan keuangan desa dan penyusunan laporan pertanggungjawaban realisasi APBDes (LPJ).',
+                    'Mengoordinasikan urusan umum, perlengkapan inventaris, dan rumah tangga kantor desa.',
+                ],
+                authorities: 'Memverifikasi kelengkapan administrasi dan mengendalikan pelaksanaan kegiatan perangkat kesekretariatan.',
+            },
+            {
+                position: 'Kaur Kesejahteraan Rakyat (Kesra)',
+                name: 'AINUN NAJIB',
+                category: 'Perangkat Desa / Urusan Staf',
+                basis: 'Permendagri No. 84/2015 Pasal 9',
+                icon: HeartHandshake,
+                summary: 'Unsur staf sekretariat yang bertugas membantu Sekretaris Desa dalam pelaksanaan urusan pelayanan sosial dan kesejahteraan masyarakat.',
+                tasks: [
+                    'Melaksanakan pelayanan bidang keagamaan, sosial budaya, pendidikan, dan pembinaan kepemudaan.',
+                    'Pencatatan dan pendataan keluarga pra-sejahtera, bantuan sosial (PKH, BLT, BPNT), dan data kesehatan warga.',
+                    'Memfasilitasi kegiatan kemasyarakatan, posyandu balita & lansia, serta bantuan tanggap darurat sosial.',
+                    'Menyiapkan bahan laporan pelaksanaan urusan kesejahteraan masyarakat desa.',
+                ],
+                authorities: 'Verifikasi usulan bantuan sosial kemasyarakatan dan fasilitasi program jaminan kesejahteraan warga.',
+            },
+            {
+                position: 'Ketua LPM',
+                name: 'SUNARTO',
+                category: 'Lembaga Kemasyarakatan Desa (LKD)',
+                basis: 'Permendagri No. 18/2018',
+                icon: Building2,
+                summary: 'Wadah partisipasi masyarakat yang bertugas merencanakan pembangunan secara partisipatif dan menggerakkan swadaya gotong royong warga.',
+                tasks: [
+                    'Menyusun rencana pembangunan secara partisipatif bersama warga dalam Musrenbangdes.',
+                    'Menggerakkan swadaya dan semangat gotong royong masyarakat dalam pembangunan fisik desa.',
+                    'Meningkatkan kualitas sumber daya manusia dan memfasilitasi pemberdayaan ekonomi lokal.',
+                    'Menampung aspirasi masyarakat dalam bidang pembangunan infrastruktur dan lingkungan.',
+                ],
+                authorities: 'Memberikan masukan teknis perencanaan pembangunan dan memobilisasi gotong royong swadaya masyarakat.',
+            },
+            {
+                position: 'Ketua Satlinmas',
+                name: 'ISMAIL EFENDI',
+                category: 'Satuan Perlindungan Masyarakat',
+                basis: 'Permendagri No. 26/2020',
+                icon: ShieldAlert,
+                summary: 'Satuan tugas garda terdepan perlindungan masyarakat dalam memelihara ketenteraman, ketertiban umum, dan kesiapsiagaan bencana desa.',
+                tasks: [
+                    'Membantu penanganan ketenteraman, ketertiban umum, dan keamanan lingkungan desa.',
+                    'Membantu penanggulangan dan evakuasi dini saat terjadi bencana alam atau keadaan darurat.',
+                    'Mendukung pengamanan kegiatan sosial warga, pengajian, hajatan, dan agenda Pemilu/Pilkades.',
+                    'Mengkoordinasikan pos ronda malam (siskamling) bersama warga masyarakat.',
+                ],
+                authorities: 'Tindakan pengamanan preventif awal dan koordinasi penanganan situasi darurat bersama Babinsa & Bhabinkamtibmas.',
+            },
+            {
+                position: 'Kepala Dusun (Kasun) Karangwungu',
+                name: 'SUJIANTO',
+                category: 'Pelaksana Kewilayahan',
+                basis: 'Permendagri No. 84/2015 Pasal 10',
+                icon: MapPin,
+                summary: 'Unsur pembantu Kepala Desa sebagai satuan tugas kewilayahan yang mengampu wilayah Dusun Karangwungu.',
+                tasks: [
+                    'Membina ketenteraman, ketertiban, dan perlindungan warga di tingkat dusun.',
+                    'Mengkoordinasikan pelaksanaan pembangunan dan pemeliharaan sarana prasarana dusun.',
+                    'Menjadi jembatan pelayanan administrasi warga dusun ke balai desa.',
+                    'Mendorong keaktifan warga dusun dalam kegiatan gotong royong dan musyawarah.',
+                ],
+                authorities: 'Pengawasan ketertiban wilayah dusun dan mediasi musyawarah kekeluargaan antarwarga dusun.',
+            },
+        ]),
     ];
 
     // Photo card component untuk Bagan Visual

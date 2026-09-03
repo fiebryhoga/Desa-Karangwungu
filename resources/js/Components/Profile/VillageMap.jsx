@@ -22,7 +22,7 @@ import {
     HeartHandshake,
 } from 'lucide-react';
 
-export default function VillageMap() {
+export default function VillageMap({ overview = {} }) {
     const mapContainerRef = useRef(null);
     const mapInstanceRef = useRef(null);
     const markersLayerRef = useRef(null);
@@ -57,36 +57,36 @@ export default function VillageMap() {
     const cardinalDirections = [
         {
             direction: 'Sebelah Utara',
-            borderWith: 'Desa Guci & Desa Sumberwudi',
+            borderWith: overview?.border_north_title || 'Desa Guci & Desa Sumberwudi',
             IconComp: ArrowUp,
-            desc: 'Batas area pertanian utara & bantaran sungai Bengawan Solo',
+            desc: overview?.border_north_desc || 'Batas area pertanian utara & bantaran sungai Bengawan Solo',
             color: 'border-red-500/40 bg-gradient-to-b from-red-700 via-red-800 to-red-950',
         },
         {
             direction: 'Sebelah Selatan',
-            borderWith: 'Desa Karanggeneng',
+            borderWith: overview?.border_south_title || 'Desa Karanggeneng',
             IconComp: ArrowDown,
-            desc: 'Pusat kecamatan, SPBU Pertamina & jalan poros kabupaten',
+            desc: overview?.border_south_desc || 'Pusat kecamatan, SPBU Pertamina & jalan poros kabupaten',
             color: 'border-red-500/40 bg-gradient-to-b from-red-700 via-red-800 to-red-950',
         },
         {
             direction: 'Sebelah Timur',
-            borderWith: 'Desa Sungelebak',
+            borderWith: overview?.border_east_title || 'Desa Sungelebak',
             IconComp: ArrowRight,
-            desc: 'Kawasan perikanan air payau & sentra tambak produktif',
+            desc: overview?.border_east_desc || 'Kawasan perikanan air payau & sentra tambak produktif',
             color: 'border-red-500/40 bg-gradient-to-b from-red-700 via-red-800 to-red-950',
         },
         {
             direction: 'Sebelah Barat',
-            borderWith: 'Desa Kalanganyar',
+            borderWith: overview?.border_west_title || 'Desa Kalanganyar',
             IconComp: ArrowLeft,
-            desc: 'Akses perniagaan warga & hamparan persawahan barat',
+            desc: overview?.border_west_desc || 'Akses perniagaan warga & hamparan persawahan barat',
             color: 'border-red-500/40 bg-gradient-to-b from-red-700 via-red-800 to-red-950',
         },
     ];
 
     // Structured points of interest with formal categories
-    const locations = [
+    const defaultLocations = [
         // 1. PEMERINTAHAN
         {
             id: 'balai-desa',
@@ -205,6 +205,56 @@ export default function VillageMap() {
             desc: 'Kawasan bantaran sungai di batas utara sebagai sumber irigasi pertanian.',
         },
     ];
+
+    const categoryConfig = {
+        gov: {
+            label: 'Pemerintahan',
+            bg: 'bg-red-600 ring-red-400',
+            svg: `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M3 10h18M5 10v11M9 10v11M13 10v11M17 10v11M12 3l8 7H4z"/></svg>`,
+        },
+        pemukiman: {
+            label: 'Pemukiman',
+            bg: 'bg-amber-500 ring-amber-300',
+            svg: `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+        },
+        umkm: {
+            label: 'UMKM',
+            bg: 'bg-violet-600 ring-violet-400',
+            svg: `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>`,
+        },
+        fasum: {
+            label: 'Fasilitas Umum',
+            bg: 'bg-blue-600 ring-blue-400',
+            svg: `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
+        },
+    };
+
+    let rawPoints = [];
+    if (overview?.map_points_data && Array.isArray(overview.map_points_data)) {
+        rawPoints = overview.map_points_data;
+    } else if (overview?.map_points && typeof overview.map_points === 'string') {
+        try {
+            rawPoints = JSON.parse(overview.map_points);
+        } catch (e) {
+            rawPoints = [];
+        }
+    }
+
+    const locations = (rawPoints && rawPoints.length > 0)
+        ? rawPoints.map((pt, i) => {
+            const cat = categoryConfig[pt.category] || categoryConfig.fasum;
+            return {
+                id: pt.id || `pt-${i}`,
+                name: pt.name,
+                category: pt.category || 'fasum',
+                categoryLabel: pt.categoryLabel || cat.label,
+                coords: [parseFloat(pt.lat), parseFloat(pt.lng)],
+                iconBg: cat.bg,
+                iconSvg: cat.svg,
+                desc: pt.desc || '',
+            };
+        })
+        : defaultLocations;
 
     // Filter configuration (Concise as requested)
     const filterCategories = [

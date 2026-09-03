@@ -20,8 +20,26 @@ import {
     Users,
 } from 'lucide-react';
 import VillageMap from '../../Components/Profile/VillageMap';
+import { getIconComponent } from '@/Utils/iconRegistry';
 
-export default function ProfileIndex({ officials = [], demographics = {} }) {
+export default function ProfileIndex({ officials = [], demographics = {}, overview = {} }) {
+    // 3 Photos, Labels & Icons
+    const photo1 = overview.overview_photo_1 || '/assets/images/hero.jpg';
+    const photo1Label = overview.overview_photo_1_label || 'Kawasan Desa Karangwungu';
+    const Photo1IconComp = getIconComponent(overview.overview_photo_1_icon, MapPin);
+
+    const photo2 = overview.overview_photo_2 || 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=600&q=80';
+    const photo2Label = overview.overview_photo_2_label || 'Persawahan Padi';
+    const Photo2IconComp = getIconComponent(overview.overview_photo_2_icon, Wheat);
+
+    const photo3 = overview.overview_photo_3 || 'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&w=600&q=80';
+    const photo3Label = overview.overview_photo_3_label || 'Tambak Ikan & Udang';
+    const Photo3IconComp = getIconComponent(overview.overview_photo_3_icon, Fish);
+
+    // Narratives
+    const paragraph1 = overview.overview_paragraph_1 || 'Desa Karangwungu merupakan salah satu dari 18 desa di wilayah administratif Kecamatan Karanggeneng, Kabupaten Lamongan, Provinsi Jawa Timur. Wilayah Karangwungu terletak di dataran rendah yang subur di sebelah utara aliran Bengawan Solo, beriklim tropis dengan bentang alam yang didominasi oleh hamparan persawahan padi produktif dan tambak budidaya air tawar/payau modern.';
+    const paragraph2 = overview.overview_paragraph_2 || 'Masyarakat Desa Karangwungu dikenal memegang teguh tradisi gotong royong warisan leluhur, kehidupan beragama yang guyub rukun dan harmonis, serta etos kerja pantang menyerah di sektor pertanian agraris, budidaya ikan bandeng & udang vaname, serta perniagaan wirausaha lokal.';
+
     const profileSubmenus = [
         {
             href: '/profil/visi-misi',
@@ -67,19 +85,19 @@ export default function ProfileIndex({ officials = [], demographics = {} }) {
 
     const villageHighlights = [
         {
-            icon: Wheat,
-            title: 'Sektor Agraris Produktif',
-            desc: 'Didukung hamparan persawahan padi subur dengan sistem irigasi teknis mandiri.',
+            icon: getIconComponent(overview.overview_point_1_icon, Wheat),
+            title: overview.overview_point_1_title || 'Sektor Agraris Produktif',
+            desc: overview.overview_point_1_desc || 'Didukung hamparan persawahan padi subur dengan sistem irigasi teknis mandiri.',
         },
         {
-            icon: Fish,
-            title: 'Budidaya Tambak Modern',
-            desc: 'Sentra perikanan air tawar & payau penghasil bandeng dan udang vaname unggulan.',
+            icon: getIconComponent(overview.overview_point_2_icon, Fish),
+            title: overview.overview_point_2_title || 'Budidaya Tambak Modern',
+            desc: overview.overview_point_2_desc || 'Sentra perikanan air tawar & payau penghasil bandeng dan udang vaname unggulan.',
         },
         {
-            icon: HeartHandshake,
-            title: 'Kearifan Gotong Royong',
-            desc: 'Kerukunan antarwarga yang harmonis dengan semangat kebersamaan yang lestari.',
+            icon: getIconComponent(overview.overview_point_3_icon, HeartHandshake),
+            title: overview.overview_point_3_title || 'Kearifan Gotong Royong',
+            desc: overview.overview_point_3_desc || 'Kerukunan antarwarga yang harmonis dengan semangat kebersamaan yang lestari.',
         },
     ];
 
@@ -130,46 +148,46 @@ export default function ProfileIndex({ officials = [], demographics = {} }) {
                                     {/* Main Large Photo (8 cols) */}
                                     <div className="md:col-span-7 relative rounded-lg overflow-hidden shadow-lg group min-h-[220px] sm:min-h-[260px]">
                                         <img
-                                            src="/assets/images/hero.jpg"
-                                            alt="Bentang Alam Desa Karangwungu"
+                                            src={photo1}
+                                            alt={photo1Label}
                                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                         />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
                                         <div className="absolute bottom-3.5 left-3.5 right-3.5 flex items-center justify-between text-white">
                                             <div className="flex items-center gap-2 bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/20 shadow-md">
-                                                <MapPin className="h-3.5 w-3.5 text-amber-300" />
-                                                <span className="text-xs font-bold">Kawasan Desa Karangwungu</span>
+                                                <Photo1IconComp className="h-3.5 w-3.5 text-amber-300" />
+                                                <span className="text-xs font-bold">{photo1Label}</span>
                                             </div>
                                         </div>
                                     </div>
 
                                     {/* Two Stacked Sub Photos (5 cols) */}
                                     <div className="md:col-span-5 grid grid-cols-2 md:grid-cols-1 gap-3">
-                                        {/* Sub Photo 1: Sawah Padi */}
+                                        {/* Sub Photo 1 */}
                                         <div className="relative rounded-lg overflow-hidden shadow-md group h-28 sm:h-[125px]">
                                             <img
-                                                src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=600&q=80"
-                                                alt="Pertanian Padi Karangwungu"
+                                                src={photo2}
+                                                alt={photo2Label}
                                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                             />
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                                             <div className="absolute bottom-2 left-2.5 flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-black/60 text-[10px] font-bold text-amber-300 border border-white/15 backdrop-blur-xs">
-                                                <Wheat className="h-3 w-3" />
-                                                <span>Persawahan Padi</span>
+                                                <Photo2IconComp className="h-3 w-3" />
+                                                <span>{photo2Label}</span>
                                             </div>
                                         </div>
 
-                                        {/* Sub Photo 2: Budidaya Tambak */}
+                                        {/* Sub Photo 2 */}
                                         <div className="relative rounded-lg overflow-hidden shadow-md group h-28 sm:h-[125px]">
                                             <img
-                                                src="https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&w=600&q=80"
-                                                alt="Tambak Budidaya Karangwungu"
+                                                src={photo3}
+                                                alt={photo3Label}
                                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                             />
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                                             <div className="absolute bottom-2 left-2.5 flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-black/60 text-[10px] font-bold text-amber-300 border border-white/15 backdrop-blur-xs">
-                                                <Fish className="h-3 w-3" />
-                                                <span>Tambak Ikan & Udang</span>
+                                                <Photo3IconComp className="h-3 w-3" />
+                                                <span>{photo3Label}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -177,12 +195,8 @@ export default function ProfileIndex({ officials = [], demographics = {} }) {
 
                                 {/* Narrative Text */}
                                 <div className="space-y-3.5 text-sm sm:text-base text-zinc-700 dark:text-zinc-300 leading-relaxed pt-1 text-justify">
-                                    <p>
-                                        <strong className="text-zinc-900 dark:text-white font-bold">Desa Karangwungu</strong> merupakan salah satu dari 18 desa di wilayah administratif <strong className="text-zinc-900 dark:text-white font-bold">Kecamatan Karanggeneng, Kabupaten Lamongan, Provinsi Jawa Timur</strong>. Wilayah Karangwungu terletak di dataran rendah yang subur di sebelah utara aliran Bengawan Solo, beriklim tropis dengan bentang alam yang didominasi oleh hamparan persawahan padi produktif dan tambak budidaya air tawar/payau modern.
-                                    </p>
-                                    <p>
-                                        Masyarakat Desa Karangwungu dikenal memegang teguh tradisi gotong royong warisan leluhur, kehidupan beragama yang guyub rukun dan harmonis, serta etos kerja pantang menyerah di sektor pertanian agraris, budidaya ikan bandeng & udang vaname, serta perniagaan wirausaha lokal.
-                                    </p>
+                                    <p>{paragraph1}</p>
+                                    <p>{paragraph2}</p>
                                 </div>
 
                                 {/* 3 Feature Highlight Badges */}
@@ -280,7 +294,7 @@ export default function ProfileIndex({ officials = [], demographics = {} }) {
 
                 {/* 3. FULL WIDTH UNIFIED BATAS WILAYAH & PETA SPASIAL LEAFLET */}
                 <div className="w-full">
-                    <VillageMap />
+                    <VillageMap overview={overview} />
                 </div>
             </div>
         </AppLayout>

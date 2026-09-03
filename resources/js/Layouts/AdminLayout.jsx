@@ -34,6 +34,8 @@ import {
     Sliders,
     Building2,
     Compass,
+    Target,
+    BarChart3,
 } from 'lucide-react';
 
 const BATIK_DARK = `data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 60 Q 30 30, 60 60 T 120 60 M0 0 Q 30 -30, 60 0 T 120 0 M0 120 Q 30 90, 60 120 T 120 120 M-30 30 L 30 90 M30 -30 L 90 30 M90 -30 L 150 30 M-30 90 L 30 150 M30 90 L 90 150 M90 90 L 150 150' stroke='%23fde047' stroke-width='2' fill='none' stroke-linecap='round' stroke-dasharray='1 4'/%3E%3Cpath d='M12 48 Q 30 24, 48 48 Q 66 72, 84 48 Q 102 24, 120 48' stroke='%23fde047' stroke-width='1.8' fill='none'/%3E%3Ccircle cx='30' cy='30' r='4' fill='%23fde047'/%3E%3Ccircle cx='90' cy='90' r='4' fill='%23fde047'/%3E%3Ccircle cx='90' cy='30' r='2' fill='%23fde047'/%3E%3Ccircle cx='30' cy='90' r='2' fill='%23fde047'/%3E%3C/svg%3E`;
@@ -198,6 +200,24 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
             href: `/${adminPath}/settings/overview`,
             icon: Compass,
             active: currentUrl ? currentUrl.startsWith(`/${adminPath}/settings/overview`) : false,
+        },
+        {
+            name: 'Konfigurasi Visi & Kepemimpinan',
+            href: `/${adminPath}/settings/vision-mission`,
+            icon: Target,
+            active: currentUrl ? currentUrl.startsWith(`/${adminPath}/settings/vision-mission`) : false,
+        },
+        {
+            name: 'Konfigurasi Perangkat Desa',
+            href: `/${adminPath}/settings/officials`,
+            icon: UserCheck,
+            active: currentUrl ? currentUrl.startsWith(`/${adminPath}/settings/officials`) : false,
+        },
+        {
+            name: 'Konfigurasi Demografi',
+            href: `/${adminPath}/settings/demographics`,
+            icon: BarChart3,
+            active: currentUrl ? currentUrl.startsWith(`/${adminPath}/settings/demographics`) : false,
         },
     ];
 
