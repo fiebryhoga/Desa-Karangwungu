@@ -23,6 +23,7 @@ import {
     Home,
     Newspaper,
     LayoutGrid,
+    Target,
 } from "lucide-react";
 
 export default function Navbar() {
@@ -204,16 +205,16 @@ export default function Navbar() {
                                             </div>
                                         </Link>
                                         <Link
-                                            href="/profil/sejarah"
+                                            href="/profil/visi-misi"
                                             className="flex items-start gap-2.5 rounded-lg p-2 text-sm hover:bg-black/30 text-red-100 hover:text-amber-300 transition-colors"
                                         >
-                                            <HistoryIcon className="h-4 w-4 text-amber-300 shrink-0 mt-0.5" />
+                                            <Target className="h-4 w-4 text-amber-300 shrink-0 mt-0.5" />
                                             <div>
                                                 <div className="font-bold text-white">
-                                                    Sejarah & Visi Misi
+                                                    Visi, Misi & Kepemimpinan
                                                 </div>
                                                 <div className="text-xs text-red-200/80">
-                                                    Asal-usul & arah pembangunan
+                                                    Arah pembangunan & silsilah Kades
                                                 </div>
                                             </div>
                                         </Link>
@@ -410,6 +411,20 @@ export default function Navbar() {
                                                 </div>
                                                 <div className="text-xs text-red-200/80">
                                                     Lokasi balai desa & formulir aspirasi
+                                                </div>
+                                            </div>
+                                        </Link>
+                                        <Link
+                                            href="/profil/fasilitas"
+                                            className="flex items-start gap-2.5 rounded-lg p-2 text-sm hover:bg-black/30 text-red-100 hover:text-amber-300 transition-colors"
+                                        >
+                                            <Building2 className="h-4 w-4 text-amber-300 shrink-0 mt-0.5" />
+                                            <div>
+                                                <div className="font-bold text-white">
+                                                    Fasilitas Umum
+                                                </div>
+                                                <div className="text-xs text-red-200/80">
+                                                    Sarana prasarana & tempat publik
                                                 </div>
                                             </div>
                                         </Link>
@@ -634,11 +649,11 @@ export default function Navbar() {
                                                 Gambaran Umum
                                             </Link>
                                             <Link
-                                                href="/profil/sejarah"
+                                                href="/profil/visi-misi"
                                                 onClick={() => setMobileMenuOpen(false)}
                                                 className="block px-3 py-1.5 rounded-md text-xs text-red-100 hover:text-amber-300 hover:bg-black/20"
                                             >
-                                                Sejarah & Visi Misi
+                                                Visi, Misi & Kepemimpinan
                                             </Link>
                                             <Link
                                                 href="/profil/perangkat-desa"
@@ -753,6 +768,13 @@ export default function Navbar() {
                                                 className="block px-3 py-1.5 rounded-md text-xs text-red-100 hover:text-amber-300 hover:bg-black/20"
                                             >
                                                 Kontak & Lapor
+                                            </Link>
+                                            <Link
+                                                href="/profil/fasilitas"
+                                                onClick={() => setMobileMenuOpen(false)}
+                                                className="block px-3 py-1.5 rounded-md text-xs text-red-100 hover:text-amber-300 hover:bg-black/20"
+                                            >
+                                                Fasilitas Umum
                                             </Link>
                                         </div>
                                     )}

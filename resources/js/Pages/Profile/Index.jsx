@@ -5,64 +5,28 @@ import SeoHead from '../../Components/SEO/SeoHead';
 import PageHeader from '../../Components/UI/PageHeader';
 import {
     MapPin,
-    Users,
     Building2,
     Compass,
     ArrowRight,
-    ArrowUp,
-    ArrowDown,
-    ArrowLeft,
     Shield,
     History as HistoryIcon,
     PieChart,
     Landmark,
-    ScrollText,
     Layers,
     Wheat,
     Fish,
     HeartHandshake,
-    ExternalLink,
-    Map as MapIcon,
+    Target,
 } from 'lucide-react';
+import VillageMap from '../../Components/Profile/VillageMap';
 
 export default function ProfileIndex({ officials = [], demographics = {} }) {
-    const cardinalDirections = [
-        {
-            direction: 'Sebelah Utara',
-            borderWith: 'Desa Guci & Desa Sumberwudi',
-            IconComp: ArrowUp,
-            desc: 'Batas area pertanian utara & persawahan irigasi',
-            color: 'border-red-500/40 bg-gradient-to-b from-red-700 via-red-800 to-red-950',
-        },
-        {
-            direction: 'Sebelah Selatan',
-            borderWith: 'Desa Karanggeneng',
-            IconComp: ArrowDown,
-            desc: 'Pusat kecamatan & akses jalan poros kabupaten',
-            color: 'border-red-500/40 bg-gradient-to-b from-red-700 via-red-800 to-red-950',
-        },
-        {
-            direction: 'Sebelah Timur',
-            borderWith: 'Desa Sungelebak',
-            IconComp: ArrowRight,
-            desc: 'Kawasan perikanan air payau & tambak produktif',
-            color: 'border-red-500/40 bg-gradient-to-b from-red-700 via-red-800 to-red-950',
-        },
-        {
-            direction: 'Sebelah Barat',
-            borderWith: 'Desa Kalanganyar',
-            IconComp: ArrowLeft,
-            desc: 'Akses perniagaan & pemukiman warga barat',
-            color: 'border-red-500/40 bg-gradient-to-b from-red-700 via-red-800 to-red-950',
-        },
-    ];
-
     const profileSubmenus = [
         {
-            href: '/profil/sejarah',
-            icon: HistoryIcon,
-            title: 'Sejarah & Visi Misi Desa',
-            desc: 'Asal-usul babat alas & arah pembangunan',
+            href: '/profil/visi-misi',
+            icon: Target,
+            title: 'Visi, Misi & Kepemimpinan',
+            desc: 'Arah pembangunan & silsilah Kepala Desa',
         },
         {
             href: '/profil/perangkat-desa',
@@ -75,6 +39,12 @@ export default function ProfileIndex({ officials = [], demographics = {} }) {
             icon: PieChart,
             title: 'Data Demografi Penduduk',
             desc: 'Statistik kependudukan per dusun & profesi',
+        },
+        {
+            href: '/profil/fasilitas',
+            icon: Building2,
+            title: 'Fasilitas & Sarana Umum',
+            desc: 'Sarana prasarana publik & tempat ibadah',
         },
     ];
 
@@ -123,14 +93,14 @@ export default function ProfileIndex({ officials = [], demographics = {} }) {
                     subtitle="Kenali lebih dalam sejarah, kearifan lokal, bentang alam, dan batas wilayah administratif desa kami."
                 />
 
-                {/* 2. MAIN 2-COLUMN LAYOUT */}
+                {/* 2. TOP 2-COLUMN SECTION: Overview Gallery (8 cols) & Sidebar Data (4 cols) */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                    {/* LEFT COLUMN: Visual Overview, Photos, & Boundaries (8 cols) */}
-                    <div className="lg:col-span-8 space-y-8">
-                        {/* 2.1. GAMBARAN UMUM WILAYAH DENGAN FOTO SHOWCASE */}
-                        <div className="rounded-2xl overflow-hidden border border-zinc-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-md">
-                            {/* Card Header */}
-                            <div className="px-5 py-4 flex items-center justify-between bg-gradient-to-r from-red-700 via-red-800 to-red-950 text-white shadow-xs">
+                    {/* LEFT COLUMN: Overview & Vision Mission Highlights (8 cols) */}
+                    <div className="lg:col-span-8 space-y-6">
+                        {/* 1. Gambaran Umum Desa Karangwungu */}
+                        <div className="rounded-lg overflow-hidden border border-zinc-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xl space-y-0">
+                            {/* Header Section */}
+                            <div className="px-5 sm:px-7 py-4 flex items-center justify-between border-b border-red-500/30 bg-gradient-to-r from-red-700 via-red-800 to-red-950 text-white shadow-xs">
                                 <div className="flex items-center gap-3">
                                     <div className="h-8 w-8 rounded-lg bg-black/30 border border-white/15 text-amber-300 flex items-center justify-center shrink-0">
                                         <Building2 className="h-4 w-4" />
@@ -151,7 +121,7 @@ export default function ProfileIndex({ officials = [], demographics = {} }) {
                                 {/* Photo Gallery Strip */}
                                 <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-stretch">
                                     {/* Main Large Photo (8 cols) */}
-                                    <div className="md:col-span-7 relative rounded-2xl overflow-hidden shadow-lg group min-h-[220px] sm:min-h-[260px]">
+                                    <div className="md:col-span-7 relative rounded-lg overflow-hidden shadow-lg group min-h-[220px] sm:min-h-[260px]">
                                         <img
                                             src="/assets/images/hero.jpg"
                                             alt="Bentang Alam Desa Karangwungu"
@@ -159,7 +129,7 @@ export default function ProfileIndex({ officials = [], demographics = {} }) {
                                         />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
                                         <div className="absolute bottom-3.5 left-3.5 right-3.5 flex items-center justify-between text-white">
-                                            <div className="flex items-center gap-2 bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/20 shadow-md">
+                                            <div className="flex items-center gap-2 bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/20 shadow-md">
                                                 <MapPin className="h-3.5 w-3.5 text-amber-300" />
                                                 <span className="text-xs font-bold">Kawasan Desa Karangwungu</span>
                                             </div>
@@ -169,28 +139,28 @@ export default function ProfileIndex({ officials = [], demographics = {} }) {
                                     {/* Two Stacked Sub Photos (5 cols) */}
                                     <div className="md:col-span-5 grid grid-cols-2 md:grid-cols-1 gap-3">
                                         {/* Sub Photo 1: Sawah Padi */}
-                                        <div className="relative rounded-xl overflow-hidden shadow-md group h-28 sm:h-[125px]">
+                                        <div className="relative rounded-lg overflow-hidden shadow-md group h-28 sm:h-[125px]">
                                             <img
                                                 src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=600&q=80"
                                                 alt="Pertanian Padi Karangwungu"
                                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                             />
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                                            <div className="absolute bottom-2 left-2.5 flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-black/60 text-[10px] font-bold text-amber-300 border border-white/15 backdrop-blur-xs">
+                                            <div className="absolute bottom-2 left-2.5 flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-black/60 text-[10px] font-bold text-amber-300 border border-white/15 backdrop-blur-xs">
                                                 <Wheat className="h-3 w-3" />
                                                 <span>Persawahan Padi</span>
                                             </div>
                                         </div>
 
                                         {/* Sub Photo 2: Budidaya Tambak */}
-                                        <div className="relative rounded-xl overflow-hidden shadow-md group h-28 sm:h-[125px]">
+                                        <div className="relative rounded-lg overflow-hidden shadow-md group h-28 sm:h-[125px]">
                                             <img
                                                 src="https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&w=600&q=80"
                                                 alt="Tambak Budidaya Karangwungu"
                                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                             />
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                                            <div className="absolute bottom-2 left-2.5 flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-black/60 text-[10px] font-bold text-amber-300 border border-white/15 backdrop-blur-xs">
+                                            <div className="absolute bottom-2 left-2.5 flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-black/60 text-[10px] font-bold text-amber-300 border border-white/15 backdrop-blur-xs">
                                                 <Fish className="h-3 w-3" />
                                                 <span>Tambak Ikan & Udang</span>
                                             </div>
@@ -199,7 +169,7 @@ export default function ProfileIndex({ officials = [], demographics = {} }) {
                                 </div>
 
                                 {/* Narrative Text */}
-                                <div className="space-y-3.5 text-sm sm:text-base text-zinc-700 dark:text-zinc-300 leading-relaxed pt-1">
+                                <div className="space-y-3.5 text-sm sm:text-base text-zinc-700 dark:text-zinc-300 leading-relaxed pt-1 text-justify">
                                     <p>
                                         <strong className="text-zinc-900 dark:text-white font-bold">Desa Karangwungu</strong> merupakan salah satu dari 18 desa di wilayah administratif <strong className="text-zinc-900 dark:text-white font-bold">Kecamatan Karanggeneng, Kabupaten Lamongan, Provinsi Jawa Timur</strong>. Wilayah Karangwungu terletak di dataran rendah yang subur di sebelah utara aliran Bengawan Solo, beriklim tropis dengan bentang alam yang didominasi oleh hamparan persawahan padi produktif dan tambak budidaya air tawar/payau modern.
                                     </p>
@@ -215,7 +185,7 @@ export default function ProfileIndex({ officials = [], demographics = {} }) {
                                         return (
                                             <div
                                                 key={idx}
-                                                className="p-3.5 rounded-xl border border-red-500/20 bg-gradient-to-b from-red-500/5 to-transparent dark:from-red-950/20 dark:to-transparent space-y-1.5"
+                                                className="p-3.5 rounded-lg border border-red-500/20 bg-gradient-to-b from-red-500/5 to-transparent dark:from-red-950/20 dark:to-transparent space-y-1.5"
                                             >
                                                 <div className="flex items-center gap-2">
                                                     <div className="h-7 w-7 rounded-lg bg-red-600/10 dark:bg-red-500/20 text-red-600 dark:text-amber-400 flex items-center justify-center shrink-0">
@@ -234,94 +204,12 @@ export default function ProfileIndex({ officials = [], demographics = {} }) {
                                 </div>
                             </div>
                         </div>
-
-                        {/* 2.2. BATAS WILAYAH ADMINISTRATIF & PETA VISUAL */}
-                        <div className="rounded-2xl overflow-hidden border border-zinc-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-md">
-                            {/* Card Header */}
-                            <div className="px-5 py-4 flex items-center justify-between bg-gradient-to-r from-red-700 via-red-800 to-red-950 text-white shadow-xs">
-                                <div className="flex items-center gap-3">
-                                    <div className="h-8 w-8 rounded-lg bg-black/30 border border-white/15 text-amber-300 flex items-center justify-center shrink-0">
-                                        <Compass className="h-4 w-4" />
-                                    </div>
-                                    <div>
-                                        <h3 className="font-black text-sm sm:text-base text-white">
-                                            Batas Wilayah Administratif
-                                        </h3>
-                                        <span className="text-[11px] text-red-200 block font-medium">
-                                            Orientasi Batas Geografis 4 Penjuru Mata Angin
-                                        </span>
-                                    </div>
-                                </div>
-                                <span className="hidden sm:inline-flex text-[10px] font-bold text-amber-300 bg-black/30 px-2.5 py-1 rounded-full border border-white/15">
-                                    Kec. Karanggeneng
-                                </span>
-                            </div>
-
-                            <div className="p-5 sm:p-7 space-y-6">
-                                {/* 4 Cardinal Grid with Enhanced Visual Design (Pure Vector Icons) */}
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    {cardinalDirections.map((item, idx) => {
-                                        const DirectionIcon = item.IconComp;
-                                        return (
-                                            <div
-                                                key={idx}
-                                                className={`p-4 rounded-xl border ${item.color} text-white shadow-md shadow-red-950/20 hover:border-amber-400 hover:shadow-xl hover:shadow-red-950/30 transition-all duration-300 flex items-start justify-between gap-3 group`}
-                                            >
-                                                <div className="space-y-1 min-w-0 flex-1">
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="inline-block px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-black/40 text-amber-300 border border-white/15">
-                                                            {item.direction}
-                                                        </span>
-                                                    </div>
-                                                    <h4 className="text-sm font-bold text-white group-hover:text-amber-300 transition-colors">
-                                                        {item.borderWith}
-                                                    </h4>
-                                                    <p className="text-[11px] text-red-200/80 leading-snug">
-                                                        {item.desc}
-                                                    </p>
-                                                </div>
-                                                <div className="h-8 w-8 rounded-lg bg-black/30 border border-white/15 text-amber-300 flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-amber-400 group-hover:text-zinc-950 transition-all">
-                                                    <DirectionIcon className="h-4 w-4" />
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-
-                                {/* Map Banner Callout */}
-                                <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50 flex flex-col sm:flex-row items-center justify-between gap-4">
-                                    <div className="flex items-center gap-3">
-                                        <div className="h-10 w-10 rounded-xl bg-red-600/10 dark:bg-red-500/20 text-red-600 dark:text-amber-400 flex items-center justify-center shrink-0">
-                                            <MapIcon className="h-5 w-5" />
-                                        </div>
-                                        <div>
-                                            <h5 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white">
-                                                Peta Satelit & Geospasial Desa
-                                            </h5>
-                                            <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
-                                                Lihat koordinat presisi dan navigasi peta satelit di Google Maps.
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <a
-                                        href="https://maps.google.com/?q=Desa+Karangwungu+Karanggeneng+Lamongan"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="w-full sm:w-auto px-4 py-2 rounded-xl bg-gradient-to-r from-red-700 via-red-800 to-red-950 hover:from-red-600 hover:to-red-900 text-white text-xs font-bold shadow-md hover:shadow-lg transition-all inline-flex items-center justify-center gap-1.5 shrink-0"
-                                    >
-                                        <Compass className="h-3.5 w-3.5 text-amber-300" />
-                                        <span>Buka Google Maps</span>
-                                        <ExternalLink className="h-3 w-3 opacity-70" />
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
                     </div>
 
                     {/* RIGHT COLUMN: Sidebar Navigation & Village Facts (4 cols) */}
                     <div className="lg:col-span-4 space-y-6">
                         {/* 1. Sub Menu Profil (Interaktif) */}
-                        <div className="rounded-2xl overflow-hidden border border-red-500/40 bg-gradient-to-b from-red-700 via-red-800 to-red-950 text-white shadow-xl shadow-red-950/25 p-5 space-y-4">
+                        <div className="rounded-lg overflow-hidden border border-red-500/40 bg-gradient-to-b from-red-700 via-red-800 to-red-950 text-white shadow-xl shadow-red-950/25 p-5 space-y-4">
                             <div className="flex items-center gap-2 pb-3 border-b border-red-500/30">
                                 <div className="h-7 w-7 rounded-lg bg-black/30 border border-white/15 text-amber-300 flex items-center justify-center shrink-0">
                                     <Layers className="h-4 w-4" />
@@ -338,7 +226,7 @@ export default function ProfileIndex({ officials = [], demographics = {} }) {
                                         <Link
                                             key={idx}
                                             href={item.href}
-                                            className="group flex items-center justify-between p-3 rounded-xl bg-black/25 hover:bg-black/45 border border-white/10 hover:border-amber-400 transition-all duration-200"
+                                            className="group flex items-center justify-between p-3 rounded-lg bg-black/25 hover:bg-black/45 border border-white/10 hover:border-amber-400 transition-all duration-200"
                                         >
                                             <div className="flex items-center gap-3 min-w-0 pr-2">
                                                 <div className="h-8 w-8 rounded-lg bg-black/30 text-amber-300 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
@@ -361,19 +249,14 @@ export default function ProfileIndex({ officials = [], demographics = {} }) {
                         </div>
 
                         {/* 2. Identitas & Fakta Pokok Desa */}
-                        <div className="rounded-2xl overflow-hidden border border-red-500/40 bg-gradient-to-b from-red-700 via-red-800 to-red-950 text-white shadow-xl shadow-red-950/25 p-5 space-y-4">
-                            <div className="flex items-center justify-between pb-3 border-b border-red-500/30">
-                                <div className="flex items-center gap-2">
-                                    <div className="h-7 w-7 rounded-lg bg-black/30 border border-white/15 text-amber-300 flex items-center justify-center shrink-0">
-                                        <Landmark className="h-4 w-4" />
-                                    </div>
-                                    <h3 className="text-sm font-black uppercase tracking-wider text-white">
-                                        Identitas Resmi Desa
-                                    </h3>
+                        <div className="rounded-lg overflow-hidden border border-red-500/40 bg-gradient-to-b from-red-700 via-red-800 to-red-950 text-white shadow-xl shadow-red-950/25 p-5 space-y-4">
+                            <div className="flex items-center gap-2 pb-3 border-b border-red-500/30">
+                                <div className="h-7 w-7 rounded-lg bg-black/30 border border-white/15 text-amber-300 flex items-center justify-center shrink-0">
+                                    <Landmark className="h-4 w-4" />
                                 </div>
-                                <span className="text-[10px] font-bold text-amber-300 bg-black/30 px-2 py-0.5 rounded-full border border-white/15">
-                                    Data Pokok
-                                </span>
+                                <h3 className="text-sm font-black uppercase tracking-wider text-white">
+                                    Identitas Resmi Desa
+                                </h3>
                             </div>
 
                             <div className="space-y-2.5 text-xs divide-y divide-red-500/20">
@@ -386,6 +269,11 @@ export default function ProfileIndex({ officials = [], demographics = {} }) {
                             </div>
                         </div>
                     </div>
+                </div>
+
+                {/* 3. FULL WIDTH UNIFIED BATAS WILAYAH & PETA SPASIAL LEAFLET */}
+                <div className="w-full">
+                    <VillageMap />
                 </div>
             </div>
         </AppLayout>

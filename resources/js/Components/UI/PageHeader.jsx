@@ -18,7 +18,7 @@ export default function PageHeader({
 }) {
     return (
         <div
-            className={`relative rounded-2xl overflow-hidden shadow-xl border border-red-500/40 bg-gradient-to-r from-red-800 via-red-700 to-red-900 text-white ${className}`}
+            className={`relative rounded-lg overflow-hidden shadow-xl border border-red-500/40 bg-gradient-to-r from-red-800 via-red-700 to-red-900 text-white ${className}`}
         >
             {/* 1. Subtle Background Landscape Photo */}
             {bgImage && (

@@ -22,10 +22,15 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 // Profil Desa Karangwungu
 Route::prefix('profil')->group(function () {
     Route::get('/', [ProfileController::class, 'index'])->name('profile.index');
-    Route::get('/sejarah', [ProfileController::class, 'history'])->name('profile.history');
+    Route::get('/visi-misi', [ProfileController::class, 'visionMission'])->name('profile.vision-mission');
+    Route::get('/kepemimpinan', [ProfileController::class, 'leadership'])->name('profile.leadership');
     Route::get('/perangkat-desa', [ProfileController::class, 'officials'])->name('profile.officials');
     Route::get('/demografi', [ProfileController::class, 'demographics'])->name('profile.demographics');
+    Route::get('/fasilitas', [ProfileController::class, 'facilities'])->name('profile.facilities');
 });
+
+// Fasilitas Umum Alias
+Route::get('/fasilitas', [ProfileController::class, 'facilities'])->name('facilities.index');
 
 // Layanan Warga & Persuratan Online
 Route::prefix('layanan')->group(function () {

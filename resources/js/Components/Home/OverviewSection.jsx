@@ -104,19 +104,19 @@ export default function OverviewSection({ stats = {} }) {
         },
         {
             label: "Luas Wilayah",
-            value: stats.total_area_ha || 245.8,
+            value: stats.total_area_ha || 123,
             suffix: "Ha",
             icon: LandPlot,
         },
         {
             label: "Sawah Pertanian",
-            value: stats.agriculture_area_ha || 160.5,
+            value: stats.agriculture_area_ha || 70,
             suffix: "Ha",
             icon: Wheat,
         },
         {
             label: "Tambak Perikanan",
-            value: stats.fishery_area_ha || 52.3,
+            value: stats.fishery_area_ha || 11,
             suffix: "Ha",
             icon: Fish,
         },

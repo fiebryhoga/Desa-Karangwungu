@@ -20,7 +20,16 @@ class PotentialController extends Controller
 
         $potentials = $query->orderBy('created_at', 'desc')->get();
 
-        $categories = ['Semua', 'Perikanan Tambak', 'Pertanian', 'UMKM Makanan', 'Kerajinan'];
+        $categories = [
+            'Semua',
+            'Perikanan Tambak',
+            'Pertanian',
+            'UMKM Makanan',
+            'Kerajinan',
+            'Peternakan',
+            'Industri Kreatif',
+            'Jasa & Perdagangan',
+        ];
 
         return Inertia::render('Potentials/Index', [
             'potentials' => $potentials,

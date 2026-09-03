@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import AppLayout from '../../Layouts/AppLayout';
 import SeoHead from '../../Components/SEO/SeoHead';
+import PageHeader from '../../Components/UI/PageHeader';
 import { formatRupiah } from '../../Utils/format';
 import {
     Landmark,
@@ -8,11 +9,8 @@ import {
     Users,
     HeartHandshake,
     AlertTriangle,
-    Clock,
     Layers,
     FileSpreadsheet,
-    TrendingUp,
-    TrendingDown,
 } from 'lucide-react';
 
 // Sleek Interactive SVG Donut Chart with News-Style Red-Gold Center Hub
@@ -294,54 +292,14 @@ export default function TransparencyIndex({
                 breadcrumbs={[{ label: 'Transparansi APBDes', url: '/transparansi' }]}
             />
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-12">
-                {/* 1. CINEMATIC HERO BANNER HEADER (Matching Sejarah Page Style) */}
-                <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-zinc-200/90 dark:border-zinc-800/90">
-                    <div
-                        className="absolute inset-0 bg-cover bg-center"
-                        style={{
-                            backgroundImage: `url('https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=1600&q=80')`,
-                        }}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/75 to-black/40" />
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-10 sm:space-y-12">
+                {/* 1. MASTER PAGE HEADER */}
+                <PageHeader
+                    badge="Akuntabilitas & Publikasi Resmi"
+                    title="Transparansi Anggaran & Realisasi APBDes"
+                    subtitle="Laporan resmi publikasi Anggaran Pendapatan dan Belanja Desa (APBDes) Karangwungu. Mewujudkan tata kelola keuangan desa yang terbuka, akuntabel, dan tepat sasaran."
+                />
 
-                    <div className="relative p-6 sm:p-10 lg:p-14 max-w-3xl space-y-4 sm:space-y-6 text-white">
-                        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-600/90 backdrop-blur-md border border-white/20 text-xs font-bold text-white tracking-wide shadow-lg">
-                            <span className="h-2 w-2 rounded-full bg-amber-300 animate-pulse" />
-                            <span>Dokumen Publikasi Resmi & Akuntabilitas</span>
-                        </div>
-
-                        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-[1.15]">
-                            Transparansi Anggaran & <br />
-                            Realisasi APBDes Karangwungu
-                        </h1>
-
-                        <p className="text-sm sm:text-base text-zinc-200 leading-relaxed font-normal">
-                            Laporan resmi publikasi Anggaran Pendapatan dan Belanja Desa (APBDes) Karangwungu. Mewujudkan tata kelola keuangan yang terbuka, akuntabel, dan tepat sasaran demi kemakmuran bersama.
-                        </p>
-
-                        <div className="flex flex-wrap gap-3 pt-2">
-                            <a
-                                href="#pendapatan-desa"
-                                className="px-4 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-bold backdrop-blur-md border border-white/20 transition-all inline-flex items-center gap-1.5"
-                            >
-                                <TrendingUp className="h-4 w-4 text-emerald-400" />
-                                <span>Pendapatan: Rp 1,38 M</span>
-                            </a>
-                            <a
-                                href="#belanja-desa"
-                                className="px-4 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-bold backdrop-blur-md border border-white/20 transition-all inline-flex items-center gap-1.5"
-                            >
-                                <TrendingDown className="h-4 w-4 text-amber-400" />
-                                <span>Belanja: Rp 1,38 M</span>
-                            </a>
-                            <div className="px-4 py-2 rounded-xl bg-red-600 text-white text-xs font-bold shadow-lg inline-flex items-center gap-1.5">
-                                <Clock className="h-4 w-4 text-amber-300" />
-                                <span>Diperbarui: November 2023</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
                 {/* ========================================================= */}
                 {/* 1. PENDAPATAN DESA                                        */}

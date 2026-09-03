@@ -45,9 +45,19 @@ class ProfileController extends Controller
         ]);
     }
 
+    public function visionMission()
+    {
+        return Inertia::render('Profile/VisionMission');
+    }
+
+    public function leadership()
+    {
+        return Inertia::render('Profile/Leadership');
+    }
+
     public function history()
     {
-        return Inertia::render('Profile/History');
+        return Inertia::render('Profile/VisionMission');
     }
 
     public function officials()
@@ -69,5 +79,10 @@ class ProfileController extends Controller
                 'area_ha' => 245.8,
             ]
         ]);
+    }
+
+    public function facilities()
+    {
+        return Inertia::render('Profile/Facilities');
     }
 }

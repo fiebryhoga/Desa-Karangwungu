@@ -103,9 +103,9 @@ export default function Footer() {
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link href="/profil/sejarah" className="text-red-100 hover:text-amber-300 flex items-center gap-1 transition-colors">
+                                    <Link href="/profil/visi-misi" className="text-red-100 hover:text-amber-300 flex items-center gap-1 transition-colors">
                                         <ChevronRight className="h-3 w-3 text-amber-400 shrink-0" />
-                                        <span>Sejarah & Visi</span>
+                                        <span>Visi, Misi & Kepemimpinan</span>
                                     </Link>
                                 </li>
                                 <li>
@@ -118,6 +118,12 @@ export default function Footer() {
                                     <Link href="/profil/demografi" className="text-red-100 hover:text-amber-300 flex items-center gap-1 transition-colors">
                                         <ChevronRight className="h-3 w-3 text-amber-400 shrink-0" />
                                         <span>Data Demografi</span>
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link href="/profil/fasilitas" className="text-red-100 hover:text-amber-300 flex items-center gap-1 transition-colors">
+                                        <ChevronRight className="h-3 w-3 text-amber-400 shrink-0" />
+                                        <span>Fasilitas Umum</span>
                                     </Link>
                                 </li>
                                 <li>
