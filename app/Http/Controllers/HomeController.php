@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ApbdesRecord;
 use App\Models\Post;
 use App\Models\Potential;
+use App\Models\SiteSetting;
 use App\Models\VillageOfficial;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -25,6 +26,9 @@ class HomeController extends Controller
         $headOfficial = VillageOfficial::where('position', 'like', '%Kepala Desa%')->first();
 
         $potentials = Potential::take(4)->get();
+
+        // Pengaturan Tampilan Beranda dari Panel Admin
+        $dashboardSettings = SiteSetting::getGroup('dashboard');
 
         // Statistik APBDes Ringkas
         $totalIncome = ApbdesRecord::where('type', 'income')->sum('budget_amount');
@@ -51,6 +55,7 @@ class HomeController extends Controller
             'headOfficial' => $headOfficial,
             'potentials' => $potentials,
             'stats' => $stats,
+            'dashboard_settings' => $dashboardSettings,
             'apbdes_summary' => [
                 'income' => $totalIncome,
                 'expense' => $totalExpense,

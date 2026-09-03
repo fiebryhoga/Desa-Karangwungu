@@ -76,7 +76,37 @@ function AnimatedNumber({ value, duration = 1500 }) {
     );
 }
 
-export default function OverviewSection({ stats = {} }) {
+export default function OverviewSection({
+    stats = {},
+    overviewCards = [],
+    overviewLocation,
+    overviewContent,
+}) {
+    const displayLocation = overviewLocation || "Kecamatan Karanggeneng, Kabupaten Lamongan";
+    const defaultParagraphs = [
+        "Desa Karangwungu adalah salah satu dari 18 desa di Kecamatan Karanggeneng, Kabupaten Lamongan, dengan mayoritas penduduk beragama Islam dan beragam mata pencaharian seperti petani, petambak, pedagang, PNS, hingga wirausaha.",
+        "Wilayah pertaniannya terdiri dari sawah dan tambak yang menghasilkan dua kali panen padi dan satu kali palawija, atau dua kali panen ikan dan satu kali padi setiap tahun. Terletak strategis di jalur jalan kolektor primer Lamongan - Gresik.",
+    ];
+    const paragraphs = overviewContent
+        ? overviewContent.split('\n\n').filter((p) => p.trim().length > 0)
+        : defaultParagraphs;
+
+    const card1 = overviewCards[0] || {};
+    const card2 = overviewCards[1] || {};
+    const card3 = overviewCards[2] || {};
+
+    const card1Badge = card1.badge || "Pertanian Unggul";
+    const card1Title = card1.title || "Hamparan Sawah Padi & Ketahanan Pangan";
+    const card1Image = card1.image || "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=800&q=80";
+
+    const card2Badge = card2.badge || "Tambak Modern";
+    const card2Title = card2.title || "Budidaya Bandeng & Udang";
+    const card2Image = card2.image || "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=600&q=80";
+
+    const card3Badge = card3.badge || "UMKM & Warga";
+    const card3Title = card3.title || "Wirausaha & Guyub Rukun";
+    const card3Image = card3.image || "https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=600&q=80";
+
     const demographicMetrics = [
         {
             label: "Kepala Keluarga",
@@ -152,29 +182,18 @@ export default function OverviewSection({ stats = {} }) {
                             <div className="flex items-center gap-2 text-xs font-semibold text-zinc-500 dark:text-zinc-400">
                                 <MapPin className="h-3.5 w-3.5 text-red-600 dark:text-amber-400 shrink-0" />
                                 <span>
-                                    Kecamatan Karanggeneng, Kabupaten Lamongan
+                                    {displayLocation}
                                 </span>
                             </div>
                         </div>
 
                         {/* Narrative Paragraph (Justified & Clean) */}
                         <div className="font-normal space-y-2.5 text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed text-justify">
-                            <p>
-                                <strong>Desa Karangwungu</strong> adalah salah
-                                satu dari 18 desa di Kecamatan Karanggeneng,
-                                Kabupaten Lamongan, dengan mayoritas penduduk
-                                beragama Islam dan beragam mata pencaharian
-                                seperti petani, petambak, pedagang, PNS, hingga
-                                wirausaha.
-                            </p>
-                            <p className="text-zinc-600 dark:text-zinc-400">
-                                Wilayah pertaniannya terdiri dari sawah dan
-                                tambak yang menghasilkan dua kali panen padi dan
-                                satu kali palawija, atau dua kali panen ikan dan
-                                satu kali padi setiap tahun. Terletak strategis
-                                di jalur jalan kolektor primer Lamongan -
-                                Gresik.
-                            </p>
+                            {paragraphs.map((p, idx) => (
+                                <p key={idx} className={idx > 0 ? "text-zinc-600 dark:text-zinc-400" : ""}>
+                                    {p}
+                                </p>
+                            ))}
                         </div>
 
                         {/* CTA Link */}
@@ -195,17 +214,17 @@ export default function OverviewSection({ stats = {} }) {
                             {/* Card 1: Large Featured (Panen Sawah) */}
                             <div className="col-span-2 relative rounded-2xl overflow-hidden aspect-[16/7] bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800 group shadow-md">
                                 <img
-                                    src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=800&q=80"
-                                    alt="Pertanian Sawah Padi Karangwungu"
+                                    src={card1Image}
+                                    alt={card1Title}
                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                                     loading="lazy"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent flex flex-col justify-end p-4 sm:p-5 text-white">
                                     <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider">
-                                        Pertanian Unggul
+                                        {card1Badge}
                                     </span>
                                     <h4 className="text-sm sm:text-base font-bold text-white leading-tight mt-0.5">
-                                        Hamparan Sawah Padi & Ketahanan Pangan
+                                        {card1Title}
                                     </h4>
                                 </div>
                             </div>
@@ -213,17 +232,17 @@ export default function OverviewSection({ stats = {} }) {
                             {/* Card 2: Tambak Perikanan */}
                             <div className="relative rounded-2xl overflow-hidden aspect-[4/3] bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800 group shadow-md">
                                 <img
-                                    src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=600&q=80"
-                                    alt="Budidaya Tambak Bandeng"
+                                    src={card2Image}
+                                    alt={card2Title}
                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                                     loading="lazy"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent flex flex-col justify-end p-3 sm:p-4 text-white">
                                     <span className="text-[9px] font-bold text-sky-400 uppercase tracking-wider">
-                                        Tambak Modern
+                                        {card2Badge}
                                     </span>
                                     <h4 className="text-xs sm:text-sm font-bold text-white leading-tight mt-0.5">
-                                        Budidaya Bandeng & Udang
+                                        {card2Title}
                                     </h4>
                                 </div>
                             </div>
@@ -231,17 +250,17 @@ export default function OverviewSection({ stats = {} }) {
                             {/* Card 3: UMKM & Guyub Rukun */}
                             <div className="relative rounded-2xl overflow-hidden aspect-[4/3] bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800 group shadow-md">
                                 <img
-                                    src="https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=600&q=80"
-                                    alt="UMKM Kreatif & Guyub Warga"
+                                    src={card3Image}
+                                    alt={card3Title}
                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                                     loading="lazy"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent flex flex-col justify-end p-3 sm:p-4 text-white">
                                     <span className="text-[9px] font-bold text-emerald-400 uppercase tracking-wider">
-                                        UMKM & Warga
+                                        {card3Badge}
                                     </span>
                                     <h4 className="text-xs sm:text-sm font-bold text-white leading-tight mt-0.5">
-                                        Wirausaha & Guyub Rukun
+                                        {card3Title}
                                     </h4>
                                 </div>
                             </div>

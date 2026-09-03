@@ -99,6 +99,10 @@ Route::prefix($adminPath)->middleware(['auth', \App\Http\Middleware\AdminSecurit
     // Dashboard Overview
     Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('admin.dashboard');
 
+    // Konfigurasi Website (Beranda / Landing Page, dll)
+    Route::get('/settings/dashboard', [\App\Http\Controllers\Admin\DashboardSettingController::class, 'index'])->name('admin.settings.dashboard');
+    Route::post('/settings/dashboard', [\App\Http\Controllers\Admin\DashboardSettingController::class, 'update'])->name('admin.settings.dashboard.update');
+
     // Profile & Ganti Password Mandiri
     Route::get('/profile', [\App\Http\Controllers\Admin\AdminProfileController::class, 'edit'])->name('admin.profile.edit');
     Route::patch('/profile', [\App\Http\Controllers\Admin\AdminProfileController::class, 'update'])->name('admin.profile.update');

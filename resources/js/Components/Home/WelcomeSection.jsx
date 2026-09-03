@@ -2,11 +2,45 @@ import React from 'react';
 import { Link } from '@inertiajs/react';
 import { ArrowRight, Quote, Shield, Compass, Users } from 'lucide-react';
 
-export default function WelcomeSection({ headOfficial }) {
-    const leaderName = headOfficial?.name || 'H. Moh. Suhartono, S.Sos';
-    const leaderPhoto =
+export default function WelcomeSection({
+    headOfficial,
+    title = 'Membangun Desa Karangwungu yang Modern, Guyub Rukun, dan Sejahtera',
+    greeting,
+    content,
+    leaderName,
+    leaderPosition,
+    leaderPhoto,
+}) {
+    const displayLeaderName = leaderName || headOfficial?.name || 'H. Moh. Suhartono, S.Sos';
+    const displayLeaderPosition = leaderPosition || headOfficial?.position || 'Kepala Desa Karangwungu';
+    const displayLeaderPhoto =
+        leaderPhoto ||
         headOfficial?.photo ||
         'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80';
+    const displayTitle = title || 'Membangun Desa Karangwungu yang Modern, Guyub Rukun, dan Sejahtera';
+
+    // Separate greeting and content cleanly
+    let displayGreeting = greeting || '';
+    let rawContent = content;
+
+    if (!displayGreeting && rawContent) {
+        const parts = rawContent.split('\n\n').filter((p) => p.trim().length > 0);
+        if (parts.length > 0 && (parts[0].includes('Assalamu') || parts[0].includes('“') || parts[0].includes('"'))) {
+            displayGreeting = parts[0];
+            rawContent = parts.slice(1).join('\n\n');
+        }
+    }
+
+    if (!displayGreeting && !content) {
+        displayGreeting = '“Assalamu’alaikum Warahmatullahi Wabarakatuh.”';
+    }
+
+    const paragraphs = rawContent
+        ? rawContent.split('\n\n').filter((p) => p.trim().length > 0)
+        : [
+            'Selamat datang di portal resmi Pemerintah Desa Karangwungu, Kecamatan Karanggeneng, Kabupaten Lamongan. Website ini kami dedikasikan sebagai wujud komitmen keterbukaan informasi publik, kemudahan pelayanan surat mandiri daring, serta etalase potensi pertanian dan tambak modern desa tercinta kita.',
+            'Melalui semangat kebersamaan dan inovasi digital, mari kita bersama melangkah memajukan Desa Karangwungu menjadi desa yang mandiri, transparan, dan memberikan kemakmuran nyata bagi seluruh masyarakat.',
+        ];
 
     return (
         <section
@@ -19,14 +53,14 @@ export default function WelcomeSection({ headOfficial }) {
 
             <div className="relative max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 my-auto">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
-                    {/* Desktop Only: Grand Portrait Card (Disembunyikan di mobile agar layout tidak kepanjangan) */}
+                    {/* Desktop Only: Grand Portrait Card */}
                     <div className="hidden lg:flex lg:col-span-5 justify-center">
                         <div className="relative group max-w-sm w-full">
                             <div className="relative rounded-2xl overflow-hidden bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-xl">
                                 <div className="aspect-[3/4] w-full overflow-hidden bg-zinc-900">
                                     <img
-                                        src={leaderPhoto}
-                                        alt={leaderName}
+                                        src={displayLeaderPhoto}
+                                        alt={displayLeaderName}
                                         className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700"
                                     />
                                 </div>
@@ -40,23 +74,23 @@ export default function WelcomeSection({ headOfficial }) {
                                         </span>
                                     </div>
                                     <h3 className="text-lg font-bold leading-tight text-white">
-                                        {leaderName}
+                                        {displayLeaderName}
                                     </h3>
                                     <p className="text-xs text-zinc-300 font-medium mt-0.5">
-                                        Kepala Desa Karangwungu
+                                        {displayLeaderPosition}
                                     </p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Right / Main Content (Optimal untuk Mobile & Desktop) */}
+                    {/* Right / Main Content */}
                     <div className="lg:col-span-7 space-y-4 sm:space-y-6 relative">
-                        {/* Mobile Only: Kartu Profil Eksekutif Kompak (Posisi di Atas Judul) */}
+                        {/* Mobile Only: Kartu Profil Eksekutif Kompak */}
                         <div className="lg:hidden flex items-center gap-3.5 p-3 rounded-xl bg-zinc-100/90 dark:bg-zinc-900/90 border border-zinc-200/80 dark:border-zinc-800 shadow-sm">
                             <img
-                                src={leaderPhoto}
-                                alt={leaderName}
+                                src={displayLeaderPhoto}
+                                alt={displayLeaderName}
                                 className="h-14 w-14 rounded-lg object-cover object-top shrink-0 ring-2 ring-red-600/30"
                             />
                             <div className="min-w-0">
@@ -66,35 +100,33 @@ export default function WelcomeSection({ headOfficial }) {
                                     </span>
                                 </div>
                                 <h3 className="text-sm font-bold text-zinc-900 dark:text-white leading-tight mt-0.5 truncate">
-                                    {leaderName}
+                                    {displayLeaderName}
                                 </h3>
                                 <p className="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium">
-                                    Pemerintah Desa Karangwungu
+                                    {displayLeaderPosition}
                                 </p>
                             </div>
                         </div>
 
                         {/* Judul Utama Elegan */}
                         <h2 className="text-xl sm:text-3xl lg:text-4xl font-extrabold text-zinc-900 dark:text-white leading-[1.25] tracking-tight">
-                            Membangun Desa Karangwungu yang Modern, Guyub Rukun, dan Sejahtera
+                            {displayTitle}
                         </h2>
 
                         {/* Speech Narrative Body */}
                         <div className="space-y-3.5 sm:space-y-4">
-                            {/* Distinctive Opening Greeting */}
-                            <div className="border-l-2 border-red-600 dark:border-amber-400 pl-3.5 py-0.5">
-                                <p className="text-sm sm:text-base lg:text-lg font-semibold text-zinc-900 dark:text-zinc-100 italic">
-                                    &ldquo;Assalamu’alaikum Warahmatullahi Wabarakatuh.&rdquo;
+                            {displayGreeting && (
+                                <div className="border-l-2 border-red-600 dark:border-amber-400 pl-3.5 py-0.5">
+                                    <p className="text-sm sm:text-base lg:text-lg font-semibold text-zinc-900 dark:text-zinc-100 italic">
+                                        {displayGreeting}
+                                    </p>
+                                </div>
+                            )}
+                            {paragraphs.map((p, idx) => (
+                                <p key={idx} className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed font-normal text-justify">
+                                    {p}
                                 </p>
-                            </div>
-
-                            <p className="text-xs sm:text-base text-zinc-700 dark:text-zinc-300 leading-relaxed font-normal text-justify">
-                                Selamat datang di portal resmi Pemerintah Desa Karangwungu, Kecamatan Karanggeneng, Kabupaten Lamongan. Website ini kami dedikasikan sebagai wujud komitmen keterbukaan informasi publik, kemudahan pelayanan surat mandiri daring, serta etalase potensi pertanian dan tambak modern desa tercinta kita.
-                            </p>
-
-                            <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed text-justify">
-                                Melalui semangat kebersamaan dan inovasi digital, mari kita bersama melangkah memajukan Desa Karangwungu menjadi desa yang mandiri, transparan, dan memberikan kemakmuran nyata bagi seluruh masyarakat.
-                            </p>
+                            ))}
                         </div>
 
                         {/* CTA Navigation Buttons */}

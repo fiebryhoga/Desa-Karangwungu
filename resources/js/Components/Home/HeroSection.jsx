@@ -2,7 +2,16 @@ import React from 'react';
 import { Link } from '@inertiajs/react';
 import { Sparkles, Search, ArrowRight } from 'lucide-react';
 
-export default function HeroSection({ heroImage = '/assets/images/hero.jpg' }) {
+export default function HeroSection({
+    heroImage = '/assets/images/hero.jpg',
+    badge = 'Kecamatan Karanggeneng • Kabupaten Lamongan',
+    title = "Website Resmi\nDesa Karangwungu",
+    description = 'Mewujudkan tata kelola desa yang transparan, pelayanan surat mandiri cepat, masyarakat religius, serta berdaya saing berbasis potensi pertanian dan perikanan tambak modern.',
+}) {
+    const displayBadge = badge || 'Kecamatan Karanggeneng • Kabupaten Lamongan';
+    const displayTitle = title || "Website Resmi\nDesa Karangwungu";
+    const displayDescription = description || 'Mewujudkan tata kelola desa yang transparan, pelayanan surat mandiri cepat, masyarakat religius, serta berdaya saing berbasis potensi pertanian dan perikanan tambak modern.';
+
     return (
         <section className="relative min-h-[calc(100vh-64px)] flex flex-col justify-between overflow-hidden">
             {/* 1. Gambar Background Utama */}
@@ -31,8 +40,7 @@ export default function HeroSection({ heroImage = '/assets/images/hero.jpg' }) {
                         {/* Sleek Frosted Glass Municipality Pill Badge */}
                         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 lg:py-2.5 rounded-full bg-black/40 dark:bg-black/50 backdrop-blur-md border border-white/20 text-[11px] sm:text-xs font-semibold text-white tracking-wide shadow-lg">
                             <span className="h-2 w-2 rounded-full bg-red-500 shrink-0 animate-pulse" />
-                            <span className="sm:hidden">Kec. Karanggeneng &bull; Kab. Lamongan</span>
-                            <span className="hidden sm:inline">Kecamatan Karanggeneng &bull; Kabupaten Lamongan</span>
+                            <span>{displayBadge}</span>
                         </div>
 
                         {/* Title with Village Logo Directly Beside It */}
@@ -42,16 +50,15 @@ export default function HeroSection({ heroImage = '/assets/images/hero.jpg' }) {
                                 alt="Lambang Resmi Desa Karangwungu"
                                 className="h-20 sm:h-28 lg:h-32 xl:h-36 w-auto object-contain shrink-0 drop-shadow-2xl hover:scale-105 transition-transform"
                             />
-                            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-[1.15] drop-shadow-xl">
-                                Website Resmi <br />
-                                Desa Karangwungu
+                            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-[1.15] drop-shadow-xl whitespace-pre-line">
+                                {displayTitle}
                             </h1>
                         </div>
                     </div>
 
                     {/* Narrative Description */}
                     <p className="text-sm sm:text-base lg:text-lg font-medium text-zinc-200 leading-5 sm:leading-6 max-w-2xl drop-shadow-md">
-                        Mewujudkan tata kelola desa yang transparan, pelayanan surat mandiri cepat, masyarakat religius, serta berdaya saing berbasis potensi pertanian dan perikanan tambak modern.
+                        {displayDescription}
                     </p>
 
                     {/* Dua Kartu Mini Interaktif (Frosted Glass Action Chips) */}
