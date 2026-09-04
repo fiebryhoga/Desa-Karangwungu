@@ -53,6 +53,7 @@ Route::get('/potensi/{slug}', [PotentialController::class, 'show'])->name('poten
 
 // Galeri Dokumentasi & Foto Desa
 Route::get('/galeri', [GalleryController::class, 'index'])->name('gallery.index');
+Route::get('/galeri/{slug}', [GalleryController::class, 'show'])->name('gallery.show');
 
 // Berita & Pengumuman
 Route::get('/berita', [NewsController::class, 'index'])->name('news.index');
@@ -131,12 +132,37 @@ Route::prefix($adminPath)->middleware(['auth', \App\Http\Middleware\AdminSecurit
     Route::post('/settings/organizations', [\App\Http\Controllers\Admin\OrganizationSettingController::class, 'update'])->name('admin.settings.organizations.update');
     Route::post('/settings/organizations/upload-logo', [\App\Http\Controllers\Admin\OrganizationSettingController::class, 'uploadLogo'])->name('admin.settings.organizations.upload_logo');
     Route::post('/settings/organizations/upload-banner', [\App\Http\Controllers\Admin\OrganizationSettingController::class, 'uploadBanner'])->name('admin.settings.organizations.upload_banner');
+    Route::post('/settings/organizations/upload-leader-photo', [\App\Http\Controllers\Admin\OrganizationSettingController::class, 'uploadLeaderPhoto'])->name('admin.settings.organizations.upload_leader_photo');
+
+    // Konfigurasi Sarana & Fasilitas Umum Desa
+    Route::get('/settings/facilities', [\App\Http\Controllers\Admin\FacilitySettingController::class, 'index'])->name('admin.settings.facilities');
+    Route::post('/settings/facilities', [\App\Http\Controllers\Admin\FacilitySettingController::class, 'update'])->name('admin.settings.facilities.update');
+    Route::post('/settings/facilities/upload-image', [\App\Http\Controllers\Admin\FacilitySettingController::class, 'uploadImage'])->name('admin.settings.facilities.upload_image');
 
     // Konfigurasi Transparansi APBDes Per Tahun
     Route::get('/settings/apbdes', [\App\Http\Controllers\Admin\ApbdesSettingController::class, 'index'])->name('admin.settings.apbdes');
     Route::post('/settings/apbdes', [\App\Http\Controllers\Admin\ApbdesSettingController::class, 'update'])->name('admin.settings.apbdes.update');
     Route::post('/settings/apbdes/year', [\App\Http\Controllers\Admin\ApbdesSettingController::class, 'storeYear'])->name('admin.settings.apbdes.store_year');
     Route::delete('/settings/apbdes/year/{year}', [\App\Http\Controllers\Admin\ApbdesSettingController::class, 'destroyYear'])->name('admin.settings.apbdes.destroy_year');
+
+    // Konfigurasi Potensi & Produk UMKM Desa
+    Route::get('/settings/potentials', [\App\Http\Controllers\Admin\PotentialSettingController::class, 'index'])->name('admin.settings.potentials');
+    Route::post('/settings/potentials', [\App\Http\Controllers\Admin\PotentialSettingController::class, 'store'])->name('admin.settings.potentials.store');
+    Route::put('/settings/potentials/{id}', [\App\Http\Controllers\Admin\PotentialSettingController::class, 'update'])->name('admin.settings.potentials.update');
+    Route::delete('/settings/potentials/{id}', [\App\Http\Controllers\Admin\PotentialSettingController::class, 'destroy'])->name('admin.settings.potentials.destroy');
+    Route::post('/settings/potentials/upload-image', [\App\Http\Controllers\Admin\PotentialSettingController::class, 'uploadImage'])->name('admin.settings.potentials.upload_image');
+    Route::post('/settings/potentials/upload-logo', [\App\Http\Controllers\Admin\PotentialSettingController::class, 'uploadLogo'])->name('admin.settings.potentials.upload_logo');
+    Route::post('/settings/potentials/upload-gallery', [\App\Http\Controllers\Admin\PotentialSettingController::class, 'uploadGallery'])->name('admin.settings.potentials.upload_gallery');
+    Route::post('/settings/potentials/upload-product-image', [\App\Http\Controllers\Admin\PotentialSettingController::class, 'uploadProductImage'])->name('admin.settings.potentials.upload_product_image');
+
+    // Konfigurasi Galeri Foto & Dokumentasi Desa
+    Route::get('/settings/gallery', [\App\Http\Controllers\Admin\GallerySettingController::class, 'index'])->name('admin.settings.gallery');
+    Route::post('/settings/gallery', [\App\Http\Controllers\Admin\GallerySettingController::class, 'store'])->name('admin.settings.gallery.store');
+    Route::put('/settings/gallery/{id}', [\App\Http\Controllers\Admin\GallerySettingController::class, 'update'])->name('admin.settings.gallery.update');
+    Route::delete('/settings/gallery/{id}', [\App\Http\Controllers\Admin\GallerySettingController::class, 'destroy'])->name('admin.settings.gallery.destroy');
+    Route::post('/settings/gallery/upload-image', [\App\Http\Controllers\Admin\GallerySettingController::class, 'uploadImage'])->name('admin.settings.gallery.upload_image');
+    Route::post('/settings/gallery/upload-photos', [\App\Http\Controllers\Admin\GallerySettingController::class, 'uploadPhotos'])->name('admin.settings.gallery.upload_photos');
+    Route::post('/settings/gallery/reorder', [\App\Http\Controllers\Admin\GallerySettingController::class, 'reorder'])->name('admin.settings.gallery.reorder');
 
     // Profile & Ganti Password Mandiri
     Route::get('/profile', [\App\Http\Controllers\Admin\AdminProfileController::class, 'edit'])->name('admin.profile.edit');

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import AppLayout from '../../Layouts/AppLayout';
 import SeoHead from '../../Components/SEO/SeoHead';
+import { getIconComponent } from '@/Utils/iconRegistry';
 import {
     Users,
     Landmark,
@@ -14,7 +15,6 @@ import {
     Fish,
     Scale,
     ArrowLeft,
-    Phone,
     MapPin,
     Calendar,
     Mail,
@@ -38,23 +38,9 @@ export default function OrganizationShow({
 }) {
     const { props } = usePage();
     const [copied, setCopied] = useState(false);
+    const [leaderPhotoError, setLeaderPhotoError] = useState(false);
 
-    // Map icons
-    const iconMap = {
-        Landmark,
-        HeartHandshake,
-        Flame,
-        Building2,
-        ShieldAlert,
-        Home,
-        Wheat,
-        Fish,
-        Users,
-        Scale,
-        Award,
-    };
-
-    const IconComponent = iconMap[organization.icon] || Users;
+    const IconComponent = getIconComponent(organization.icon, Users);
 
     const leader = organization.leader || { name: 'Pimpinan Lembaga', role: 'Ketua', phone: '' };
     const structure = organization.structure || [];
@@ -98,6 +84,14 @@ export default function OrganizationShow({
     const avatarUrl = (name) =>
         `https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'Pengurus')}&background=991b1b&color=fef08a&size=256&bold=true&font-size=0.36`;
 
+    // Helper: extract initials for avatar badge
+    const getInitials = (name) => {
+        if (!name) return 'PL';
+        const parts = name.trim().split(/\s+/).filter(Boolean);
+        if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+        return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    };
+
     return (
         <AppLayout>
             <SeoHead
@@ -113,49 +107,7 @@ export default function OrganizationShow({
             />
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-                {/* 1. TOP NAVIGATION & ACTION BAR */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-zinc-200 dark:border-zinc-800">
-                    <Link
-                        href="/profil/lembaga"
-                        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-red-700 dark:hover:text-amber-400 border border-zinc-200 dark:border-zinc-700 transition-colors w-fit group"
-                    >
-                        <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-1" />
-                        <span>Kembali ke Katalog Lembaga Desa</span>
-                    </Link>
-
-                    {/* Quick share actions */}
-                    <div className="flex items-center gap-2">
-                        <a
-                            href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`Profil ${organization.name}: ${currentUrl}`)}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition-colors"
-                        >
-                            <Share2 className="h-3.5 w-3.5" />
-                            <span>WhatsApp</span>
-                        </a>
-
-                        <button
-                            type="button"
-                            onClick={handleCopyUrl}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 transition-colors cursor-pointer border border-zinc-200 dark:border-zinc-700"
-                        >
-                            {copied ? (
-                                <>
-                                    <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-                                    <span className="text-emerald-700 dark:text-emerald-400 font-bold">Tautan Disalin!</span>
-                                </>
-                            ) : (
-                                <>
-                                    <Share2 className="h-3.5 w-3.5" />
-                                    <span>Salin Tautan</span>
-                                </>
-                            )}
-                        </button>
-                    </div>
-                </div>
-
-                {/* 2. HERO BANNER (Redesigned with rounded-lg, geometric facets & clean logo) */}
+                {/* 1. HERO BANNER with Integrated Glassmorphism Navigation */}
                 <div className="relative rounded-lg overflow-hidden shadow-xl border border-red-500/40 bg-gradient-to-r from-red-800 via-red-700 to-red-900 text-white">
                     {/* Background Landscape Photo Overlay */}
                     {organization.image && (
@@ -192,7 +144,23 @@ export default function OrganizationShow({
 
                     {/* Content inside Hero */}
                     <div className="relative z-10 p-5 sm:p-7 md:p-8 space-y-5">
-                        {/* Top: Logo + Badges + Title */}
+                        {/* Top Action Bar inside Hero (Integrated Glassmorphism) */}
+                        <div className="flex items-center justify-between gap-3">
+                            <Link
+                                href="/profil/lembaga"
+                                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold text-white bg-black/40 hover:bg-black/60 backdrop-blur-md border border-white/20 hover:border-amber-400/50 shadow-sm transition-all group w-fit"
+                            >
+                                <ArrowLeft className="h-3.5 w-3.5 text-amber-300 transition-transform group-hover:-translate-x-1" />
+                                <span>Kembali ke Katalog Lembaga Desa</span>
+                            </Link>
+
+                            <span className="text-[11px] font-bold text-amber-200/90 hidden sm:inline-flex items-center gap-1.5 bg-black/30 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10">
+                                <Landmark className="h-3.5 w-3.5 text-amber-400" />
+                                <span>Kelembagaan Desa Karangwungu</span>
+                            </span>
+                        </div>
+
+                        {/* Top: Logo + Title */}
                         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
                             {/* Official Logo (Clean, prominent rounded-lg container) */}
                             <div className="h-24 w-24 sm:h-28 sm:w-28 md:h-32 md:w-32 rounded-lg bg-white dark:bg-zinc-900/95 p-2.5 sm:p-3 shadow-2xl border-2 border-amber-400 ring-4 ring-red-950/40 flex items-center justify-center shrink-0">
@@ -209,36 +177,14 @@ export default function OrganizationShow({
 
                             {/* Title & Badges */}
                             <div className="space-y-2 flex-1 min-w-0">
-                                {/* Badges row (without "Status: Aktif Menjabat") */}
-                                <div className="flex flex-wrap items-center gap-2">
-                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-black/40 backdrop-blur-md border border-amber-400/40 text-amber-300 text-xs font-bold shadow-xs">
-                                        {organization.logo ? (
-                                            <img src={organization.logo} alt="" className="h-3.5 w-3.5 object-contain shrink-0" />
-                                        ) : (
-                                            <IconComponent className="h-3.5 w-3.5 shrink-0" />
-                                        )}
-                                        <span>{organization.shortName || organization.category || 'Lembaga Desa'}</span>
-                                    </span>
 
-                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-black/30 backdrop-blur-md border border-white/20 text-white text-xs font-semibold">
-                                        <Users className="h-3.5 w-3.5 text-amber-300" />
-                                        <span>{organization.memberCount || 'Kader Aktif'}</span>
-                                    </span>
-
-                                    {organization.legalBasis && (
-                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-black/30 backdrop-blur-md border border-white/20 text-zinc-200 text-xs font-medium">
-                                            <Scale className="h-3.5 w-3.5 text-amber-400" />
-                                            <span>Dasar: {organization.legalBasis}</span>
-                                        </span>
-                                    )}
-                                </div>
 
                                 {/* Main Title */}
                                 <div>
-                                    <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black text-white tracking-tight leading-tight drop-shadow-md">
+                                    <h1 className="text-lg sm:text-xl md:text-2xl lg:text-2xl xl:text-3xl font-bold text-white tracking-tight leading-snug drop-shadow-md">
                                         {organization.name}
                                     </h1>
-                                    <p className="text-xs sm:text-sm md:text-base text-amber-200 font-medium italic mt-1 leading-relaxed drop-shadow-xs">
+                                    <p className="text-xs sm:text-sm text-amber-200 font-medium italic mt-1 leading-relaxed drop-shadow-xs">
                                         "{organization.tagline || 'Bersinergi membangun kemandirian dan keharmonisan Desa Karangwungu'}"
                                     </p>
                                 </div>
@@ -508,13 +454,19 @@ export default function OrganizationShow({
                                         key={idx}
                                         className="flex items-center gap-3 p-3 rounded-lg bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700/80 hover:border-red-500/40 dark:hover:border-amber-400/40 transition-colors group"
                                     >
-                                        <div className="h-10 w-10 rounded-lg overflow-hidden bg-red-950/80 shrink-0 border border-amber-400/40 flex items-center justify-center">
-                                            <img
-                                                src={avatarUrl(item.name)}
-                                                alt={item.name}
-                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                                                loading="lazy"
-                                            />
+                                        <div className="h-10 w-10 rounded-lg overflow-hidden bg-red-950 shrink-0 border border-amber-400/40 flex items-center justify-center">
+                                            {item.photo ? (
+                                                <img
+                                                    src={item.photo}
+                                                    alt={item.name}
+                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                                                    loading="lazy"
+                                                />
+                                            ) : (
+                                                <span className="text-amber-300 font-bold text-xs select-none">
+                                                    {getInitials(item.name)}
+                                                </span>
+                                            )}
                                         </div>
                                         <div className="min-w-0 flex-1">
                                             <span className="text-[9.5px] font-bold text-red-700 dark:text-amber-400 uppercase tracking-wider block truncate">
@@ -529,6 +481,44 @@ export default function OrganizationShow({
                                         </div>
                                     </div>
                                 ))}
+                            </div>
+                        </div>
+
+                        {/* Bagikan Informasi Lembaga */}
+                        <div className="p-4 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-xs flex flex-wrap items-center justify-between gap-3">
+                            <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
+                                <Share2 className="h-4 w-4 text-red-600 dark:text-amber-400" />
+                                <span>Bagikan Informasi Lembaga:</span>
+                            </span>
+
+                            <div className="flex items-center gap-2">
+                                <a
+                                    href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`Profil ${organization.name}: ${currentUrl}`)}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition-colors"
+                                >
+                                    <Share2 className="h-3.5 w-3.5" />
+                                    <span>WhatsApp</span>
+                                </a>
+
+                                <button
+                                    type="button"
+                                    onClick={handleCopyUrl}
+                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 transition-colors cursor-pointer border border-zinc-200 dark:border-zinc-700"
+                                >
+                                    {copied ? (
+                                        <>
+                                            <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                                            <span className="text-emerald-700 dark:text-emerald-400 font-bold">Tautan Disalin!</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Share2 className="h-3.5 w-3.5" />
+                                            <span>Salin Tautan</span>
+                                        </>
+                                    )}
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -549,18 +539,17 @@ export default function OrganizationShow({
                             <div className="flex flex-col items-center text-center space-y-2.5 pt-1">
                                 {/* Leader Portrait */}
                                 <div className="h-24 w-24 rounded-lg overflow-hidden bg-red-950 border-2 border-amber-400 shadow-md flex items-center justify-center">
-                                    {leader.photo ? (
+                                    {leader.photo && !leaderPhotoError ? (
                                         <img
                                             src={leader.photo}
                                             alt={leader.name}
+                                            onError={() => setLeaderPhotoError(true)}
                                             className="w-full h-full object-cover"
                                         />
                                     ) : (
-                                        <img
-                                            src={avatarUrl(leader.name)}
-                                            alt={leader.name}
-                                            className="w-full h-full object-cover"
-                                        />
+                                        <div className="w-full h-full flex items-center justify-center bg-red-950 text-amber-300 font-extrabold text-2xl tracking-wider select-none">
+                                            {getInitials(leader.name)}
+                                        </div>
                                     )}
                                 </div>
 
@@ -573,21 +562,6 @@ export default function OrganizationShow({
                                     </p>
                                 </div>
                             </div>
-
-                            {/* Contact WhatsApp Button */}
-                            {leader.phone && (
-                                <div className="pt-2 border-t border-white/20">
-                                    <a
-                                        href={`https://wa.me/${leader.phone.replace(/[^0-9]/g, '')}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="w-full inline-flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition-all cursor-pointer border border-emerald-400/40"
-                                    >
-                                        <Phone className="h-3.5 w-3.5" />
-                                        <span>Hubungi WhatsApp ({leader.phone})</span>
-                                    </a>
-                                </div>
-                            )}
                         </div>
 
                         {/* 2. INFORMASI SEKRETARIAT & LAYANAN */}
@@ -618,13 +592,6 @@ export default function OrganizationShow({
                                         {organization.email || 'pemdes@karangwungu-lamongan.desa.id'}
                                     </p>
                                 </div>
-
-                                <div className="space-y-0.5">
-                                    <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block">Dasar Regulasi:</span>
-                                    <p className="font-medium text-zinc-800 dark:text-zinc-200">
-                                        {organization.legalBasis || 'Peraturan Desa Karangwungu'}
-                                    </p>
-                                </div>
                             </div>
                         </div>
 
@@ -645,7 +612,7 @@ export default function OrganizationShow({
 
                                 <div className="space-y-2">
                                     {otherOrganizations.slice(0, 5).map((other) => {
-                                        const OtherIcon = iconMap[other.icon] || Users;
+                                        const OtherIcon = getIconComponent(other.icon, Users);
                                         return (
                                             <Link
                                                 key={other.id}

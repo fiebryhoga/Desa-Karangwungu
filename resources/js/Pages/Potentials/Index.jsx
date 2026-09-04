@@ -105,7 +105,7 @@ export default function PotentialsIndex({
 
                                 {/* Dropdown Menu */}
                                 {isOtherOpen && (
-                                    <div className="absolute left-0 mt-2 w-48 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 shadow-2xl p-1.5 z-50 space-y-0.5 animate-in fade-in-50 slide-in-from-top-1 duration-150">
+                                    <div className="absolute left-0 mt-2 w-48 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 shadow-2xl p-1.5 z-50 space-y-0.5 animate-in fade-in-50 slide-in-from-top-1 duration-150">
                                         <div className="px-2.5 py-1 text-[10px] font-bold text-zinc-400 uppercase tracking-wider border-b border-zinc-100 dark:border-zinc-800 mb-1">
                                             Kategori Lainnya
                                         </div>
@@ -153,7 +153,7 @@ export default function PotentialsIndex({
 
                 {/* Potentials Cards Grid (2 Columns on Mobile) */}
                 {filteredPotentials.length === 0 ? (
-                    <div className="p-12 rounded-2xl bg-white dark:bg-zinc-900 border border-dashed border-zinc-300 dark:border-zinc-800 text-center space-y-2">
+                    <div className="p-12 rounded-lg bg-white dark:bg-zinc-900 border border-dashed border-zinc-300 dark:border-zinc-800 text-center space-y-2">
                         <p className="text-base font-bold text-zinc-700 dark:text-zinc-300">
                             Tidak ada potensi atau produk UMKM ditemukan.
                         </p>
@@ -166,7 +166,7 @@ export default function PotentialsIndex({
                         {filteredPotentials.map((item) => (
                             <div
                                 key={item.id}
-                                className="group rounded-xl sm:rounded-2xl overflow-hidden bg-gradient-to-b from-red-700 via-red-800 to-red-950 dark:from-red-900/90 dark:via-red-950 dark:to-[#1a0507] text-white shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 flex flex-col justify-between"
+                                className="group rounded-lg overflow-hidden bg-gradient-to-b from-red-700 via-red-800 to-red-950 dark:from-red-900/90 dark:via-red-950 dark:to-[#1a0507] text-white shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 flex flex-col justify-between"
                             >
                                 {/* Clickable Link Area: Image + Details */}
                                 <Link
@@ -188,14 +188,41 @@ export default function PotentialsIndex({
                                         </div>
                                     </div>
 
+                                    {/* Overlapping Official Logo Box like Lembaga */}
+                                    <div className="px-3 sm:px-4 -mt-8 sm:-mt-10 relative z-10 flex items-end justify-between">
+                                        <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-lg bg-white dark:bg-zinc-900 p-1.5 sm:p-2 border-2 border-amber-400 shadow-2xl flex items-center justify-center shrink-0 ring-4 ring-red-950/60">
+                                            {item.logo ? (
+                                                <img
+                                                    src={item.logo}
+                                                    alt={`Logo ${item.title}`}
+                                                    className="w-full h-full object-contain filter drop-shadow-sm group-hover:scale-105 transition-transform duration-300"
+                                                    loading="lazy"
+                                                />
+                                            ) : (
+                                                <img
+                                                    src="/assets/images/logo.png"
+                                                    alt="Logo"
+                                                    className="w-full h-full object-contain filter drop-shadow-sm group-hover:scale-105 transition-transform duration-300"
+                                                    loading="lazy"
+                                                />
+                                            )}
+                                        </div>
+
+                                        {item.price_range && (
+                                            <span className="text-[9.5px] sm:text-[11px] font-bold text-amber-300 bg-black/60 backdrop-blur-md border border-white/20 px-2 py-0.5 rounded-md shadow-xs truncate max-w-[140px]">
+                                                {item.price_range}
+                                            </span>
+                                        )}
+                                    </div>
+
                                     {/* Content */}
-                                    <div className="p-2.5 sm:p-4 flex-1 flex flex-col gap-1.5 sm:gap-2.5">
+                                    <div className="p-2.5 sm:p-4 pt-2 sm:pt-3 flex-1 flex flex-col gap-1.5 sm:gap-2">
                                         <h3 className="text-xs sm:text-sm font-bold text-white group-hover:text-amber-300 transition-colors leading-snug line-clamp-2">
                                             {item.title}
                                         </h3>
 
                                         {item.price_range && (
-                                            <p className="text-[10px] sm:text-xs font-bold text-amber-300 flex items-center gap-1 font-mono">
+                                            <p className="text-[10px] sm:text-xs font-bold text-amber-300 flex items-center gap-1">
                                                 <Tag className="h-2.5 w-2.5 sm:h-3 sm:w-3 shrink-0" />
                                                 <span className="truncate">{item.price_range}</span>
                                             </p>

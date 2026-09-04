@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-@variant dark (&:where(.dark, .dark *));
+@variant dark (&:is(.dark, .dark *));
 
 @source "../views/**/*.blade.php";
 @source "../js/**/*.{js,jsx,ts,tsx}";

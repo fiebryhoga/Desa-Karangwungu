@@ -110,4 +110,32 @@ class OrganizationSettingController extends Controller
             'message' => 'Foto banner berhasil diunggah.',
         ]);
     }
+
+    /**
+     * Upload custom organization leader photo file.
+     */
+    public function uploadLeaderPhoto(Request $request)
+    {
+        $request->validate([
+            'leader_photo_file' => 'required|file|mimes:png,jpg,jpeg,webp|max:5120',
+        ]);
+
+        $file = $request->file('leader_photo_file');
+        $uploadDir = public_path('uploads/organizations/leaders');
+        if (!file_exists($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+
+        $extension = $file->getClientOriginalExtension();
+        $filename = 'leader_' . time() . '_' . uniqid() . '.' . $extension;
+        $file->move($uploadDir, $filename);
+
+        $url = '/uploads/organizations/leaders/' . $filename;
+
+        return response()->json([
+            'success' => true,
+            'url' => $url,
+            'message' => 'Foto pimpinan berhasil diunggah.',
+        ]);
+    }
 }

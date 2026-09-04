@@ -2,11 +2,14 @@ import React, { useState } from 'react';
 import { useForm, usePage } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import AdminPageHeader from '@/Components/Admin/AdminPageHeader';
+import { ICON_REGISTRY, getIconComponent } from '@/Utils/iconRegistry';
 import {
     Save,
     ExternalLink,
     Plus,
     Trash2,
+    AlertTriangle,
+    Palette,
     Users,
     Landmark,
     HeartHandshake,
@@ -73,6 +76,7 @@ export default function OrganizationsSettings({ settings = {} }) {
     // Uploading states
     const [uploadingLogo, setUploadingLogo] = useState(false);
     const [uploadingBanner, setUploadingBanner] = useState(false);
+    const [uploadingLeaderPhoto, setUploadingLeaderPhoto] = useState(false);
 
     const handleSubmit = () => {
         post(`/${adminPath}/settings/organizations`, {
@@ -92,24 +96,24 @@ export default function OrganizationsSettings({ settings = {} }) {
         'Lainnya',
     ];
 
-    const iconOptions = [
-        { value: 'Landmark', label: 'Pemerintahan' },
-        { value: 'HeartHandshake', label: 'Sosial / PKK' },
-        { value: 'Flame', label: 'Pemuda / Karang Taruna' },
-        { value: 'Building2', label: 'Pembangunan / LPM' },
-        { value: 'ShieldAlert', label: 'Keamanan / Linmas' },
-        { value: 'Home', label: 'Rumah / RT RW' },
-        { value: 'Wheat', label: 'Pertanian / Gapoktan' },
-        { value: 'Fish', label: 'Perikanan / Tambak' },
-        { value: 'Users', label: 'Kelompok Warga' },
-        { value: 'Scale', label: 'Hukum & Regulasi' },
-        { value: 'Award', label: 'Prestasi' },
-    ];
+    // Delete Confirmation Modal State
+    const [deleteConfirmOrg, setDeleteConfirmOrg] = useState(null);
 
-    const getIconComponent = (iconName) => {
-        const icons = { Landmark, HeartHandshake, Flame, Building2, ShieldAlert, Home, Wheat, Fish, Users, Scale, Award, UserCheck };
-        return icons[iconName] || Users;
-    };
+    // Icon Picker Modal State
+    const [showIconPicker, setShowIconPicker] = useState(false);
+    const [iconSearch, setIconSearch] = useState('');
+    const [iconCategoryFilter, setIconCategoryFilter] = useState('all');
+
+    const iconCategories = ['all', ...Array.from(new Set(Object.values(ICON_REGISTRY).map((i) => i.category)))];
+    const iconEntries = Object.entries(ICON_REGISTRY).filter(([key, item]) => {
+        const matchesCategory = iconCategoryFilter === 'all' || item.category === iconCategoryFilter;
+        const matchesSearch =
+            !iconSearch.trim() ||
+            key.toLowerCase().includes(iconSearch.toLowerCase()) ||
+            (item.label || '').toLowerCase().includes(iconSearch.toLowerCase()) ||
+            (item.category || '').toLowerCase().includes(iconSearch.toLowerCase());
+        return matchesCategory && matchesSearch;
+    });
 
     // Handlers
     const handleAddOrganization = () => {
@@ -119,7 +123,6 @@ export default function OrganizationsSettings({ settings = {} }) {
             shortName: '',
             tagline: '',
             category: 'Lainnya',
-            legalBasis: '',
             icon: 'Users',
             logo: '',
             image: '',
@@ -133,7 +136,7 @@ export default function OrganizationsSettings({ settings = {} }) {
             missions: [''],
             objectives: [''],
             duties: [''],
-            leader: { name: '', role: '', phone: '' },
+            leader: { name: '', role: '', photo: '' },
             programs: [''],
             structure: [{ role: '', name: '' }],
         };
@@ -211,6 +214,40 @@ export default function OrganizationsSettings({ settings = {} }) {
         }
     };
 
+    // Asynchronous upload handler for leader portrait photo
+    const handleLeaderPhotoUpload = async (e) => {
+        const file = e.target.files?.[0];
+        if (!file || selectedIndex === null) return;
+
+        setUploadingLeaderPhoto(true);
+        const formData = new FormData();
+        formData.append('leader_photo_file', file);
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+        try {
+            const response = await fetch(`/${adminPath}/settings/organizations/upload-leader-photo`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json',
+                },
+                body: formData,
+            });
+            const resData = await response.json();
+            if (response.ok && resData?.url) {
+                handleUpdateLeader(selectedIndex, 'photo', resData.url);
+            } else {
+                throw new Error(resData?.message || 'Gagal mengunggah foto pimpinan');
+            }
+        } catch (err) {
+            console.error('Error uploading leader photo:', err);
+            alert(`Gagal mengunggah foto pimpinan: ${err.message || 'Terjadi kesalahan'}`);
+        } finally {
+            setUploadingLeaderPhoto(false);
+            e.target.value = '';
+        }
+    };
+
     const handleUpdateOrg = (index, field, value) => {
         const updated = [...data.organizations_list];
         updated[index] = { ...updated[index], [field]: value };
@@ -227,16 +264,25 @@ export default function OrganizationsSettings({ settings = {} }) {
     };
 
     const handleDeleteOrg = (index) => {
-        const orgName = data.organizations_list[index]?.name || 'lembaga ini';
-        if (confirm(`Hapus "${orgName}"? Data ini akan dihapus permanen setelah disimpan.`)) {
-            const updated = data.organizations_list.filter((_, i) => i !== index);
-            setData('organizations_list', updated);
-            if (selectedIndex === index) {
-                setSelectedIndex(updated.length > 0 ? 0 : null);
-            } else if (selectedIndex > index) {
-                setSelectedIndex(selectedIndex - 1);
-            }
+        const org = data.organizations_list[index];
+        if (!org) return;
+        setDeleteConfirmOrg({
+            index,
+            name: org.name || 'Lembaga Desa',
+        });
+    };
+
+    const confirmDeleteOrg = () => {
+        if (!deleteConfirmOrg) return;
+        const { index } = deleteConfirmOrg;
+        const updated = data.organizations_list.filter((_, i) => i !== index);
+        setData('organizations_list', updated);
+        if (selectedIndex === index) {
+            setSelectedIndex(updated.length > 0 ? 0 : null);
+        } else if (selectedIndex > index) {
+            setSelectedIndex(selectedIndex - 1);
         }
+        setDeleteConfirmOrg(null);
     };
 
     const handleMoveOrg = (index, direction) => {
@@ -542,9 +588,6 @@ export default function OrganizationsSettings({ settings = {} }) {
                                                 <span className="px-2 py-0.5 rounded-md bg-black/40 text-amber-300 text-[10px] font-bold border border-white/20">
                                                     {selectedOrg.category}
                                                 </span>
-                                                <span className="text-[10px] text-zinc-300">
-                                                    #{selectedIndex + 1}
-                                                </span>
                                             </div>
                                             <h2 className="text-base sm:text-lg font-black text-white truncate leading-tight mt-0.5">
                                                 {selectedOrg.name || 'Lembaga Desa'}
@@ -669,18 +712,6 @@ export default function OrganizationsSettings({ settings = {} }) {
                                                     />
                                                 </div>
 
-                                                <div>
-                                                    <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
-                                                        Dasar Hukum / Regulasi
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        value={selectedOrg.legalBasis || ''}
-                                                        onChange={(e) => handleUpdateOrg(selectedIndex, 'legalBasis', e.target.value)}
-                                                        placeholder="UU No. 6/2014 & Permendagri No. 110/2016"
-                                                        className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-xs text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-red-500"
-                                                    />
-                                                </div>
 
                                                 <div>
                                                     <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
@@ -699,15 +730,29 @@ export default function OrganizationsSettings({ settings = {} }) {
                                                     <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
                                                         Ikon Lembaga
                                                     </label>
-                                                    <select
-                                                        value={selectedOrg.icon}
-                                                        onChange={(e) => handleUpdateOrg(selectedIndex, 'icon', e.target.value)}
-                                                        className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-xs text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-red-500"
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setShowIconPicker(true)}
+                                                        className="w-full flex items-center justify-between px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700/80 hover:border-zinc-400 dark:hover:border-zinc-600 transition-all text-left group cursor-pointer shadow-2xs focus:outline-none focus:ring-2 focus:ring-red-500/20"
                                                     >
-                                                        {iconOptions.map((opt) => (
-                                                            <option key={opt.value} value={opt.value}>{opt.label}</option>
-                                                        ))}
-                                                    </select>
+                                                        <div className="flex items-center gap-2.5 min-w-0">
+                                                            <div className="p-1.5 rounded-lg bg-red-50 dark:bg-red-950/60 text-red-600 dark:text-amber-400 border border-red-200 dark:border-red-900/50 shrink-0">
+                                                                <SelectedIcon className="h-4 w-4" />
+                                                            </div>
+                                                            <div className="min-w-0">
+                                                                <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100 block truncate">
+                                                                    {ICON_REGISTRY[selectedOrg.icon]?.label?.split('/')[0]?.trim() || selectedOrg.icon || 'Pilih Ikon'}
+                                                                </span>
+                                                                <span className="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono block truncate">
+                                                                    {selectedOrg.icon || 'Users'}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <span className="inline-flex items-center gap-1 text-xs font-bold text-red-600 dark:text-amber-400 shrink-0 group-hover:underline">
+                                                            <Palette className="h-3.5 w-3.5" />
+                                                            <span>Pilih Ikon</span>
+                                                        </span>
+                                                    </button>
                                                 </div>
                                             </div>
 
@@ -885,12 +930,75 @@ export default function OrganizationsSettings({ settings = {} }) {
                                     {activeTab === 'contact' && (
                                         <div className="space-y-4">
                                             {/* Pimpinan Box */}
-                                            <div className="p-4 rounded-lg bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 space-y-3">
+                                            <div className="p-4 rounded-lg bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 space-y-4">
                                                 <h4 className="text-xs font-bold text-zinc-900 dark:text-zinc-100 uppercase tracking-wider flex items-center gap-1.5">
                                                     <UserCheck className="h-3.5 w-3.5 text-red-500" />
-                                                    <span>Data Ketua / Pimpinan</span>
+                                                    <span>Data Ketua / Pimpinan Lembaga</span>
                                                 </h4>
-                                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+
+                                                {/* Upload Foto Pimpinan & Preview */}
+                                                <div className="flex flex-col sm:flex-row sm:items-center gap-4 p-3 rounded-lg bg-white dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-700">
+                                                    {/* Foto Portrait Box Preview */}
+                                                    <div className="h-20 w-20 rounded-lg overflow-hidden bg-red-950 border-2 border-amber-400 p-0.5 flex items-center justify-center shrink-0 shadow-sm">
+                                                        {selectedOrg.leader?.photo ? (
+                                                            <img
+                                                                src={selectedOrg.leader.photo}
+                                                                alt={selectedOrg.leader?.name || 'Pimpinan'}
+                                                                className="w-full h-full object-cover rounded-[6px]"
+                                                            />
+                                                        ) : (
+                                                            <div className="w-full h-full flex items-center justify-center bg-red-950 text-amber-300 font-extrabold text-xl tracking-wider select-none">
+                                                                {(selectedOrg.leader?.name || 'PL').split(' ').filter(Boolean).map(w => w[0]).slice(0, 2).join('').toUpperCase()}
+                                                            </div>
+                                                        )}
+                                                    </div>
+
+                                                    {/* Upload / Delete Actions */}
+                                                    <div className="flex-1 space-y-1.5">
+                                                        <div className="flex flex-wrap items-center gap-2">
+                                                            <label className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold shadow-xs transition-colors cursor-pointer ${
+                                                                uploadingLeaderPhoto
+                                                                    ? 'bg-zinc-400 text-white cursor-not-allowed'
+                                                                    : 'bg-red-600 hover:bg-red-700 text-white'
+                                                            }`}>
+                                                                {uploadingLeaderPhoto ? (
+                                                                    <>
+                                                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                                                        <span>Mengunggah Foto...</span>
+                                                                    </>
+                                                                ) : (
+                                                                    <>
+                                                                        <Upload className="h-4 w-4" />
+                                                                        <span>{selectedOrg.leader?.photo ? 'Ganti Foto Pimpinan' : 'Unggah Foto Pimpinan'}</span>
+                                                                    </>
+                                                                )}
+                                                                <input
+                                                                    type="file"
+                                                                    accept=".png,.jpg,.jpeg,.webp"
+                                                                    onChange={handleLeaderPhotoUpload}
+                                                                    disabled={uploadingLeaderPhoto}
+                                                                    className="hidden"
+                                                                />
+                                                            </label>
+
+                                                            {selectedOrg.leader?.photo && (
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => handleUpdateLeader(selectedIndex, 'photo', '')}
+                                                                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-zinc-100 hover:bg-red-100 hover:text-red-700 dark:bg-zinc-800 dark:hover:bg-red-950/60 dark:hover:text-red-300 text-xs font-semibold text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700 transition-colors cursor-pointer"
+                                                                >
+                                                                    <Trash2 className="h-3.5 w-3.5 text-red-500" />
+                                                                    <span>Hapus Foto (Gunakan Inisial)</span>
+                                                                </button>
+                                                            )}
+                                                        </div>
+                                                        <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
+                                                            Format: JPG, PNG, WebP (Maks 5MB). Jika dikosongkan, kartu pimpinan otomatis menampilkan inisial nama.
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                                     <div>
                                                         <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
                                                             Nama Lengkap Pimpinan
@@ -912,18 +1020,6 @@ export default function OrganizationsSettings({ settings = {} }) {
                                                             value={selectedOrg.leader?.role || ''}
                                                             onChange={(e) => handleUpdateLeader(selectedIndex, 'role', e.target.value)}
                                                             placeholder="Ketua BPD"
-                                                            className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-xs text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-red-500"
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
-                                                            No. WhatsApp / HP
-                                                        </label>
-                                                        <input
-                                                            type="text"
-                                                            value={selectedOrg.leader?.phone || ''}
-                                                            onChange={(e) => handleUpdateLeader(selectedIndex, 'phone', e.target.value)}
-                                                            placeholder="0812-3456-7891"
                                                             className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-xs text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-red-500"
                                                         />
                                                     </div>
@@ -1295,11 +1391,6 @@ export default function OrganizationsSettings({ settings = {} }) {
                                                                 <SelectedIcon className="h-8 w-8 text-red-600" />
                                                             )}
                                                         </div>
-                                                        {selectedOrg.legalBasis && (
-                                                            <span className="text-[10px] font-medium text-amber-200/90 bg-black/50 backdrop-blur-md border border-white/15 px-2.5 py-1 rounded-lg truncate max-w-[160px]">
-                                                                {selectedOrg.legalBasis}
-                                                            </span>
-                                                        )}
                                                     </div>
 
                                                     {/* Title & Tagline */}
@@ -1316,7 +1407,15 @@ export default function OrganizationsSettings({ settings = {} }) {
                                                     <div className="p-4 pt-3 space-y-3">
                                                         <div className="flex items-center gap-2.5 p-2.5 rounded-lg bg-black/35 border border-white/10">
                                                             <div className="h-9 w-9 rounded-lg overflow-hidden bg-red-950 border border-amber-400/50 shrink-0 flex items-center justify-center text-amber-300 font-bold text-xs">
-                                                                {(selectedOrg.leader?.name || 'P').slice(0, 2).toUpperCase()}
+                                                                {selectedOrg.leader?.photo ? (
+                                                                    <img
+                                                                        src={selectedOrg.leader.photo}
+                                                                        alt={selectedOrg.leader?.name || 'Pimpinan'}
+                                                                        className="w-full h-full object-cover"
+                                                                    />
+                                                                ) : (
+                                                                    (selectedOrg.leader?.name || 'P').slice(0, 2).toUpperCase()
+                                                                )}
                                                             </div>
                                                             <div className="min-w-0 flex-1">
                                                                 <span className="text-[9.5px] text-amber-300 font-bold uppercase tracking-wider block">
@@ -1362,6 +1461,179 @@ export default function OrganizationsSettings({ settings = {} }) {
                     </div>
                 </div>
             </div>
+
+            {/* ==================================================== */}
+            {/* MODAL PILIH IKON CUSTOM                             */}
+            {/* ==================================================== */}
+            {showIconPicker && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs animate-in fade-in duration-200">
+                    <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl max-w-2xl w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+                        {/* Header Modal */}
+                        <div className="px-5 py-4 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between bg-zinc-50/80 dark:bg-zinc-900/80">
+                            <div>
+                                <h3 className="text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+                                    <Sparkles className="h-4 w-4 text-red-600 dark:text-amber-400" />
+                                    <span>Pilih Ikon untuk {selectedOrg?.name || 'Lembaga Desa'}</span>
+                                </h3>
+                                <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">
+                                    Pilih ikon visual dari katalog referensi resmi kelembagaan desa.
+                                </p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setShowIconPicker(false)}
+                                className="p-1.5 text-zinc-400 hover:text-zinc-700 dark:hover:text-white rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                            >
+                                <X className="h-5 w-5" />
+                            </button>
+                        </div>
+
+                        {/* Search & Kategori Filter */}
+                        <div className="p-4 border-b border-zinc-200 dark:border-zinc-800 space-y-3 bg-white dark:bg-zinc-900">
+                            <div className="relative">
+                                <Search className="absolute left-3 top-2.5 h-4 w-4 text-zinc-400" />
+                                <input
+                                    type="text"
+                                    value={iconSearch}
+                                    onChange={(e) => setIconSearch(e.target.value)}
+                                    placeholder="Cari ikon (misal: landmark, pemuda, keamanan, pertanian, warga, perikanan...)"
+                                    className="w-full pl-9 pr-4 py-2 rounded-xl border border-zinc-300 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-red-500/20"
+                                    autoFocus
+                                />
+                            </div>
+
+                            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-[10px]">
+                                {iconCategories.map((cat) => (
+                                    <button
+                                        key={cat}
+                                        type="button"
+                                        onClick={() => setIconCategoryFilter(cat)}
+                                        className={`px-2.5 py-1 rounded-full whitespace-nowrap font-medium transition-all cursor-pointer ${
+                                            iconCategoryFilter === cat
+                                                ? 'bg-red-600 text-white font-bold'
+                                                : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700'
+                                        }`}
+                                    >
+                                        {cat === 'all' ? 'Semua Kategori' : cat}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Grid Ikon */}
+                        <div className="p-4 overflow-y-auto max-h-[50vh]">
+                            {iconEntries.length === 0 ? (
+                                <div className="p-8 text-center text-xs text-zinc-400">
+                                    Tidak ditemukan ikon yang cocok dengan pencarian "{iconSearch}".
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                                    {iconEntries.map(([iconKey, item]) => {
+                                        const Comp = item.icon;
+                                        const isCurrent = selectedOrg?.icon === iconKey;
+
+                                        return (
+                                            <button
+                                                key={iconKey}
+                                                type="button"
+                                                onClick={() => {
+                                                    handleUpdateOrg(selectedIndex, 'icon', iconKey);
+                                                    setShowIconPicker(false);
+                                                }}
+                                                className={`p-3 rounded-xl border text-left flex flex-col items-center gap-2 transition-all cursor-pointer group ${
+                                                    isCurrent
+                                                        ? 'bg-red-50 border-red-500 dark:bg-red-950/40 dark:border-red-500 shadow-xs ring-2 ring-red-500/40'
+                                                        : 'bg-zinc-50/60 dark:bg-zinc-800/40 border-zinc-200 dark:border-zinc-800 hover:border-zinc-400 dark:hover:border-zinc-600 hover:bg-white dark:hover:bg-zinc-800'
+                                                }`}
+                                            >
+                                                <div
+                                                    className={`p-2.5 rounded-lg transition-transform group-hover:scale-110 ${
+                                                        isCurrent
+                                                            ? 'bg-red-600 text-white'
+                                                            : 'bg-zinc-100 dark:bg-zinc-700/60 text-zinc-700 dark:text-zinc-300 group-hover:text-red-600 dark:group-hover:text-amber-400'
+                                                    }`}
+                                                >
+                                                    <Comp className="h-5 w-5" />
+                                                </div>
+                                                <div className="text-center w-full min-w-0">
+                                                    <div className="text-[11px] font-bold text-zinc-900 dark:text-zinc-100 truncate">
+                                                        {item.label.split('/')[0].trim()}
+                                                    </div>
+                                                    <div className="text-[9px] text-zinc-400 font-mono truncate mt-0.5">
+                                                        {iconKey}
+                                                    </div>
+                                                </div>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Footer Modal */}
+                        <div className="p-3 border-t border-zinc-200 dark:border-zinc-800 flex justify-end bg-zinc-50/50 dark:bg-zinc-900/50">
+                            <button
+                                type="button"
+                                onClick={() => setShowIconPicker(false)}
+                                className="px-4 py-2 rounded-lg text-xs font-bold text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
+                            >
+                                Tutup
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {/* ==================================================== */}
+            {/* MODAL KONFIRMASI HAPUS LEMBAGA                      */}
+            {/* ==================================================== */}
+            {deleteConfirmOrg && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs animate-in fade-in duration-200">
+                    <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl max-w-md w-full p-6 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200 space-y-5">
+                        <div className="flex items-start gap-4">
+                            <div className="p-3 rounded-2xl bg-red-100 dark:bg-red-950/60 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/50 shrink-0">
+                                <AlertTriangle className="h-6 w-6" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                                <h3 className="text-base font-bold text-zinc-900 dark:text-white">
+                                    Hapus Lembaga Desa?
+                                </h3>
+                                <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1 leading-relaxed">
+                                    Apakah Anda yakin ingin menghapus <span className="font-bold text-zinc-900 dark:text-zinc-100">"{deleteConfirmOrg.name}"</span>?
+                                </p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setDeleteConfirmOrg(null)}
+                                className="text-zinc-400 hover:text-zinc-700 dark:hover:text-white p-1 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                            >
+                                <X className="h-5 w-5" />
+                            </button>
+                        </div>
+
+                        <div className="p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/40 text-[11px] text-amber-800 dark:text-amber-300 leading-relaxed">
+                            Data lembaga ini akan dihapus dari daftar konfigurasi. Perubahan akan disimpan secara permanen saat Anda menekan tombol <strong>"Simpan Semua Pengaturan"</strong>.
+                        </div>
+
+                        <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-zinc-100 dark:border-zinc-800">
+                            <button
+                                type="button"
+                                onClick={() => setDeleteConfirmOrg(null)}
+                                className="px-4 py-2 rounded-xl text-xs font-semibold text-zinc-700 dark:text-zinc-300 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
+                            >
+                                Batal
+                            </button>
+                            <button
+                                type="button"
+                                onClick={confirmDeleteOrg}
+                                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-red-600 hover:bg-red-700 shadow-md shadow-red-600/30 transition-all cursor-pointer"
+                            >
+                                <Trash2 className="h-3.5 w-3.5" />
+                                <span>Ya, Hapus Lembaga</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </AdminLayout>
     );
 }

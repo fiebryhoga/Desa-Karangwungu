@@ -14,5 +14,6 @@ class Potential extends Model
     protected $casts = [
         'features' => 'array',
         'gallery' => 'array',
+        'products' => 'array',
     ];
 }

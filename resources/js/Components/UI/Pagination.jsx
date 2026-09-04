@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from '@inertiajs/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-export default function Pagination({ links = [], meta = {} }) {
+export default function Pagination({ links = [], meta = {}, itemLabel = 'artikel' }) {
     if (!links || links.length <= 3) return null;
 
     return (
@@ -12,7 +12,7 @@ export default function Pagination({ links = [], meta = {} }) {
                 <p className="text-xs text-zinc-500 dark:text-zinc-400">
                     Menampilkan <span className="font-semibold text-zinc-900 dark:text-white">{meta.from || 0}</span> -{' '}
                     <span className="font-semibold text-zinc-900 dark:text-white">{meta.to || 0}</span> dari{' '}
-                    <span className="font-semibold text-zinc-900 dark:text-white">{meta.total}</span> artikel
+                    <span className="font-semibold text-zinc-900 dark:text-white">{meta.total}</span> {itemLabel}
                 </p>
             )}
 

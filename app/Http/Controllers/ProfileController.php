@@ -162,7 +162,26 @@ class ProfileController extends Controller
 
     public function facilities()
     {
-        return Inertia::render('Profile/Facilities');
+        $settings = SiteSetting::getGroup('facilities');
+
+        $facilitiesList = [];
+        if (isset($settings['facilities_list']) && is_string($settings['facilities_list'])) {
+            $facilitiesList = json_decode($settings['facilities_list'], true) ?: [];
+        } elseif (isset($settings['facilities_list']) && is_array($settings['facilities_list'])) {
+            $facilitiesList = $settings['facilities_list'];
+        }
+
+        if (empty($facilitiesList)) {
+            $facilitiesList = \App\Http\Controllers\Admin\FacilitySettingController::getDefaultFacilities();
+        }
+
+        $settings['facilities_title'] = $settings['facilities_title'] ?? 'Fasilitas Umum Desa Karangwungu';
+        $settings['facilities_subtitle'] = $settings['facilities_subtitle'] ?? 'Informasi lengkap sarana prasarana pelayanan masyarakat, tempat ibadah, fasilitas kesehatan, pendidikan, ruang terbuka publik, serta infrastruktur pertanian.';
+
+        return Inertia::render('Profile/Facilities', [
+            'facilities' => $facilitiesList,
+            'facilitiesSettings' => $settings,
+        ]);
     }
 
     public function organizations()

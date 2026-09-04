@@ -3,6 +3,7 @@ import { Link } from '@inertiajs/react';
 import AppLayout from '../../Layouts/AppLayout';
 import SeoHead from '../../Components/SEO/SeoHead';
 import PageHeader from '../../Components/UI/PageHeader';
+import { getIconComponent } from '@/Utils/iconRegistry';
 import {
     Users,
     Landmark,
@@ -31,21 +32,24 @@ export default function Organizations({ organizationsSettings = {} }) {
     const [isOtherOpen, setIsOtherOpen] = useState(false);
     const otherDropdownRef = useRef(null);
 
-    // Icon mapping for dynamic data
-    const iconMap = { Landmark, HeartHandshake, Flame, Building2, ShieldAlert, Home, Wheat, Fish, Users };
-
     // Parse organizations list from backend settings
     let rawOrgs = [];
     if (organizationsSettings.organizations_list_data && Array.isArray(organizationsSettings.organizations_list_data)) {
         rawOrgs = organizationsSettings.organizations_list_data;
     } else if (organizationsSettings.organizations_list && typeof organizationsSettings.organizations_list === 'string') {
-        try { rawOrgs = JSON.parse(organizationsSettings.organizations_list); } catch (e) { rawOrgs = []; }
+        try {
+            rawOrgs = JSON.parse(organizationsSettings.organizations_list);
+        } catch (e) {
+            rawOrgs = [];
+        }
+    } else if (Array.isArray(organizationsSettings.organizations_list)) {
+        rawOrgs = organizationsSettings.organizations_list;
     }
 
     // Map icon string to component
     const organizationsData = rawOrgs.map((org) => ({
         ...org,
-        icon: iconMap[org.icon] || Users,
+        icon: getIconComponent(org.icon, Users),
         programs: org.programs || [],
         structure: org.structure || [],
         leader: org.leader || { name: '', role: '', phone: '' },
@@ -259,12 +263,6 @@ export default function Organizations({ organizationsSettings = {} }) {
                                                     <IconComponent className="h-10 w-10 text-red-600 dark:text-amber-400" />
                                                 )}
                                             </div>
-
-                                            {org.legalBasis && (
-                                                <span className="text-[10px] font-medium text-amber-200/90 bg-black/50 backdrop-blur-md border border-white/15 px-2.5 py-1 rounded-lg truncate max-w-[180px]" title={org.legalBasis}>
-                                                    {org.legalBasis}
-                                                </span>
-                                            )}
                                         </div>
 
                                         {/* 3. Title & Tagline */}

@@ -36,6 +36,7 @@ import {
     Compass,
     Target,
     BarChart3,
+    Landmark,
 } from 'lucide-react';
 
 const BATIK_DARK = `data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 60 Q 30 30, 60 60 T 120 60 M0 0 Q 30 -30, 60 0 T 120 0 M0 120 Q 30 90, 60 120 T 120 120 M-30 30 L 30 90 M30 -30 L 90 30 M90 -30 L 150 30 M-30 90 L 30 150 M30 90 L 90 150 M90 90 L 150 150' stroke='%23fde047' stroke-width='2' fill='none' stroke-linecap='round' stroke-dasharray='1 4'/%3E%3Cpath d='M12 48 Q 30 24, 48 48 Q 66 72, 84 48 Q 102 24, 120 48' stroke='%23fde047' stroke-width='1.8' fill='none'/%3E%3Ccircle cx='30' cy='30' r='4' fill='%23fde047'/%3E%3Ccircle cx='90' cy='90' r='4' fill='%23fde047'/%3E%3Ccircle cx='90' cy='30' r='2' fill='%23fde047'/%3E%3Ccircle cx='30' cy='90' r='2' fill='%23fde047'/%3E%3C/svg%3E`;
@@ -226,6 +227,24 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
             active: currentUrl ? currentUrl.startsWith(`/${adminPath}/settings/organizations`) : false,
         },
         {
+            name: 'Konfigurasi Fasilitas Umum',
+            href: `/${adminPath}/settings/facilities`,
+            icon: Landmark,
+            active: currentUrl ? currentUrl.startsWith(`/${adminPath}/settings/facilities`) : false,
+        },
+        {
+            name: 'Konfigurasi Potensi & UMKM',
+            href: `/${adminPath}/settings/potentials`,
+            icon: Sparkles,
+            active: currentUrl ? currentUrl.startsWith(`/${adminPath}/settings/potentials`) : false,
+        },
+        {
+            name: 'Konfigurasi Galeri Foto',
+            href: `/${adminPath}/settings/gallery`,
+            icon: Image,
+            active: currentUrl ? currentUrl.startsWith(`/${adminPath}/settings/gallery`) : false,
+        },
+        {
             name: 'Transparansi APBDes',
             href: `/${adminPath}/settings/apbdes`,
             icon: DollarSign,
@@ -308,7 +327,7 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
     };
 
     return (
-        <div className={`min-h-screen flex flex-col md:flex-row transition-colors duration-300 relative overflow-x-hidden ${
+        <div className={`min-h-screen flex flex-col md:flex-row transition-colors duration-300 relative overflow-x-clip ${
             isDark
                 ? 'dark bg-zinc-950 text-zinc-100 selection:bg-red-600 selection:text-white'
                 : 'bg-slate-100 text-zinc-900 selection:bg-red-600 selection:text-white'
@@ -691,10 +710,10 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
                 sidebarCollapsed ? 'md:ml-20' : 'md:ml-64 lg:ml-72'
             }`}>
                 {/* Topbar Header (Sinkron & Sejajar Siluet Batik dgn Sidebar Brand Header) */}
-                <header className={`h-16 border-b px-4 sm:px-6 lg:px-8 flex items-center justify-between sticky top-0 z-40 transition-colors duration-300 relative shrink-0 ${
+                <header className={`h-16 border-b px-4 sm:px-6 lg:px-8 flex items-center justify-between sticky top-0 z-40 transition-colors duration-300 shrink-0 ${
                     isDark
-                        ? 'bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 border-zinc-800'
-                        : 'bg-gradient-to-r from-white via-white to-slate-50 border-zinc-200 shadow-xs'
+                        ? 'bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 border-zinc-800 shadow-md shadow-black/20'
+                        : 'bg-gradient-to-r from-white via-white to-slate-50 border-zinc-200 shadow-sm'
                 }`}>
                     {/* Siluet Batik Parang Sinkron & Sejajar */}
                     <div
@@ -943,7 +962,7 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
                 )}
 
                 {/* Page Content */}
-                <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+                <main className="flex-1 p-4 sm:p-6 lg:p-8">
                     {children}
                 </main>
             </div>

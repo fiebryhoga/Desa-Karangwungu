@@ -65,10 +65,5 @@ class HomeController extends Controller
                 'realized_expense' => $realizedExpense,
             ],
         ]);
-                'expense' => $totalExpense,
-                'realized_income' => $realizedIncome,
-                'realized_expense' => $realizedExpense,
-            ],
-        ]);
     }
 }
