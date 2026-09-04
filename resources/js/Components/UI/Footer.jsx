@@ -34,7 +34,7 @@ export default function Footer() {
     const waUrl = general.social_whatsapp_url || `https://wa.me/${rawWa}?text=Halo%20Admin%20Desa%20Karangwungu`;
 
     return (
-        <footer className="relative bg-gradient-to-b from-red-700 via-red-800 to-red-900 dark:from-red-800 dark:via-red-850 dark:to-red-950 text-red-100 border-t border-red-500/50 shadow-2xl transition-colors overflow-hidden">
+        <footer className="relative bg-gradient-to-b from-red-700 via-red-800 to-red-900 dark:from-red-800 dark:via-red-900 dark:to-red-950 text-red-100 border-t border-red-500/50 shadow-2xl transition-colors overflow-hidden">
             {/* 1. Siluet Motif Batik Parang & Mega Mendung Tradisional Emas */}
             <div
                 className="absolute inset-0 opacity-[0.10] pointer-events-none bg-repeat"
@@ -244,7 +244,7 @@ export default function Footer() {
                                 <li>
                                     <Link href="/layanan" className="text-red-100 hover:text-amber-300 flex items-center gap-1 transition-colors">
                                         <ChevronRight className="h-3 w-3 text-amber-400 shrink-0" />
-                                        <span>Katalog Surat</span>
+                                        <span>Produk Hukum Desa</span>
                                     </Link>
                                 </li>
                                 <li>

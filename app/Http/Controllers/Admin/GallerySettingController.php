@@ -38,7 +38,7 @@ class GallerySettingController extends Controller
                     'location' => $g->location,
                     'order' => $g->order ?? 0,
                     'is_published' => (bool) $g->is_published,
-                    'created_at' => $g->created_at ? $g->created_at->format('Y-m-d H:i') : null,
+                    'created_at' => $g->created_at ? $g->created_at->timezone('Asia/Jakarta')->format('Y-m-d H:i') : null,
                 ];
             });
 

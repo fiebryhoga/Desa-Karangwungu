@@ -36,13 +36,16 @@ Route::get('/fasilitas', [ProfileController::class, 'facilities'])->name('facili
 Route::get('/lembaga', [ProfileController::class, 'organizations'])->name('organizations.index');
 Route::get('/lembaga/{id}', [ProfileController::class, 'organizationShow'])->name('organizations.show');
 
-// Layanan Warga & Persuratan Online
+// Layanan Warga, Produk Hukum & Persuratan Online
 Route::prefix('layanan')->group(function () {
     Route::get('/', [ServiceController::class, 'index'])->name('services.index');
+    Route::get('/produk-hukum/{id}/unduh', [ServiceController::class, 'downloadLegalProduct'])->name('services.legal-products.download');
     Route::get('/ajukan', [ServiceController::class, 'create'])->name('services.create');
     Route::post('/ajukan', [ServiceController::class, 'store'])->name('services.store');
     Route::get('/lacak', [ServiceController::class, 'track'])->name('services.track');
 });
+Route::get('/produk-hukum', [ServiceController::class, 'index'])->name('legal-products.index');
+Route::get('/produk-hukum/{id}/unduh', [ServiceController::class, 'downloadLegalProduct'])->name('legal-products.download');
 
 // Transparansi APBDes
 Route::get('/transparansi', [TransparencyController::class, 'index'])->name('transparency.index');
@@ -163,6 +166,33 @@ Route::prefix($adminPath)->middleware(['auth', \App\Http\Middleware\AdminSecurit
     Route::post('/settings/gallery/upload-image', [\App\Http\Controllers\Admin\GallerySettingController::class, 'uploadImage'])->name('admin.settings.gallery.upload_image');
     Route::post('/settings/gallery/upload-photos', [\App\Http\Controllers\Admin\GallerySettingController::class, 'uploadPhotos'])->name('admin.settings.gallery.upload_photos');
     Route::post('/settings/gallery/reorder', [\App\Http\Controllers\Admin\GallerySettingController::class, 'reorder'])->name('admin.settings.gallery.reorder');
+
+    // Manajemen Aspirasi & Pengaduan Warga (Kanal Lapor Desa)
+    Route::get('/settings/feedbacks', [\App\Http\Controllers\Admin\FeedbackSettingController::class, 'index'])->name('admin.settings.feedbacks');
+    Route::patch('/settings/feedbacks/{id}/toggle-public', [\App\Http\Controllers\Admin\FeedbackSettingController::class, 'togglePublic'])->name('admin.settings.feedbacks.toggle_public');
+    Route::post('/settings/feedbacks/bulk-action', [\App\Http\Controllers\Admin\FeedbackSettingController::class, 'bulkAction'])->name('admin.settings.feedbacks.bulk_action');
+    Route::put('/settings/feedbacks/{id}', [\App\Http\Controllers\Admin\FeedbackSettingController::class, 'update'])->name('admin.settings.feedbacks.update');
+    Route::delete('/settings/feedbacks/{id}', [\App\Http\Controllers\Admin\FeedbackSettingController::class, 'destroy'])->name('admin.settings.feedbacks.destroy');
+
+    // Manajemen Produk Hukum Desa (Perdes, SK Kepala Desa, dll)
+    Route::get('/settings/legal-products', [\App\Http\Controllers\Admin\LegalProductSettingController::class, 'index'])->name('admin.settings.legal_products');
+    Route::post('/settings/legal-products', [\App\Http\Controllers\Admin\LegalProductSettingController::class, 'store'])->name('admin.settings.legal_products.store');
+    Route::put('/settings/legal-products/{id}', [\App\Http\Controllers\Admin\LegalProductSettingController::class, 'update'])->name('admin.settings.legal_products.update');
+    Route::delete('/settings/legal-products/{id}', [\App\Http\Controllers\Admin\LegalProductSettingController::class, 'destroy'])->name('admin.settings.legal_products.destroy');
+
+    // Manajemen Warta & Berita Desa
+    Route::get('/settings/news', [\App\Http\Controllers\Admin\NewsSettingController::class, 'index'])->name('admin.settings.news');
+    Route::get('/settings/news/create', [\App\Http\Controllers\Admin\NewsSettingController::class, 'create'])->name('admin.settings.news.create');
+    Route::post('/settings/news', [\App\Http\Controllers\Admin\NewsSettingController::class, 'store'])->name('admin.settings.news.store');
+    Route::get('/settings/news/{id}/edit', [\App\Http\Controllers\Admin\NewsSettingController::class, 'edit'])->name('admin.settings.news.edit');
+    Route::put('/settings/news/{id}', [\App\Http\Controllers\Admin\NewsSettingController::class, 'update'])->name('admin.settings.news.update');
+    Route::delete('/settings/news/{id}', [\App\Http\Controllers\Admin\NewsSettingController::class, 'destroy'])->name('admin.settings.news.destroy');
+    Route::get('/settings/news/{id}/comments', [\App\Http\Controllers\Admin\NewsSettingController::class, 'comments'])->name('admin.settings.news.comments');
+    Route::patch('/settings/news/{id}/toggle-featured', [\App\Http\Controllers\Admin\NewsSettingController::class, 'toggleFeatured'])->name('admin.settings.news.toggle_featured');
+    Route::post('/settings/news/upload-image', [\App\Http\Controllers\Admin\NewsSettingController::class, 'uploadImage'])->name('admin.settings.news.upload_image');
+    Route::post('/settings/news/{postId}/comments/{commentId}/reply', [\App\Http\Controllers\Admin\NewsSettingController::class, 'replyComment'])->name('admin.settings.news.reply_comment');
+    Route::patch('/settings/news/comments/{commentId}/toggle-approval', [\App\Http\Controllers\Admin\NewsSettingController::class, 'toggleCommentApproval'])->name('admin.settings.news.toggle_comment_approval');
+    Route::delete('/settings/news/comments/{commentId}', [\App\Http\Controllers\Admin\NewsSettingController::class, 'destroyComment'])->name('admin.settings.news.destroy_comment');
 
     // Profile & Ganti Password Mandiri
     Route::get('/profile', [\App\Http\Controllers\Admin\AdminProfileController::class, 'edit'])->name('admin.profile.edit');

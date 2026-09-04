@@ -34,9 +34,9 @@ class ContactController extends Controller
             'contact_info' => $validated['contact_info'],
             'category' => $validated['category'],
             'message' => $validated['message'],
-            'is_public' => true,
+            'is_public' => false,
         ]);
 
-        return back()->with('success', 'Aspirasi / Pengaduan Anda berhasil dikirimkan. Terima kasih atas partisipasi Anda membangun Desa Karangwungu!');
+        return back()->with('success', 'Aspirasi / Pengaduan Anda berhasil dikirimkan ke pihak Pemerintah Desa Karangwungu. Tim kami akan meninjau dan menindaklanjuti pesan Anda. Terima kasih!');
     }
 }

@@ -24,11 +24,64 @@ export function parseNumberDots(value) {
 export function formatDateIndo(dateString) {
     if (!dateString) return '-';
     const date = new Date(dateString);
+    if (isNaN(date.getTime())) return dateString;
     return new Intl.DateTimeFormat('id-ID', {
         day: 'numeric',
         month: 'long',
         year: 'numeric',
+        timeZone: 'Asia/Jakarta',
     }).format(date);
+}
+
+export function formatIndoDateTime(dateStr) {
+    if (!dateStr) return '-';
+    if (typeof dateStr === 'string' && dateStr.includes('jam')) return dateStr;
+
+    let d;
+    if (typeof dateStr === 'string') {
+        const safeStr = dateStr.includes('T') ? dateStr : dateStr.replace(' ', 'T');
+        d = new Date(safeStr);
+    } else {
+        d = new Date(dateStr);
+    }
+    if (isNaN(d.getTime())) return dateStr;
+
+    const formatter = new Intl.DateTimeFormat('id-ID', {
+        timeZone: 'Asia/Jakarta',
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+    });
+
+    const parts = formatter.formatToParts(d);
+    const getPart = (type) => parts.find((p) => p.type === type)?.value || '';
+
+    const weekday = getPart('weekday');
+    const day = getPart('day');
+    const month = getPart('month');
+    const hour = getPart('hour');
+    const minute = getPart('minute');
+
+    return `${weekday}, ${day} ${month} jam ${hour}:${minute}`;
+}
+
+export function getIndoDateTimeLocalNow() {
+    const now = new Date();
+    const formatter = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'Asia/Jakarta',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+    });
+    const parts = formatter.formatToParts(now);
+    const getPart = (type) => parts.find((p) => p.type === type)?.value || '';
+    return `${getPart('year')}-${getPart('month')}-${getPart('day')}T${getPart('hour')}:${getPart('minute')}`;
 }
 
 export function truncateText(text, length = 120) {

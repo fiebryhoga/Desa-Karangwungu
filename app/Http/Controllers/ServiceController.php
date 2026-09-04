@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\LegalProduct;
 use App\Models\LetterRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -9,70 +10,80 @@ use Inertia\Inertia;
 
 class ServiceController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $services = [
-            [
-                'id' => 'sku',
-                'title' => 'Surat Keterangan Usaha (SKU)',
-                'category' => 'Ekonomi & Usaha',
-                'description' => 'Surat keterangan untuk legalitas pembukaan rekening usaha, pengajuan KUR/kredit bank, atau izin usaha mikro di wilayah Karangwungu.',
-                'requirements' => ['Fotokopi KTP Pemohon', 'Fotokopi Kartu Keluarga (KK)', 'Surat Pengantar dari Ketua RT/RW', 'Foto Lokasi/Aktivitas Usaha'],
-                'processing_time' => '1 Hari Kerja (Gratis / Rp 0)',
-            ],
-            [
-                'id' => 'domisili',
-                'title' => 'Surat Keterangan Domisili',
-                'category' => 'Kependudukan',
-                'description' => 'Surat keterangan tempat tinggal resmi bagi warga ber-KTP Karangwungu maupun warga pendatang yang berdomisili di Desa Karangwungu.',
-                'requirements' => ['Fotokopi KTP', 'Fotokopi KK', 'Surat Pengantar RT/RW setempat'],
-                'processing_time' => '1 Hari Kerja (Gratis / Rp 0)',
-            ],
-            [
-                'id' => 'sktm',
-                'title' => 'Surat Keterangan Tidak Mampu (SKTM)',
-                'category' => 'Kesejahteraan Sosial',
-                'description' => 'Surat keterangan untuk keperluan beasiswa pendidikan siswa/mahasiswa, keringanan biaya kesehatan/BPJS, atau bantuan sosial.',
-                'requirements' => ['Fotokopi KTP Orang Tua/Wali', 'Fotokopi Kartu Keluarga', 'Surat Pengantar RT/RW menyatakan tidak mampu'],
-                'processing_time' => '1 Hari Kerja (Gratis / Rp 0)',
-            ],
-            [
-                'id' => 'kelahiran',
-                'title' => 'Surat Keterangan Kelahiran',
-                'category' => 'Kependudukan',
-                'description' => 'Surat pengantar untuk penerbitan Akta Kelahiran resmi di Dinas Kependudukan dan Pencatatan Sipil Kab. Lamongan.',
-                'requirements' => ['Surat Keterangan Lahir dari Bidan/Puskesmas/RS', 'Fotokopi KTP Suami & Istri', 'Fotokopi Buku Nikah', 'Fotokopi KK'],
-                'processing_time' => '1 Hari Kerja (Gratis / Rp 0)',
-            ],
-            [
-                'id' => 'kematian',
-                'title' => 'Surat Keterangan Kematian',
-                'category' => 'Kependudukan',
-                'description' => 'Surat keterangan pencatatan warga yang meninggal dunia untuk kepengurusan Akta Kematian, perbankan, dan waris.',
-                'requirements' => ['KTP & KK Asli Almarhum/Almarhumah', 'Fotokopi KTP Pelapor/Ahli Waris', 'Surat Kematian dari Medis/RT'],
-                'processing_time' => '1 Hari Kerja (Gratis / Rp 0)',
-            ],
-            [
-                'id' => 'pengantar-nikah',
-                'title' => 'Surat Pengantar Nikah (N1-N4)',
-                'category' => 'Administrasi Pernikahan',
-                'description' => 'Surat pengantar resmi bagi warga yang akan melangsungkan pernikahan di KUA Kecamatan Karanggeneng.',
-                'requirements' => ['Fotokopi KTP & KK Calon Pengantin', 'Fotokopi KTP Orang Tua', 'Fotokopi Ijazah Terakhir & Akta Kelahiran', 'Pas foto 2x3 dan 4x6 latar biru'],
-                'processing_time' => '2 Hari Kerja (Gratis / Rp 0)',
-            ],
-            [
-                'id' => 'kehilangan',
-                'title' => 'Surat Pengantar Kehilangan',
-                'category' => 'Umum',
-                'description' => 'Surat pengantar permohonan laporan kehilangan dokumen (KTP, KK, SIM, Ijazah) ke Polsek Karanggeneng.',
-                'requirements' => ['Fotokopi dokumen yang hilang (jika ada)', 'Fotokopi KTP & KK pemohon', 'Surat Pengantar RT/RW'],
-                'processing_time' => '1 Hari Kerja (Gratis / Rp 0)',
-            ],
+        $search = $request->query('search');
+        $type = $request->query('type');
+        $year = $request->query('year');
+        $status = $request->query('status');
+
+        $query = LegalProduct::active();
+
+        if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('document_number', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        if (!empty($type) && $type !== 'all') {
+            $query->where('document_type', $type);
+        }
+
+        if (!empty($year) && $year !== 'all') {
+            $query->where('year', $year);
+        }
+
+        if (!empty($status) && $status !== 'all') {
+            $query->where('status', $status);
+        }
+
+        $legalProducts = $query->orderBy('year', 'desc')
+            ->orderBy('effective_date', 'desc')
+            ->orderBy('id', 'desc')
+            ->get();
+
+        $availableTypes = [
+            'Keputusan Kepala Desa (SK)',
+            'Peraturan Desa (Perdes)',
+            'Peraturan Bersama Kepala Desa',
+            'Keputusan BPD',
         ];
 
+        $availableYears = LegalProduct::active()
+            ->select('year')
+            ->distinct()
+            ->orderBy('year', 'desc')
+            ->pluck('year')
+            ->toArray();
+
         return Inertia::render('Services/Index', [
-            'services' => $services,
+            'legalProducts' => $legalProducts,
+            'availableTypes' => $availableTypes,
+            'availableYears' => $availableYears ?: [(int) date('Y')],
+            'filters' => [
+                'search' => $search ?? '',
+                'type' => $type ?? 'all',
+                'year' => $year ?? 'all',
+                'status' => $status ?? 'all',
+            ],
         ]);
+    }
+
+    public function downloadLegalProduct($id)
+    {
+        $product = LegalProduct::findOrFail($id);
+        $product->increment('download_count');
+
+        if (!empty($product->file_url)) {
+            $path = public_path(ltrim($product->file_url, '/'));
+            if (file_exists($path)) {
+                return response()->download($path, $product->file_name ?: basename($path));
+            }
+        }
+
+        return redirect()->back()->with('error', 'Berkas dokumen belum tersedia untuk diunduh.');
     }
 
     public function create(Request $request)

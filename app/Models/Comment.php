@@ -34,6 +34,11 @@ class Comment extends Model
 
     public function replies()
     {
-        return $this->hasMany(Comment::class, 'parent_id')->where('is_approved', true)->latest();
+        return $this->hasMany(Comment::class, 'parent_id')->where('is_approved', true)->oldest();
+    }
+
+    public function allReplies()
+    {
+        return $this->hasMany(Comment::class, 'parent_id')->oldest();
     }
 }

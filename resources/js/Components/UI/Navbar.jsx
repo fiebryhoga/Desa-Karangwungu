@@ -24,6 +24,7 @@ import {
     Newspaper,
     LayoutGrid,
     Target,
+    Scale,
 } from "lucide-react";
 
 export default function Navbar() {
@@ -292,13 +293,13 @@ export default function Navbar() {
                                             href="/layanan"
                                             className="flex items-start gap-2.5 rounded-lg p-2 text-sm hover:bg-black/30 text-red-100 hover:text-amber-300 transition-colors"
                                         >
-                                            <FileText className="h-4 w-4 text-amber-300 shrink-0 mt-0.5" />
+                                            <Scale className="h-4 w-4 text-amber-300 shrink-0 mt-0.5" />
                                             <div>
                                                 <div className="font-bold text-white">
-                                                    Katalog Layanan Surat
+                                                    Produk Hukum Desa
                                                 </div>
                                                 <div className="text-xs text-red-200/80">
-                                                    Persyaratan SKU, Domisili, SKTM, dll
+                                                    Perdes, SK Kepala Desa, Regulasi
                                                 </div>
                                             </div>
                                         </Link>
@@ -714,7 +715,7 @@ export default function Navbar() {
                                                 onClick={() => setMobileMenuOpen(false)}
                                                 className="block px-3 py-1.5 rounded-md text-xs text-red-100 hover:text-amber-300 hover:bg-black/20"
                                             >
-                                                Katalog Surat
+                                                Produk Hukum Desa
                                             </Link>
                                             <Link
                                                 href="/layanan/ajukan"

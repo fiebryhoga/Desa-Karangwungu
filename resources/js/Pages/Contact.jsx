@@ -18,9 +18,10 @@ import {
     Building2,
     FileText,
     ArrowRight,
-    Sparkles,
-    AlertCircle,
     ChevronRight,
+    Copy,
+    Check,
+    ChevronDown,
 } from 'lucide-react';
 
 export default function Contact({ feedbacks = [] }) {
@@ -40,10 +41,25 @@ export default function Contact({ feedbacks = [] }) {
     const waNumber = cleanPhone.startsWith('0') ? '62' + cleanPhone.slice(1) : cleanPhone;
     const waUrl = waNumber ? `https://wa.me/${waNumber}?text=${encodeURIComponent('Halo Pemdes Karangwungu, saya ingin bertanya terkait pelayanan desa.')}` : null;
 
+    const [copied, setCopied] = useState(false);
+    const handleCopyAddress = () => {
+        navigator.clipboard?.writeText(address);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
+
+    const CATEGORIES = [
+        'Saran & Masukan Pembangunan',
+        'Kritik & Pelayanan Administrasi',
+        'Infrastruktur & Fasilitas Umum',
+        'Kebersihan & Lingkungan Hidup',
+        'Ketertiban & Keamanan Warga',
+    ];
+
     const { data, setData, post, processing, errors, reset, recentlySuccessful } = useForm({
         name: '',
         contact_info: '',
-        category: 'Saran & Masukan Pembangunan',
+        category: CATEGORIES[0],
         message: '',
     });
 
@@ -59,14 +75,6 @@ export default function Contact({ feedbacks = [] }) {
             },
         });
     };
-
-    const CATEGORIES = [
-        { id: 'Saran & Masukan Pembangunan', label: 'Saran & Pembangunan' },
-        { id: 'Kritik & Pelayanan Administrasi', label: 'Pelayanan Publik' },
-        { id: 'Infrastruktur & Fasilitas Umum', label: 'Infrastruktur' },
-        { id: 'Kebersihan & Lingkungan Hidup', label: 'Lingkungan' },
-        { id: 'Ketertiban & Keamanan Warga', label: 'Ketertiban & Keamanan' },
-    ];
 
     return (
         <AppLayout>
@@ -85,16 +93,18 @@ export default function Contact({ feedbacks = [] }) {
                     subtitle="Pemerintah Desa Karangwungu siap melayani kebutuhan informasi warga serta mendengarkan aspirasi dan masukan konstruktif demi pembangunan desa yang lebih baik."
                 />
 
-                {/* 2. TOP QUICK ACTION PILLARS */}
+                {/* 2. TOP QUICK ACTION PILLARS (Signature Karangwungu Design) */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
                     {/* Card 1: WhatsApp Pelayanan Cepat */}
-                    <div className="rounded-lg border border-zinc-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 shadow-xs hover:border-emerald-500/40 dark:hover:border-emerald-500/40 transition-all flex flex-col justify-between space-y-4">
+                    <div className="rounded-lg border border-zinc-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 shadow-xs hover:border-amber-500/40 dark:hover:border-amber-500/40 transition-all flex flex-col justify-between space-y-4 relative overflow-hidden group">
+                        <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-emerald-500 to-amber-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+
                         <div className="flex items-start gap-3.5">
                             <div className="w-10 h-10 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/20">
                                 <MessageCircle className="w-5 h-5" />
                             </div>
                             <div className="space-y-1">
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                                <span className="text-[10px] font-black tracking-widest text-emerald-600 dark:text-emerald-400 uppercase">
                                     Respon Cepat
                                 </span>
                                 <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
@@ -111,7 +121,7 @@ export default function Contact({ feedbacks = [] }) {
                                 href={waUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center justify-center gap-1.5 w-full py-2 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-colors shadow-xs"
+                                className="inline-flex items-center justify-center gap-1.5 w-full py-2.5 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-colors shadow-xs"
                             >
                                 <span>Hubungi via WhatsApp</span>
                                 <ArrowRight className="w-3.5 h-3.5" />
@@ -124,13 +134,15 @@ export default function Contact({ feedbacks = [] }) {
                     </div>
 
                     {/* Card 2: Layanan Mandiri Online */}
-                    <div className="rounded-lg border border-zinc-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 shadow-xs hover:border-red-500/40 dark:hover:border-amber-500/40 transition-all flex flex-col justify-between space-y-4">
+                    <div className="rounded-lg border border-zinc-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 shadow-xs hover:border-red-500/40 dark:hover:border-amber-500/40 transition-all flex flex-col justify-between space-y-4 relative overflow-hidden group">
+                        <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-red-600 to-amber-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+
                         <div className="flex items-start gap-3.5">
                             <div className="w-10 h-10 rounded-lg bg-red-500/10 text-red-600 dark:text-amber-400 flex items-center justify-center shrink-0 border border-red-500/20">
                                 <FileText className="w-5 h-5" />
                             </div>
                             <div className="space-y-1">
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-red-600 dark:text-amber-400">
+                                <span className="text-[10px] font-black tracking-widest text-red-600 dark:text-amber-400 uppercase">
                                     Layanan Mandiri
                                 </span>
                                 <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
@@ -144,7 +156,7 @@ export default function Contact({ feedbacks = [] }) {
 
                         <Link
                             href="/layanan/ajukan"
-                            className="inline-flex items-center justify-center gap-1.5 w-full py-2 px-3 rounded-lg bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-white text-xs font-bold transition-colors shadow-xs"
+                            className="inline-flex items-center justify-center gap-1.5 w-full py-2.5 px-3 rounded-lg bg-gradient-to-r from-red-700 to-red-800 hover:from-red-800 hover:to-red-900 text-white text-xs font-bold transition-all shadow-xs"
                         >
                             <span>Buat Surat Online</span>
                             <ArrowRight className="w-3.5 h-3.5" />
@@ -152,13 +164,15 @@ export default function Contact({ feedbacks = [] }) {
                     </div>
 
                     {/* Card 3: Jam Layanan Kantor */}
-                    <div className="rounded-lg border border-zinc-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 shadow-xs hover:border-amber-500/40 dark:hover:border-amber-500/40 transition-all flex flex-col justify-between space-y-4">
+                    <div className="rounded-lg border border-zinc-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 shadow-xs hover:border-amber-500/40 dark:hover:border-amber-500/40 transition-all flex flex-col justify-between space-y-4 relative overflow-hidden group">
+                        <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-amber-500 to-red-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+
                         <div className="flex items-start gap-3.5">
                             <div className="w-10 h-10 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/20">
                                 <Clock className="w-5 h-5" />
                             </div>
                             <div className="space-y-1">
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+                                <span className="text-[10px] font-black tracking-widest text-amber-600 dark:text-amber-400 uppercase">
                                     Tatap Muka
                                 </span>
                                 <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
@@ -170,7 +184,7 @@ export default function Contact({ feedbacks = [] }) {
                             </div>
                         </div>
 
-                        <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-800/80 text-zinc-700 dark:text-zinc-300 text-xs font-semibold">
+                        <div className="inline-flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-emerald-500/10 dark:bg-emerald-950/40 border border-emerald-500/30 text-emerald-700 dark:text-emerald-400 text-xs font-bold">
                             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                             <span>Buka Setiap Hari Kerja</span>
                         </div>
@@ -179,78 +193,78 @@ export default function Contact({ feedbacks = [] }) {
 
                 {/* 3. MAIN SPLIT SECTION: CONTACT INFO & LAPOR DESA FORM */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                    {/* Left Column: Official Office Information & Map */}
+                    {/* Left Column: Signature Red-Gold Office Information & Map */}
                     <div className="lg:col-span-5 space-y-6">
-                        {/* Office Details Card */}
-                        <div className="rounded-lg border border-zinc-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 sm:p-6 shadow-xs space-y-6">
-                            <div className="flex items-center justify-between pb-4 border-b border-zinc-100 dark:border-zinc-800">
-                                <div className="space-y-0.5">
-                                    <span className="text-[11px] font-bold uppercase tracking-wider text-red-600 dark:text-amber-400">
-                                        Pemerintah Desa
+                        {/* Signature Karangwungu Royal Red-Gold Card */}
+                        <div className="rounded-lg overflow-hidden bg-gradient-to-b from-red-800 via-red-900 to-[#2e0508] text-white shadow-xl border border-amber-400/40 p-5 sm:p-6 space-y-5 relative">
+                            {/* Header Section */}
+                            <div className="space-y-2 border-b border-white/15 pb-4">
+                                <div>
+                                    <span className="text-[10px] font-black tracking-widest text-amber-300 uppercase px-2.5 py-1 rounded-md bg-black/40 border border-amber-400/30 inline-flex items-center gap-1.5">
+                                        <Building2 className="w-3 h-3 text-amber-300" />
+                                        <span>Pemerintah Desa Karangwungu</span>
                                     </span>
-                                    <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">
-                                        Kantor Balai Desa
-                                    </h3>
                                 </div>
-                                <div className="w-8 h-8 rounded-lg bg-red-500/10 text-red-600 dark:text-red-400 flex items-center justify-center">
-                                    <Building2 className="w-4 h-4" />
-                                </div>
+                                <h3 className="text-lg font-black text-white leading-snug">
+                                    Kantor Balai Desa
+                                </h3>
+                                <p className="text-xs text-amber-200/90 font-medium">
+                                    Pusat Administrasi & Pelayanan Warga Masyarakat
+                                </p>
                             </div>
 
-                            <div className="space-y-5 text-xs">
+                            {/* Info Items */}
+                            <div className="space-y-4 text-xs">
                                 {/* Alamat */}
                                 <div className="flex items-start gap-3.5">
-                                    <div className="w-9 h-9 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 flex items-center justify-center shrink-0 border border-zinc-200 dark:border-zinc-700">
-                                        <MapPin className="w-4 h-4 text-red-600 dark:text-amber-400" />
+                                    <div className="w-9 h-9 rounded-lg bg-black/30 border border-white/15 text-amber-300 flex items-center justify-center shrink-0">
+                                        <MapPin className="w-4 h-4" />
                                     </div>
-                                    <div className="space-y-1 min-w-0">
-                                        <span className="font-bold text-zinc-900 dark:text-zinc-100 block">
-                                            Alamat Resmi
+                                    <div className="space-y-0.5 min-w-0">
+                                        <span className="font-bold text-white block">
+                                            Alamat Resmi:
                                         </span>
-                                        <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                                        <p className="text-red-100/90 leading-relaxed">
                                             {address}
                                         </p>
+                                        <button
+                                            type="button"
+                                            onClick={handleCopyAddress}
+                                            className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-300 hover:text-amber-200 pt-1 cursor-pointer"
+                                        >
+                                            {copied ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                                            <span>{copied ? 'Alamat Tersalin!' : 'Salin Alamat'}</span>
+                                        </button>
                                     </div>
                                 </div>
 
                                 {/* Telepon / WhatsApp */}
                                 <div className="flex items-start gap-3.5">
-                                    <div className="w-9 h-9 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 flex items-center justify-center shrink-0 border border-zinc-200 dark:border-zinc-700">
-                                        <Phone className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                                    <div className="w-9 h-9 rounded-lg bg-black/30 border border-white/15 text-amber-300 flex items-center justify-center shrink-0">
+                                        <Phone className="w-4 h-4" />
                                     </div>
-                                    <div className="space-y-1 min-w-0">
-                                        <span className="font-bold text-zinc-900 dark:text-zinc-100 block">
-                                            Telepon & WhatsApp
+                                    <div className="space-y-0.5 min-w-0">
+                                        <span className="font-bold text-white block">
+                                            Telepon / WhatsApp:
                                         </span>
-                                        <p className="text-zinc-800 dark:text-zinc-200 font-semibold">
+                                        <p className="text-amber-300 font-bold text-sm">
                                             {phone}
                                         </p>
-                                        {waUrl && (
-                                            <a
-                                                href={waUrl}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline pt-0.5"
-                                            >
-                                                <span>Kirim pesan WhatsApp</span>
-                                                <ChevronRight className="w-3 h-3" />
-                                            </a>
-                                        )}
                                     </div>
                                 </div>
 
                                 {/* Email */}
                                 <div className="flex items-start gap-3.5">
-                                    <div className="w-9 h-9 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 flex items-center justify-center shrink-0 border border-zinc-200 dark:border-zinc-700">
-                                        <Mail className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                                    <div className="w-9 h-9 rounded-lg bg-black/30 border border-white/15 text-amber-300 flex items-center justify-center shrink-0">
+                                        <Mail className="w-4 h-4" />
                                     </div>
-                                    <div className="space-y-1 min-w-0">
-                                        <span className="font-bold text-zinc-900 dark:text-zinc-100 block">
-                                            Email Resmi
+                                    <div className="space-y-0.5 min-w-0">
+                                        <span className="font-bold text-white block">
+                                            Email Resmi:
                                         </span>
                                         <a
                                             href={`mailto:${email}`}
-                                            className="text-zinc-600 dark:text-zinc-400 hover:text-red-600 dark:hover:text-amber-400 transition-colors break-all"
+                                            className="text-red-100/90 hover:text-amber-300 transition-colors break-all"
                                         >
                                             {email}
                                         </a>
@@ -259,28 +273,51 @@ export default function Contact({ feedbacks = [] }) {
 
                                 {/* Jam Kerja */}
                                 <div className="flex items-start gap-3.5">
-                                    <div className="w-9 h-9 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 flex items-center justify-center shrink-0 border border-zinc-200 dark:border-zinc-700">
-                                        <Clock className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                                    <div className="w-9 h-9 rounded-lg bg-black/30 border border-white/15 text-amber-300 flex items-center justify-center shrink-0">
+                                        <Clock className="w-4 h-4" />
                                     </div>
-                                    <div className="space-y-1 min-w-0">
-                                        <span className="font-bold text-zinc-900 dark:text-zinc-100 block">
-                                            Jam Operasional
+                                    <div className="space-y-0.5 min-w-0">
+                                        <span className="font-bold text-white block">
+                                            Jam Operasional Pelayanan:
                                         </span>
-                                        <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed whitespace-pre-line">
+                                        <p className="text-red-100/90 whitespace-pre-line leading-relaxed">
                                             {workingHours}
                                         </p>
                                     </div>
                                 </div>
                             </div>
+
+                            {/* Direct Action Buttons */}
+                            <div className="pt-3 border-t border-white/15 space-y-2">
+                                {waUrl && (
+                                    <a
+                                        href={waUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-colors cursor-pointer"
+                                    >
+                                        <MessageCircle className="h-4 w-4" />
+                                        <span>Hubungi via WhatsApp</span>
+                                    </a>
+                                )}
+
+                                <a
+                                    href={`tel:${(phone || '').replace(/[^0-9+]/g, '')}`}
+                                    className="w-full inline-flex items-center justify-center gap-2 py-2 px-4 rounded-lg bg-black/30 hover:bg-black/50 text-white font-semibold text-xs border border-white/20 hover:border-amber-400/50 transition-colors cursor-pointer"
+                                >
+                                    <Phone className="h-3.5 w-3.5 text-amber-300" />
+                                    <span>Panggil Telepon Kantor</span>
+                                </a>
+                            </div>
                         </div>
 
                         {/* Interactive Maps Card */}
-                        <div className="rounded-lg border border-zinc-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xs overflow-hidden">
+                        <div className="rounded-lg border border-zinc-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm overflow-hidden">
                             <div className="p-4 flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800">
                                 <div className="flex items-center gap-2">
                                     <MapPin className="w-4 h-4 text-red-600 dark:text-amber-400" />
                                     <h4 className="text-xs font-bold text-zinc-900 dark:text-zinc-100">
-                                        Peta Lokasi Kantor Desa
+                                        Peta Lokasi Balai Desa
                                     </h4>
                                 </div>
                                 <a
@@ -294,7 +331,7 @@ export default function Contact({ feedbacks = [] }) {
                                 </a>
                             </div>
 
-                            <div className="h-64 w-full bg-zinc-100 dark:bg-zinc-950 relative">
+                            <div className="h-60 w-full bg-zinc-950 relative">
                                 <iframe
                                     title="Peta Lokasi Desa Karangwungu Karanggeneng"
                                     src={mapsUrl}
@@ -311,18 +348,21 @@ export default function Contact({ feedbacks = [] }) {
 
                     {/* Right Column: Citizen Feedback & Aspiration Form */}
                     <div className="lg:col-span-7 space-y-6">
-                        <div className="rounded-lg border border-zinc-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 sm:p-7 shadow-xs space-y-6">
+                        <div className="rounded-lg border border-zinc-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 sm:p-7 shadow-sm space-y-6 relative overflow-hidden">
+                            {/* Signature top accent line */}
+                            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-600 via-amber-500 to-red-600" />
+
                             {/* Form Header */}
-                            <div className="space-y-1.5 pb-5 border-b border-zinc-100 dark:border-zinc-800">
-                                <div className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-red-600 dark:text-amber-400">
-                                    <MessageSquare className="w-3.5 h-3.5" />
+                            <div className="space-y-2 pb-5 border-b border-zinc-100 dark:border-zinc-800">
+                                <div className="inline-flex items-center gap-1.5 text-[10px] font-black tracking-widest uppercase text-amber-500 dark:text-amber-400 px-2.5 py-1 rounded-md bg-amber-500/10 border border-amber-500/20">
+                                    <MessageSquare className="w-3.5 h-3.5 text-amber-500" />
                                     <span>Kanal Lapor Desa</span>
                                 </div>
-                                <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
+                                <h3 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-100">
                                     Form Aspirasi & Pengaduan Warga
                                 </h3>
                                 <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                                    Sampaikan aspirasi, saran pembangunan, laporan kerusakan fasilitas, atau kendala pelayanan desa. Laporan Anda akan ditinjau langsung oleh tim pengelola Pemdes Karangwungu.
+                                    Sampaikan aspirasi, kritik membangun, maupun laporan kondisi fasilitas umum secara langsung kepada Pemerintah Desa Karangwungu.
                                 </p>
                             </div>
 
@@ -351,10 +391,10 @@ export default function Contact({ feedbacks = [] }) {
                                         </label>
                                         <input
                                             type="text"
-                                            placeholder="Contoh: Ahmad Fauzi"
+                                            placeholder="Nama Anda"
                                             value={data.name}
                                             onChange={(e) => setData('name', e.target.value)}
-                                            className="w-full px-3.5 py-2 text-xs rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-red-500 dark:focus:ring-amber-500 shadow-2xs font-medium"
+                                            className="w-full px-3.5 py-2.5 text-xs rounded-lg border border-zinc-300 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-amber-500/50 focus:border-red-500 dark:focus:border-amber-500 shadow-2xs font-medium"
                                             required
                                         />
                                         {errors.name && (
@@ -368,10 +408,10 @@ export default function Contact({ feedbacks = [] }) {
                                         </label>
                                         <input
                                             type="text"
-                                            placeholder="Contoh: 081234567890"
+                                            placeholder="08xxxxxxxxxx atau email"
                                             value={data.contact_info}
                                             onChange={(e) => setData('contact_info', e.target.value)}
-                                            className="w-full px-3.5 py-2 text-xs rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-red-500 dark:focus:ring-amber-500 shadow-2xs font-medium"
+                                            className="w-full px-3.5 py-2.5 text-xs rounded-lg border border-zinc-300 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-amber-500/50 focus:border-red-500 dark:focus:border-amber-500 shadow-2xs font-medium"
                                             required
                                         />
                                         {errors.contact_info && (
@@ -380,24 +420,27 @@ export default function Contact({ feedbacks = [] }) {
                                     </div>
                                 </div>
 
-                                {/* Category */}
+                                {/* Category Selection */}
                                 <div className="space-y-2">
                                     <label className="block text-xs font-bold text-zinc-700 dark:text-zinc-300">
-                                        Kategori Aspirasi / Laporan <span className="text-red-500">*</span>
+                                        Kategori Laporan / Masukan <span className="text-red-500">*</span>
                                     </label>
 
                                     {/* Category Select Dropdown */}
-                                    <select
-                                        value={data.category}
-                                        onChange={(e) => setData('category', e.target.value)}
-                                        className="w-full px-3.5 py-2 text-xs rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-red-500 dark:focus:ring-amber-500 shadow-2xs font-medium cursor-pointer"
-                                    >
-                                        {CATEGORIES.map((cat) => (
-                                            <option key={cat.id} value={cat.id}>
-                                                {cat.id}
-                                            </option>
-                                        ))}
-                                    </select>
+                                    <div className="relative">
+                                        <select
+                                            value={data.category}
+                                            onChange={(e) => setData('category', e.target.value)}
+                                            className="w-full appearance-none pl-3.5 pr-10 py-2.5 text-xs rounded-lg border border-zinc-300 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-amber-500/50 focus:border-red-500 dark:focus:border-amber-500 shadow-2xs font-medium cursor-pointer"
+                                        >
+                                            {CATEGORIES.map((cat) => (
+                                                <option key={cat} value={cat}>
+                                                    {cat}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <ChevronDown className="w-4 h-4 text-zinc-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                                    </div>
                                     {errors.category && (
                                         <p className="text-[11px] text-red-500 font-semibold">{errors.category}</p>
                                     )}
@@ -407,7 +450,7 @@ export default function Contact({ feedbacks = [] }) {
                                 <div className="space-y-1.5">
                                     <div className="flex items-center justify-between">
                                         <label className="block text-xs font-bold text-zinc-700 dark:text-zinc-300">
-                                            Uraian Aspirasi / Pengaduan <span className="text-red-500">*</span>
+                                            Isi Pesan Aspirasi / Pengaduan <span className="text-red-500">*</span>
                                         </label>
                                         <span className="text-[11px] text-zinc-400">
                                             Maks. 1000 karakter
@@ -415,10 +458,10 @@ export default function Contact({ feedbacks = [] }) {
                                     </div>
                                     <textarea
                                         rows={5}
-                                        placeholder="Tuliskan uraian aspirasi, kritik membangun, lokasi spesifik, atau pengaduan Anda dengan jelas dan santun..."
+                                        placeholder="Tuliskan uraian aspirasi, lokasi spesifik, atau pengaduan Anda dengan jelas dan santun..."
                                         value={data.message}
                                         onChange={(e) => setData('message', e.target.value)}
-                                        className="w-full px-3.5 py-2.5 text-xs rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-red-500 dark:focus:ring-amber-500 shadow-2xs font-medium leading-relaxed"
+                                        className="w-full px-3.5 py-2.5 text-xs rounded-lg border border-zinc-300 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-amber-500/50 focus:border-red-500 dark:focus:border-amber-500 shadow-2xs font-medium leading-relaxed"
                                         required
                                     />
                                     {errors.message && (
@@ -427,8 +470,8 @@ export default function Contact({ feedbacks = [] }) {
                                 </div>
 
                                 {/* Privacy Notice Box */}
-                                <div className="p-3.5 rounded-lg bg-zinc-50 dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800 flex items-start gap-2.5">
-                                    <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                                <div className="p-3.5 rounded-lg bg-amber-500/5 dark:bg-amber-950/20 border border-amber-500/20 flex items-start gap-2.5">
+                                    <ShieldCheck className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
                                     <p className="text-[11px] text-zinc-600 dark:text-zinc-400 leading-relaxed">
                                         <strong className="text-zinc-800 dark:text-zinc-200">Kerahasiaan Terjamin:</strong> Identitas dan kontak Anda hanya digunakan oleh perangkat desa untuk verifikasi dan konfirmasi tindak lanjut laporan.
                                     </p>
@@ -438,10 +481,10 @@ export default function Contact({ feedbacks = [] }) {
                                 <button
                                     type="submit"
                                     disabled={processing}
-                                    className="w-full py-2.5 px-4 rounded-lg bg-gradient-to-r from-red-700 to-amber-600 hover:from-red-800 hover:to-amber-700 text-white text-xs font-bold transition-all shadow-md shadow-red-700/20 disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+                                    className="w-full py-3 px-5 rounded-lg bg-gradient-to-r from-red-700 via-red-800 to-amber-600 hover:from-red-800 hover:via-red-900 hover:to-amber-700 text-white font-bold text-xs shadow-md shadow-red-900/30 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                                 >
                                     <Send className="w-3.5 h-3.5" />
-                                    <span>{processing ? 'Mengirimkan Aspirasi...' : 'Kirimkan Aspirasi Sekarang'}</span>
+                                    <span>{processing ? 'Mengirimkan Aspirasi...' : 'Kirimkan Aspirasi'}</span>
                                 </button>
                             </form>
                         </div>

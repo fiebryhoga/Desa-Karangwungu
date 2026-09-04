@@ -48,6 +48,14 @@ export default function Dashboard({ stats = {}, recentLetters = [], recentPosts 
             link: '/potensi',
         },
         {
+            title: 'Aspirasi Warga',
+            value: stats.total_feedbacks || 0,
+            badge: 'Kritik & Saran',
+            badgeColor: 'bg-purple-400/10 text-purple-500 border-purple-400/30',
+            icon: MessageSquare,
+            link: `/${adminPath}/settings/feedbacks`,
+        },
+        {
             title: 'Administrator Aktif',
             value: stats.total_admins || 0,
             badge: 'Pengelola Sistem',
@@ -104,7 +112,7 @@ export default function Dashboard({ stats = {}, recentLetters = [], recentPosts 
                 </div>
 
                 {/* Stat Cards Grid (Theme Adaptive) */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-5">
                     {statCards.map((card, idx) => {
                         const Icon = card.icon;
                         return (

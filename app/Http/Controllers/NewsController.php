@@ -24,7 +24,10 @@ class NewsController extends Controller
         }
 
         if ($category && $category !== 'Semua') {
-            $query->where('category', $category);
+            $query->where(function ($q) use ($category) {
+                $q->where('category', $category)
+                  ->orWhereJsonContains('categories', $category);
+            });
         }
 
         $posts = $query->orderBy('published_at', 'desc')->paginate(6)->withQueryString();
@@ -38,7 +41,9 @@ class NewsController extends Controller
             ->take(4)
             ->get();
 
-        $categories = ['Semua', 'Berita', 'Pertanian', 'Perikanan', 'Pengumuman', 'Prestasi'];
+        $defaultCategories = ['Semua', 'Berita', 'Pertanian', 'Perikanan', 'Pengumuman', 'Prestasi', 'Agenda', 'Pembangunan'];
+        $dynamicCategories = Post::whereNotNull('categories')->pluck('categories')->flatten()->filter()->unique()->values()->all();
+        $categories = array_values(array_unique(array_merge($defaultCategories, $dynamicCategories)));
 
         return Inertia::render('News/Index', [
             'posts' => $posts,

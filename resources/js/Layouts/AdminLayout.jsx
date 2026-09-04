@@ -4,8 +4,6 @@ import {
     LayoutDashboard,
     Users,
     UserCheck,
-    FileText,
-    Newspaper,
     Sparkles,
     Image,
     DollarSign,
@@ -37,6 +35,8 @@ import {
     Target,
     BarChart3,
     Landmark,
+    Newspaper,
+    Scale,
 } from 'lucide-react';
 
 const BATIK_DARK = `data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 60 Q 30 30, 60 60 T 120 60 M0 0 Q 30 -30, 60 0 T 120 0 M0 120 Q 30 90, 60 120 T 120 120 M-30 30 L 30 90 M30 -30 L 90 30 M90 -30 L 150 30 M-30 90 L 30 150 M30 90 L 90 150 M90 90 L 150 150' stroke='%23fde047' stroke-width='2' fill='none' stroke-linecap='round' stroke-dasharray='1 4'/%3E%3Cpath d='M12 48 Q 30 24, 48 48 Q 66 72, 84 48 Q 102 24, 120 48' stroke='%23fde047' stroke-width='1.8' fill='none'/%3E%3Ccircle cx='30' cy='30' r='4' fill='%23fde047'/%3E%3Ccircle cx='90' cy='90' r='4' fill='%23fde047'/%3E%3Ccircle cx='90' cy='30' r='2' fill='%23fde047'/%3E%3Ccircle cx='30' cy='90' r='2' fill='%23fde047'/%3E%3C/svg%3E`;
@@ -250,15 +250,24 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
             icon: DollarSign,
             active: currentUrl ? currentUrl.startsWith(`/${adminPath}/settings/apbdes`) : false,
         },
-    ];
-
-    const publicModules = [
-        { name: 'Layanan Surat', href: '/layanan', icon: FileText },
-        { name: 'Berita Desa', href: '/berita', icon: Newspaper },
-        { name: 'Potensi & UMKM', href: '/potensi', icon: Sparkles },
-        { name: 'Galeri Foto', href: '/galeri', icon: Image },
-        { name: 'Pratinjau APBDes Publik', href: '/transparansi', icon: DollarSign },
-        { name: 'Layanan Kontak', href: '/kontak', icon: MessageSquare },
+        {
+            name: 'Warta & Berita Desa',
+            href: `/${adminPath}/settings/news`,
+            icon: Newspaper,
+            active: currentUrl ? currentUrl.startsWith(`/${adminPath}/settings/news`) : false,
+        },
+        {
+            name: 'Aspirasi & Pengaduan Warga',
+            href: `/${adminPath}/settings/feedbacks`,
+            icon: MessageSquare,
+            active: currentUrl ? currentUrl.startsWith(`/${adminPath}/settings/feedbacks`) : false,
+        },
+        {
+            name: 'Produk Hukum Desa',
+            href: `/${adminPath}/settings/legal-products`,
+            icon: Scale,
+            active: currentUrl ? currentUrl.startsWith(`/${adminPath}/settings/legal-products`) : false,
+        },
     ];
 
     const systemNav = [
@@ -507,56 +516,6 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
                                             </div>
                                         )}
                                     </Link>
-                                );
-                            })}
-                        </div>
-                    </div>
-
-                    {/* 3. Public Preview Links */}
-                    <div className="space-y-1">
-                        {!sidebarCollapsed && (
-                            <span className={`px-3 text-[10px] font-bold uppercase tracking-wider ${
-                                isDark ? 'text-zinc-500' : 'text-zinc-400'
-                            }`}>
-                                Website & Layanan Desa
-                            </span>
-                        )}
-                        <div className="mt-1.5 space-y-0.5">
-                            {publicModules.map((item) => {
-                                const Icon = item.icon;
-                                return (
-                                    <a
-                                        key={item.href}
-                                        href={item.href}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        title={item.name}
-                                        className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all group relative ${
-                                            sidebarCollapsed ? 'justify-center' : ''
-                                        } ${
-                                            isDark
-                                                ? 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/40'
-                                                : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
-                                        }`}
-                                    >
-                                        <div className="flex items-center gap-2.5">
-                                            <Icon className={`h-3.5 w-3.5 shrink-0 ${
-                                                isDark ? 'text-zinc-500 group-hover:text-amber-400' : 'text-zinc-400 group-hover:text-red-700'
-                                            }`} />
-                                            {!sidebarCollapsed && <span className="truncate">{item.name}</span>}
-                                        </div>
-                                        {!sidebarCollapsed && (
-                                            <Globe className="h-3 w-3 text-zinc-500 opacity-60 group-hover:opacity-100" />
-                                        )}
-
-                                        {/* Floating Tooltip in Collapsed Mode */}
-                                        {sidebarCollapsed && (
-                                            <div className="hidden group-hover:flex items-center absolute left-full top-1/2 -translate-y-1/2 ml-3 px-3 py-1.5 rounded-lg bg-zinc-900 text-white text-xs font-bold whitespace-nowrap shadow-2xl border border-zinc-700 z-50 pointer-events-none">
-                                                <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-zinc-900 border-l border-b border-zinc-700 rotate-45" />
-                                                <span>{item.name}</span>
-                                            </div>
-                                        )}
-                                    </a>
                                 );
                             })}
                         </div>

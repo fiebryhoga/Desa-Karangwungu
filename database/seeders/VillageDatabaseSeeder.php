@@ -1055,18 +1055,18 @@ class VillageDatabaseSeeder extends Seeder
             [
                 'name' => 'Hasan Basri',
                 'contact_info' => '0813-xxxx-xxxx',
-                'category' => 'Infrastruktur',
+                'category' => 'Infrastruktur & Fasilitas Umum',
                 'message' => 'Terima kasih kepada Pemdes Karangwungu atas perbaikan saluran drainase di jalan poros dusun timur, saat hujan deras kemarin air langsung lancar tidak menggenang lagi.',
                 'is_public' => true,
-                'response' => 'Terima kasih atas apresiasinya bapak Hasan. Pemdes Karangwungu terus berkomitmen menjaga dan merawat infrastruktur demi kenyamanan seluruh warga.',
+                'response' => null,
             ],
             [
                 'name' => 'Warga RT 02',
                 'contact_info' => 'warga.rt02@gmail.com',
-                'category' => 'Pelayanan',
+                'category' => 'Kritik & Pelayanan Administrasi',
                 'message' => 'Layanan surat online di website desa ini sangat mempermudah warga yang bekerja di luar kota sehingga tidak perlu bolak-balik ke kantor desa hanya untuk cek berkas.',
                 'is_public' => true,
-                'response' => 'Alhamdulillah, kami senang layanan digital desa dapat bermanfaat optimal untuk seluruh masyarakat Karangwungu di manapun berada.',
+                'response' => null,
             ],
         ];
 

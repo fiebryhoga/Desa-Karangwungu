@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, usePage, useForm, router } from '@inertiajs/react';
 import AppLayout from '../../Layouts/AppLayout';
 import SeoHead from '../../Components/SEO/SeoHead';
-import { formatDateIndo } from '../../Utils/format';
+import { formatDateIndo, formatIndoDateTime } from '../../Utils/format';
 import {
     Calendar,
     Eye,
@@ -203,10 +203,12 @@ export default function NewsShow({ post, relatedPosts = [], popularPosts = [] })
 
                             {/* Metadata bar */}
                             <div className="flex flex-wrap items-center gap-3.5 text-xs text-zinc-600 dark:text-zinc-400 py-2.5 border-y border-zinc-200 dark:border-zinc-800">
-                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-red-500/10 dark:bg-amber-500/10 border border-red-500/20 dark:border-amber-500/30 text-[11px] font-bold text-red-600 dark:text-amber-400">
-                                    <Tag className="h-3 w-3" />
-                                    <span>{post.category}</span>
-                                </span>
+                                {(post.categories_list || post.categories || [post.category]).map((cat, i) => (
+                                    <span key={i} className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-red-500/10 dark:bg-amber-500/10 border border-red-500/20 dark:border-amber-500/30 text-[11px] font-bold text-red-600 dark:text-amber-400">
+                                        <Tag className="h-3 w-3" />
+                                        <span>{cat}</span>
+                                    </span>
+                                ))}
                                 <span className="flex items-center gap-1.5 font-bold text-red-600 dark:text-amber-400">
                                     <User className="h-3.5 w-3.5" />
                                     <span>{post.author || 'Pemerintah Desa Karangwungu'}</span>
@@ -399,7 +401,7 @@ export default function NewsShow({ post, relatedPosts = [], popularPosts = [] })
                                                             {comment.name}
                                                         </h4>
                                                         <span className="text-[10px] text-zinc-500 dark:text-zinc-400 shrink-0">
-                                                            {formatDateIndo(comment.created_at)}
+                                                            {formatIndoDateTime(comment.created_at)}
                                                         </span>
                                                     </div>
                                                     <p className="text-xs text-zinc-700 dark:text-zinc-300 leading-relaxed font-normal">
@@ -512,7 +514,7 @@ export default function NewsShow({ post, relatedPosts = [], popularPosts = [] })
                                                                         ) : null}
                                                                     </div>
                                                                     <span className="text-[9px] text-zinc-500 dark:text-zinc-400 shrink-0">
-                                                                        {formatDateIndo(reply.created_at)}
+                                                                        {formatIndoDateTime(reply.created_at)}
                                                                     </span>
                                                                 </div>
                                                                 <p className="text-[11px] text-zinc-700 dark:text-zinc-300 leading-relaxed font-normal">
