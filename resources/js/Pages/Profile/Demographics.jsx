@@ -20,59 +20,71 @@ import {
     Home,
     Layers,
 } from 'lucide-react';
+import { getIconComponent } from '@/Utils/iconRegistry';
 
-export default function Demographics() {
+export default function Demographics({ demographicsSettings = {} }) {
     // 1. Data Agregat Pokok
+    const total = Number(demographicsSettings.total_citizens || 3482);
+    const male = Number(demographicsSettings.male_citizens || 1724);
+    const female = Number(demographicsSettings.female_citizens || 1758);
+    const malePercent = ((male / (total || 1)) * 100).toFixed(1);
+    const femalePercent = ((female / (total || 1)) * 100).toFixed(1);
+
     const stats = {
-        total: 3482,
-        male: 1724,
-        malePercent: 49.5,
-        female: 1758,
-        femalePercent: 50.5,
-        families: 985,
-        area: 123,
-        density: 2830,
-        productivePercent: 68.3,
+        total,
+        male,
+        malePercent,
+        female,
+        femalePercent,
+        families: Number(demographicsSettings.total_families || 985),
+        area: Number(demographicsSettings.area_ha || 123),
+        density: Number(demographicsSettings.density || 2830),
+        productivePercent: Number(demographicsSettings.productive_age_percent || 68.3),
+        productiveCount: Number(demographicsSettings.productive_age_count || 2380),
     };
 
-    // 2. Data Tata Guna Lahan Wilayah (Total 123 Ha / 1,23 km²)
-    const landUseData = [
+    // 2. Data Tata Guna Lahan Wilayah
+    const defaultLandUse = [
         {
             category: 'Sawah / Pertanian',
-            areaHa: 70,
+            area_ha: 70,
             percent: 56.9,
-            icon: Wheat,
+            icon: 'Wheat',
             badge: 'Lahan Terluas (56,9%)',
             desc: 'Komoditas utama padi sawah, palawija, dan tanaman pangan pendukung ketahanan pangan desa.',
         },
         {
             category: 'Tanah Kering / Kebun',
-            areaHa: 33,
+            area_ha: 33,
             percent: 26.8,
-            icon: Layers,
+            icon: 'Layers',
             badge: 'Tegalan & Kebun (26,8%)',
             desc: 'Pekarangan produktif, tegalan kering, tanaman musiman hortikultura, dan pohon peneduh.',
         },
         {
             category: 'Tambak Perikanan',
-            areaHa: 11,
+            area_ha: 11,
             percent: 8.9,
-            icon: Fish,
+            icon: 'Fish',
             badge: 'Sektor Unggulan (8,9%)',
             desc: 'Kawasan budidaya perikanan air payau produktif untuk komoditas ikan bandeng dan udang vaname.',
         },
         {
             category: 'Perkampungan / Permukiman',
-            areaHa: 9,
+            area_ha: 9,
             percent: 7.3,
-            icon: Home,
+            icon: 'Home',
             badge: 'Kawasan Hunian (7,3%)',
             desc: 'Kompleks pemukiman warga desa, balai desa, fasilitas umum, sarana ibadah, dan jalan perdesaan.',
         },
     ];
+    const landUseData =
+        Array.isArray(demographicsSettings.land_use_list_data) && demographicsSettings.land_use_list_data.length > 0
+            ? demographicsSettings.land_use_list_data
+            : defaultLandUse;
 
     // 3. Data Mata Pencaharian
-    const professions = [
+    const defaultProfessions = [
         { label: 'Petani Sawah / Palawija', count: 1150, percent: 33.0 },
         { label: 'Petambak Ikan Bandeng & Udang', count: 840, percent: 24.1 },
         { label: 'Karyawan Swasta & Buruh Pabrik', count: 520, percent: 14.9 },
@@ -80,9 +92,13 @@ export default function Demographics() {
         { label: 'Lainnya / Wirausaha & Jasa', count: 400, percent: 11.6 },
         { label: 'PNS / TNI / Polri / Guru', count: 112, percent: 3.2 },
     ];
+    const professions =
+        Array.isArray(demographicsSettings.professions_list_data) && demographicsSettings.professions_list_data.length > 0
+            ? demographicsSettings.professions_list_data
+            : defaultProfessions;
 
     // 4. Data Piramida Usia
-    const ageGroups = [
+    const defaultAgeGroups = [
         { label: '0 – 4 Th (Balita)', count: 260, percent: 7.5, male: 132, female: 128 },
         { label: '5 – 14 Th (Anak-Anak)', count: 540, percent: 15.5, male: 275, female: 265 },
         { label: '15 – 24 Th (Remaja)', count: 580, percent: 16.7, male: 290, female: 290 },
@@ -90,15 +106,23 @@ export default function Demographics() {
         { label: '55 – 64 Th (Pra-Lansia)', count: 342, percent: 9.8, male: 165, female: 177 },
         { label: '65+ Th (Lansia)', count: 250, percent: 7.1, male: 120, female: 130 },
     ];
+    const ageGroups =
+        Array.isArray(demographicsSettings.age_groups_list_data) && demographicsSettings.age_groups_list_data.length > 0
+            ? demographicsSettings.age_groups_list_data
+            : defaultAgeGroups;
 
     // 5. Data Pendidikan
-    const education = [
+    const defaultEducation = [
         { label: 'SMA / SMK / MA', count: 1132, percent: 32.5 },
         { label: 'SMP / MTs', count: 960, percent: 27.6 },
         { label: 'SD / Sederajat', count: 890, percent: 25.6 },
         { label: 'Diploma / Sarjana (S1/S2)', count: 320, percent: 9.1 },
         { label: 'Belum / Tidak Sekolah', count: 180, percent: 5.2 },
     ];
+    const education =
+        Array.isArray(demographicsSettings.education_list_data) && demographicsSettings.education_list_data.length > 0
+            ? demographicsSettings.education_list_data
+            : defaultEducation;
 
     return (
         <AppLayout>
@@ -198,7 +222,7 @@ export default function Demographics() {
                 </div>
 
                 {/* ============================================================ */}
-                {/* 3. SEKSI TATA GUNA LAHAN & WILAYAH DESA (123 Ha / 1,23 km²)  */}
+                {/* 3. SEKSI TATA GUNA LAHAN & WILAYAH DESA                      */}
                 {/* ============================================================ */}
                 <div className="space-y-5">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-200 dark:border-zinc-800 pb-3">
@@ -208,10 +232,10 @@ export default function Demographics() {
                             </div>
                             <div>
                                 <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-white leading-tight">
-                                    Tata Guna Lahan & Luas Wilayah
+                                    {demographicsSettings.land_use_title || 'Tata Guna Lahan & Luas Wilayah'}
                                 </h2>
                                 <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                                    Distribusi pemanfaatan ruang dan peruntukan wilayah desa seluas 123 Ha (1,23 km²)
+                                    {demographicsSettings.land_use_subtitle || `Distribusi pemanfaatan ruang dan peruntukan wilayah desa seluas ${stats.area} Ha (${(stats.area / 100).toFixed(2).replace('.', ',')} km²)`}
                                 </p>
                             </div>
                         </div>
@@ -220,16 +244,20 @@ export default function Demographics() {
                         <div className="flex items-center gap-2">
                             <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-900/60 text-red-700 dark:text-amber-400 text-xs font-bold shadow-xs">
                                 <Compass className="h-3.5 w-3.5" />
-                                <span>Total Luas: 123 Ha (1,23 km²)</span>
+                                <span>Total Luas: {stats.area} Ha ({(stats.area / 100).toFixed(2).replace('.', ',')} km²)</span>
                             </span>
                         </div>
                     </div>
 
-
-                    {/* 4 Cards Grid */}
+                    {/* Cards Grid */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         {landUseData.map((item, idx) => {
-                            const IconComponent = item.icon;
+                            const IconComponent =
+                                typeof item.icon === 'string'
+                                    ? getIconComponent(item.icon, Layers)
+                                    : item.icon || Layers;
+                            const areaHa = item.area_ha ?? item.areaHa ?? 0;
+
                             return (
                                 <div
                                     key={idx}
@@ -238,7 +266,7 @@ export default function Demographics() {
                                     <div className="space-y-3">
                                         <div className="flex items-center justify-between">
                                             <span className="px-2.5 py-0.5 rounded-md bg-black/40 border border-white/15 text-amber-300 font-bold text-[10px]">
-                                                {item.badge}
+                                                {item.badge || `Sektor ${idx + 1}`}
                                             </span>
                                             <div className="h-8 w-8 rounded-lg bg-black/30 border border-white/15 text-amber-300 flex items-center justify-center">
                                                 <IconComponent className="h-4 w-4" />
@@ -251,7 +279,7 @@ export default function Demographics() {
                                             </h3>
                                             <div className="flex items-baseline gap-1.5 mt-1.5">
                                                 <span className="text-3xl font-black text-white tracking-tight">
-                                                    {item.areaHa}
+                                                    {areaHa}
                                                 </span>
                                                 <span className="text-xs font-bold text-amber-300">
                                                     Hektar (Ha)
@@ -272,7 +300,7 @@ export default function Demographics() {
                                         <div className="h-2 w-full rounded-full bg-black/40 overflow-hidden">
                                             <div
                                                 className="h-full bg-gradient-to-r from-amber-400 to-amber-200 rounded-full transition-all duration-700"
-                                                style={{ width: `${item.percent}%` }}
+                                                style={{ width: `${Math.min(item.percent, 100)}%` }}
                                             />
                                         </div>
                                     </div>
@@ -294,10 +322,10 @@ export default function Demographics() {
                             </div>
                             <div>
                                 <h3 className="text-base font-bold text-zinc-900 dark:text-white">
-                                    Mata Pencaharian Utama Warga
+                                    {demographicsSettings.professions_title || 'Mata Pencaharian Utama Warga'}
                                 </h3>
                                 <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                                    Distribusi sektor pekerjaan masyarakat Desa Karangwungu
+                                    {demographicsSettings.professions_subtitle || 'Distribusi sektor pekerjaan masyarakat Desa Karangwungu'}
                                 </p>
                             </div>
                         </div>
@@ -311,7 +339,7 @@ export default function Demographics() {
                                         </span>
                                         <div className="flex items-center gap-1.5">
                                             <span className="font-bold text-zinc-900 dark:text-white">
-                                                {prof.count.toLocaleString('id-ID')} Orang
+                                                {Number(prof.count).toLocaleString('id-ID')} Orang
                                             </span>
                                             <span className="text-xs font-semibold text-red-600 dark:text-amber-400">
                                                 ({prof.percent}%)
@@ -322,7 +350,7 @@ export default function Demographics() {
                                     <div className="h-2.5 w-full rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
                                         <div
                                             className="h-full bg-gradient-to-r from-red-600 via-red-700 to-amber-500 rounded-full transition-all duration-700"
-                                            style={{ width: `${prof.percent}%` }}
+                                            style={{ width: `${Math.min(prof.percent, 100)}%` }}
                                         />
                                     </div>
                                 </div>
@@ -338,10 +366,10 @@ export default function Demographics() {
                             </div>
                             <div>
                                 <h3 className="text-base font-bold text-zinc-900 dark:text-white">
-                                    Struktur Penduduk Berdasarkan Kelompok Usia
+                                    {demographicsSettings.age_groups_title || 'Struktur Penduduk Berdasarkan Kelompok Usia'}
                                 </h3>
                                 <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                                    Komposisi kelompok usia dan proporsi gender warga desa
+                                    {demographicsSettings.age_groups_subtitle || 'Komposisi kelompok usia dan proporsi gender warga desa'}
                                 </p>
                             </div>
                         </div>
@@ -355,10 +383,10 @@ export default function Demographics() {
                                         </span>
                                         <div className="flex items-center gap-2 text-xs">
                                             <span className="text-zinc-500 dark:text-zinc-400">
-                                                L: {group.male} | P: {group.female}
+                                                L: {Number(group.male).toLocaleString('id-ID')} | P: {Number(group.female).toLocaleString('id-ID')}
                                             </span>
                                             <span className="font-bold text-zinc-900 dark:text-white">
-                                                {group.count} Jiwa ({group.percent}%)
+                                                {Number(group.count).toLocaleString('id-ID')} Jiwa ({group.percent}%)
                                             </span>
                                         </div>
                                     </div>
@@ -366,11 +394,11 @@ export default function Demographics() {
                                     <div className="h-2.5 w-full rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden flex">
                                         <div
                                             className="h-full bg-red-600 transition-all duration-500"
-                                            style={{ width: `${(group.male / stats.total) * 100 * 2}%` }}
+                                            style={{ width: `${(Number(group.male) / (stats.total || 1)) * 100 * 2}%` }}
                                         />
                                         <div
                                             className="h-full bg-amber-500 transition-all duration-500"
-                                            style={{ width: `${(group.female / stats.total) * 100 * 2}%` }}
+                                            style={{ width: `${(Number(group.female) / (stats.total || 1)) * 100 * 2}%` }}
                                         />
                                     </div>
                                 </div>
@@ -381,11 +409,15 @@ export default function Demographics() {
                         <div className="flex items-center justify-center gap-6 pt-3 border-t border-zinc-100 dark:border-zinc-800 text-xs">
                             <div className="flex items-center gap-1.5">
                                 <span className="h-3 w-3 rounded-full bg-red-600" />
-                                <span className="text-zinc-600 dark:text-zinc-400 font-medium">Laki-Laki (1.724 Jiwa)</span>
+                                <span className="text-zinc-600 dark:text-zinc-400 font-medium">
+                                    Laki-Laki ({stats.male.toLocaleString('id-ID')} Jiwa)
+                                </span>
                             </div>
                             <div className="flex items-center gap-1.5">
                                 <span className="h-3 w-3 rounded-full bg-amber-500" />
-                                <span className="text-zinc-600 dark:text-zinc-400 font-medium">Perempuan (1.758 Jiwa)</span>
+                                <span className="text-zinc-600 dark:text-zinc-400 font-medium">
+                                    Perempuan ({stats.female.toLocaleString('id-ID')} Jiwa)
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -401,10 +433,10 @@ export default function Demographics() {
                         </div>
                         <div>
                             <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-white leading-tight">
-                                Tingkat Pendidikan Terakhir Masyarakat
+                                {demographicsSettings.education_title || 'Tingkat Pendidikan Terakhir Masyarakat'}
                             </h2>
                             <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                                Jenjang pendidikan formal penduduk usia sekolah ke atas
+                                {demographicsSettings.education_subtitle || 'Jenjang pendidikan formal penduduk usia sekolah ke atas'}
                             </p>
                         </div>
                     </div>
@@ -420,7 +452,7 @@ export default function Demographics() {
                                         {edu.label}
                                     </span>
                                     <p className="text-xl font-bold text-zinc-900 dark:text-white">
-                                        {edu.count.toLocaleString('id-ID')} <span className="text-xs font-normal text-zinc-400">Jiwa</span>
+                                        {Number(edu.count).toLocaleString('id-ID')} <span className="text-xs font-normal text-zinc-400">Jiwa</span>
                                     </p>
                                 </div>
 
@@ -432,7 +464,7 @@ export default function Demographics() {
                                     <div className="h-1.5 w-full rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
                                         <div
                                             className="h-full bg-gradient-to-r from-red-600 to-amber-500 rounded-full"
-                                            style={{ width: `${edu.percent}%` }}
+                                            style={{ width: `${Math.min(edu.percent, 100)}%` }}
                                         />
                                     </div>
                                 </div>
