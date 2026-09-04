@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { router } from '@inertiajs/react';
+import { router, Link } from '@inertiajs/react';
 import AppLayout from '../../Layouts/AppLayout';
 import SeoHead from '../../Components/SEO/SeoHead';
 import PageHeader from '../../Components/UI/PageHeader';
-import { Sparkles, Phone, MapPin, Tag, ShoppingBag, ChevronDown, Check, Search } from 'lucide-react';
+import { Sparkles, Phone, MapPin, Tag, ShoppingBag, ChevronDown, Check, Search, ChevronRight, MessageCircle } from 'lucide-react';
 
 export default function PotentialsIndex({
     potentials = [],
@@ -166,70 +166,84 @@ export default function PotentialsIndex({
                         {filteredPotentials.map((item) => (
                             <div
                                 key={item.id}
-                                className="group rounded-xl sm:rounded-2xl overflow-hidden bg-gradient-to-b from-red-700 via-red-800 to-red-950 dark:from-red-900/90 dark:via-red-950 dark:to-[#1a0507] text-white shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 flex flex-col"
+                                className="group rounded-xl sm:rounded-2xl overflow-hidden bg-gradient-to-b from-red-700 via-red-800 to-red-950 dark:from-red-900/90 dark:via-red-950 dark:to-[#1a0507] text-white shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 flex flex-col justify-between"
                             >
-                                {/* Image */}
-                                <div className="aspect-[4/3] sm:aspect-auto sm:h-44 w-full overflow-hidden bg-zinc-950 relative">
-                                    <img
-                                        src={item.image || 'https://images.unsplash.com/photo-1534043464124-3be32fe00099?auto=format&fit=crop&w=800&q=80'}
-                                        alt={item.title}
-                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                        loading="lazy"
-                                    />
-                                    <div className="absolute top-2 left-2 sm:top-3 sm:left-3">
-                                        <span className="px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-md bg-black/75 backdrop-blur-md border border-white/20 text-amber-300 text-[8.5px] sm:text-[10px] font-bold shadow-xs truncate max-w-[120px] sm:max-w-none block">
-                                            {item.category}
-                                        </span>
+                                {/* Clickable Link Area: Image + Details */}
+                                <Link
+                                    href={`/potensi/${item.slug}`}
+                                    className="flex-1 flex flex-col cursor-pointer"
+                                >
+                                    {/* Image */}
+                                    <div className="aspect-[4/3] sm:aspect-auto sm:h-44 w-full overflow-hidden bg-zinc-950 relative">
+                                        <img
+                                            src={item.image || 'https://images.unsplash.com/photo-1534043464124-3be32fe00099?auto=format&fit=crop&w=800&q=80'}
+                                            alt={item.title}
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                            loading="lazy"
+                                        />
+                                        <div className="absolute top-2 left-2 sm:top-3 sm:left-3">
+                                            <span className="px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-md bg-black/75 backdrop-blur-md border border-white/20 text-amber-300 text-[8.5px] sm:text-[10px] font-bold shadow-xs truncate max-w-[120px] sm:max-w-none block">
+                                                {item.category}
+                                            </span>
+                                        </div>
                                     </div>
-                                </div>
 
-                                {/* Content */}
-                                <div className="p-2.5 sm:p-4 flex-1 flex flex-col gap-1.5 sm:gap-2.5">
-                                    <h3 className="text-xs sm:text-sm font-bold text-white group-hover:text-amber-300 transition-colors leading-snug line-clamp-2">
-                                        {item.title}
-                                    </h3>
+                                    {/* Content */}
+                                    <div className="p-2.5 sm:p-4 flex-1 flex flex-col gap-1.5 sm:gap-2.5">
+                                        <h3 className="text-xs sm:text-sm font-bold text-white group-hover:text-amber-300 transition-colors leading-snug line-clamp-2">
+                                            {item.title}
+                                        </h3>
 
-                                    {item.price_range && (
-                                        <p className="text-[10px] sm:text-xs font-bold text-amber-300 flex items-center gap-1">
-                                            <Tag className="h-2.5 w-2.5 sm:h-3 sm:w-3 shrink-0" />
-                                            <span className="truncate">{item.price_range}</span>
+                                        {item.price_range && (
+                                            <p className="text-[10px] sm:text-xs font-bold text-amber-300 flex items-center gap-1 font-mono">
+                                                <Tag className="h-2.5 w-2.5 sm:h-3 sm:w-3 shrink-0" />
+                                                <span className="truncate">{item.price_range}</span>
+                                            </p>
+                                        )}
+
+                                        <p className="text-[9.5px] sm:text-[11px] text-red-100/80 leading-relaxed line-clamp-2 sm:line-clamp-3">
+                                            {item.description}
                                         </p>
-                                    )}
 
-                                    <p className="text-[9.5px] sm:text-[11px] text-red-100/80 leading-relaxed line-clamp-2 sm:line-clamp-3">
-                                        {item.description}
-                                    </p>
-
-                                    <div className="space-y-0.5 sm:space-y-1 text-[9px] sm:text-[11px] text-red-200/70 mt-auto pt-1.5 sm:pt-2 border-t border-white/10">
-                                        {item.owner_name && (
-                                            <div className="flex items-center gap-1 sm:gap-1.5 truncate">
-                                                <ShoppingBag className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-amber-300/80 shrink-0" />
-                                                <span className="truncate">Produsen: <strong className="text-white/90">{item.owner_name}</strong></span>
-                                            </div>
-                                        )}
-                                        {item.location && (
-                                            <div className="flex items-center gap-1 sm:gap-1.5 truncate">
-                                                <MapPin className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-amber-300/80 shrink-0" />
-                                                <span className="truncate">{item.location}</span>
-                                            </div>
-                                        )}
+                                        <div className="space-y-0.5 sm:space-y-1 text-[9px] sm:text-[11px] text-red-200/70 mt-auto pt-1.5 sm:pt-2 border-t border-white/10">
+                                            {item.owner_name && (
+                                                <div className="flex items-center gap-1 sm:gap-1.5 truncate">
+                                                    <ShoppingBag className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-amber-300/80 shrink-0" />
+                                                    <span className="truncate">Produsen: <strong className="text-white/90">{item.owner_name}</strong></span>
+                                                </div>
+                                            )}
+                                            {item.location && (
+                                                <div className="flex items-center gap-1 sm:gap-1.5 truncate">
+                                                    <MapPin className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-amber-300/80 shrink-0" />
+                                                    <span className="truncate">{item.location}</span>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
-                                </div>
+                                </Link>
 
-                                {/* Footer */}
-                                {item.contact_phone && (
-                                    <div className="p-2 sm:p-3 pt-0">
+                                {/* Footer Action Buttons: Lihat Detail + WA Order */}
+                                <div className="p-2 sm:p-3 pt-0 flex items-center gap-1.5 border-t border-white/10 mt-1">
+                                    <Link
+                                        href={`/potensi/${item.slug}`}
+                                        className="flex-1 inline-flex items-center justify-center gap-1 py-1.5 sm:py-2 px-2 sm:px-3 rounded-lg text-[10px] sm:text-xs font-bold bg-white/15 hover:bg-white/25 text-white transition-all"
+                                    >
+                                        <span>Lihat Detail</span>
+                                        <ChevronRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
+                                    </Link>
+
+                                    {(item.contact_whatsapp || item.contact_phone) && (
                                         <a
-                                            href={`https://wa.me/62${item.contact_phone.replace(/[^0-9]/g, '').replace(/^0/, '')}?text=Halo%20saya%20tertarik%20dengan%20produk%20${encodeURIComponent(item.title)}%20Desa%20Karangwungu`}
+                                            href={`https://wa.me/${(item.contact_whatsapp || item.contact_phone).replace(/[^0-9]/g, '').replace(/^0/, '62')}?text=${encodeURIComponent(`Halo saya tertarik dengan produk ${item.title} Desa Karangwungu`)}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="w-full inline-flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 sm:py-2 px-2 sm:px-3 rounded-lg text-[10px] sm:text-xs font-bold bg-black/30 hover:bg-black/50 text-emerald-300 border border-white/10 hover:border-emerald-400/40 transition-all cursor-pointer"
+                                            title="Chat Penjual via WhatsApp"
+                                            className="inline-flex items-center justify-center p-1.5 sm:p-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white transition-all shrink-0 cursor-pointer shadow-xs"
                                         >
-                                            <Phone className="h-3 w-3 sm:h-3.5 sm:w-3.5 shrink-0" />
-                                            <span className="truncate">Hubungi Penjual</span>
+                                            <MessageCircle className="h-3.5 w-3.5" />
                                         </a>
-                                    </div>
-                                )}
+                                    )}
+                                </div>
                             </div>
                         ))}
                     </div>

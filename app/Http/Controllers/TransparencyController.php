@@ -44,90 +44,99 @@ class TransparencyController extends Controller
         $totalFinancingBudget = $financings->sum('budget_amount');
         $totalFinancingRealized = $financings->sum('realized_amount');
 
-        // Color & code map for known income types
-        $incomeMeta = [
-            'Dana Desa (DD)' => ['code' => 'DD', 'color' => '#dc2626'],
-            'Alokasi Dana Desa (ADD)' => ['code' => 'ADD', 'color' => '#ea580c'],
-            'Bantuan Keuangan APBD Kabupaten (PBK)' => ['code' => 'PBK', 'color' => '#2563eb'],
-            'Bantuan Keuangan Kabupaten (PBK)' => ['code' => 'PBK', 'color' => '#2563eb'],
-            'Pendapatan Asli Desa (PAD)' => ['code' => 'PAD', 'color' => '#d97706'],
-            'Bagi Hasil Pajak & Retribusi Daerah (PBH)' => ['code' => 'PBH', 'color' => '#059669'],
-            'Bagi Hasil Pajak & Retribusi (PBH)' => ['code' => 'PBH', 'color' => '#059669'],
-            'Lain-Lain Pendapatan Asli Desa Yang Sah (DLL)' => ['code' => 'DLL', 'color' => '#7c3aed'],
-            'Pendapatan Lain-Lain Sah (DLL)' => ['code' => 'DLL', 'color' => '#7c3aed'],
-            'Bantuan Keuangan APBD Provinsi (PBP)' => ['code' => 'PBP', 'color' => '#0891b2'],
+        // Palette of colors for income categories
+        $palette = ['#dc2626', '#ea580c', '#d97706', '#059669', '#2563eb', '#7c3aed', '#0891b2', '#ec4899'];
+        $codeColorMap = [
+            'DD' => '#dc2626',
+            'ADD' => '#ea580c',
+            'PBK' => '#2563eb',
+            'PAD' => '#d97706',
+            'PBH' => '#059669',
+            'DLL' => '#7c3aed',
+            'PBP' => '#0891b2',
         ];
 
         // Format income list with calculated percent
-        $formattedIncomes = $incomes->map(function ($item) use ($totalIncomeBudget, $incomeMeta) {
+        $formattedIncomes = $incomes->values()->map(function ($item, $index) use ($totalIncomeBudget, $codeColorMap, $palette) {
             $bAmount = (int) $item->budget_amount;
-            $meta = $incomeMeta[$item->category_name] ?? ['code' => 'LAIN', 'color' => '#64748b'];
+
+            // Determine code from model or category name
+            $code = !empty($item->code) ? trim($item->code) : null;
+            if (!$code && preg_match('/\(([^)]+)\)/', $item->category_name, $m)) {
+                $code = strtoupper(trim($m[1]));
+            }
+            if (!$code) {
+                $code = 'POS ' . ($index + 1);
+            }
+
+            $color = $codeColorMap[$code] ?? $palette[$index % count($palette)];
 
             return [
                 'id' => $item->id,
                 'name' => $item->category_name,
                 'desc' => $item->subcategory_name ?: 'Alokasi Penerimaan Desa',
-                'code' => $meta['code'],
-                'color' => $meta['color'],
+                'code' => $code,
+                'color' => $color,
                 'amount' => $bAmount,
                 'realized' => (int) $item->realized_amount,
-                'percent' => $totalIncomeBudget > 0 ? number_format(($bAmount / $totalIncomeBudget) * 100, 2) : '0.00',
+                'percent' => $totalIncomeBudget > 0 ? number_format(($bAmount / $totalIncomeBudget) * 2, 2) : '0.00', // recalculated below
             ];
         });
 
-        // 5 Official Expense Bidang
-        $officialBidangDefs = [
-            [
-                'key' => 'Bidang Pelaksanaan Pembangunan Desa',
-                'title' => 'Pelaksanaan Pembangunan Desa',
-                'color' => '#dc2626',
-                'icon' => 'Hammer',
-            ],
-            [
-                'key' => 'Bidang Penyelenggaraan Pemerintahan Desa',
-                'title' => 'Penyelenggaraan Pemerintahan',
-                'color' => '#2563eb',
-                'icon' => 'Landmark',
-            ],
-            [
-                'key' => 'Bidang Penanggulangan Bencana',
-                'title' => 'Penanggulangan Bencana & Mendesak',
-                'color' => '#ea580c',
-                'icon' => 'AlertTriangle',
-            ],
-            [
-                'key' => 'Bidang Pemberdayaan Masyarakat',
-                'title' => 'Pemberdayaan Masyarakat',
-                'color' => '#7c3aed',
-                'icon' => 'Users',
-            ],
-            [
-                'key' => 'Bidang Pembinaan Kemasyarakatan',
-                'title' => 'Pembinaan Kemasyarakatan',
-                'color' => '#059669',
-                'icon' => 'HeartHandshake',
-            ],
+        // Recalculate percent cleanly
+        $formattedIncomes = $formattedIncomes->map(function ($item) use ($totalIncomeBudget) {
+            $item['percent'] = $totalIncomeBudget > 0 ? number_format(($item['amount'] / $totalIncomeBudget) * 100, 2) : '0.00';
+            return $item;
+        });
+
+        // Dynamic Expense Bidang from database records
+        $paletteBidang = ['#dc2626', '#2563eb', '#ea580c', '#7c3aed', '#059669', '#0891b2', '#d97706', '#db2777'];
+        $officialMeta = [
+            'pembangunan' => ['color' => '#dc2626', 'icon' => 'Hammer'],
+            'pemerintahan' => ['color' => '#2563eb', 'icon' => 'Landmark'],
+            'bencana' => ['color' => '#ea580c', 'icon' => 'AlertTriangle'],
+            'pemberdayaan' => ['color' => '#7c3aed', 'icon' => 'Users'],
+            'pembinaan' => ['color' => '#059669', 'icon' => 'HeartHandshake'],
         ];
 
+        $groupedExpenses = $expenses->groupBy('category_name');
         $expenseCategories = [];
-        foreach ($officialBidangDefs as $def) {
-            $matchingItems = $expenses->filter(function ($e) use ($def) {
-                return str_contains(strtolower($e->category_name), strtolower(str_replace('Bidang ', '', $def['key'])));
-            })->values();
+        $catIndex = 0;
 
-            $subtotal = $matchingItems->sum('budget_amount');
-            $subtotalRealized = $matchingItems->sum('realized_amount');
+        foreach ($groupedExpenses as $catName => $items) {
+            $subtotal = $items->sum('budget_amount');
+            $subtotalRealized = $items->sum('realized_amount');
+
+            $color = $paletteBidang[$catIndex % count($paletteBidang)];
+            $icon = 'Layers';
+            $lower = strtolower($catName);
+            foreach ($officialMeta as $keyword => $meta) {
+                if (str_contains($lower, $keyword)) {
+                    $color = $meta['color'];
+                    $icon = $meta['icon'];
+                    break;
+                }
+            }
+
+            // If a custom icon is saved on database records, use it
+            $firstCustom = $items->first(fn($i) => !empty($i->icon));
+            if ($firstCustom && !empty($firstCustom->icon)) {
+                $icon = $firstCustom->icon;
+            }
+
+            $title = preg_replace('/^Bidang\s+/i', '', $catName);
 
             $expenseCategories[] = [
-                'key' => $def['key'],
-                'title' => $def['title'],
-                'color' => $def['color'],
-                'icon' => $def['icon'],
-                'items' => $matchingItems->toArray(),
+                'key' => $catName,
+                'title' => $title ?: $catName,
+                'color' => $color,
+                'icon' => $icon,
+                'items' => $items->values()->toArray(),
                 'subtotal' => $subtotal,
                 'subtotal_realized' => $subtotalRealized,
                 'percent' => $totalExpenseBudget > 0 ? number_format(($subtotal / $totalExpenseBudget) * 100, 2) : '0.00',
             ];
+            $catIndex++;
         }
 
         return Inertia::render('Transparency/Index', [

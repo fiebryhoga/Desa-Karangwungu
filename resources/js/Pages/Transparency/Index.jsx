@@ -16,6 +16,21 @@ import {
     CheckCircle2,
     DollarSign,
     ArrowUpRight,
+    Sprout,
+    Trees,
+    GraduationCap,
+    HeartPulse,
+    Briefcase,
+    ShoppingBag,
+    Sparkles,
+    Trophy,
+    ShieldCheck,
+    Home,
+    Coins,
+    Lightbulb,
+    Truck,
+    Wifi,
+    BookOpen,
 } from 'lucide-react';
 
 // Helper to compute SVG Donut Arc Path
@@ -205,13 +220,32 @@ export default function TransparencyIndex({
         color: group.color,
     }));
 
+    const iconMap = {
+        Landmark,
+        Hammer,
+        HeartHandshake,
+        Users,
+        AlertTriangle,
+        Sprout,
+        Trees,
+        GraduationCap,
+        HeartPulse,
+        Briefcase,
+        ShoppingBag,
+        Sparkles,
+        Trophy,
+        ShieldCheck,
+        Home,
+        Coins,
+        Lightbulb,
+        Truck,
+        Wifi,
+        BookOpen,
+        Layers,
+    };
+
     const getBidangIcon = (iconName) => {
-        if (iconName === 'Landmark') return Landmark;
-        if (iconName === 'Hammer') return Hammer;
-        if (iconName === 'HeartHandshake') return HeartHandshake;
-        if (iconName === 'Users') return Users;
-        if (iconName === 'AlertTriangle') return AlertTriangle;
-        return Layers;
+        return iconMap[iconName] || Layers;
     };
 
     return (
@@ -416,7 +450,7 @@ export default function TransparencyIndex({
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 sm:p-5 rounded-lg bg-gradient-to-r from-red-700 via-red-800 to-red-950 text-white border border-red-500/40 shadow-lg">
                         <div>
                             <h2 className="text-base sm:text-lg font-black text-white">
-                                Belanja Desa 5 Bidang (TA {selectedYear})
+                                Belanja Desa ({expenseCategories.length} Bidang) – TA {selectedYear}
                             </h2>
                             <p className="text-xs text-red-200 font-medium">
                                 Pengeluaran anggaran untuk pembangunan infrastruktur, tata kelola pemerintahan, pembinaan, dan penanggulangan bencana.
@@ -560,61 +594,7 @@ export default function TransparencyIndex({
                     </div>
                 </section>
 
-                {/* ========================================================= */}
-                {/* 6. PEMBIAYAAN DESA (JIKA ADA)                             */}
-                {/* ========================================================= */}
-                {financings && financings.length > 0 && (
-                    <section id="pembiayaan-desa" className="space-y-4 pt-4 border-t border-zinc-200 dark:border-zinc-800">
-                        <div className="flex items-center justify-between p-4 rounded-lg bg-gradient-to-r from-red-700 to-red-900 text-white border border-red-500/40 shadow-sm">
-                            <div>
-                                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                                    <DollarSign className="h-4 w-4 text-amber-400" />
-                                    <span>Pembiayaan Desa (TA {selectedYear})</span>
-                                </h3>
-                                <p className="text-[11px] text-red-200">
-                                    Sisa Lebih Perhitungan Anggaran (SILPA) dan penyertaan modal desa.
-                                </p>
-                            </div>
-                            <span className="text-xs font-bold text-amber-300">
-                                Total: {formatRupiah(summary?.financing_budget || 0)}
-                            </span>
-                        </div>
 
-                        <div className="rounded-lg overflow-hidden border border-red-500/40 bg-gradient-to-b from-red-800 to-red-950 text-white shadow-sm">
-                            <table className="w-full text-left text-xs">
-                                <thead className="bg-black/30 text-[10px] font-bold text-amber-300 uppercase tracking-wider border-b border-red-500/20">
-                                    <tr>
-                                        <th className="py-2.5 px-3 w-10 text-center">No</th>
-                                        <th className="py-2.5 px-3">Uraian Pembiayaan</th>
-                                        <th className="py-2.5 px-4 text-right">Jumlah Anggaran</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-red-500/20">
-                                    {financings.map((fin, fIdx) => (
-                                        <tr key={fIdx} className="hover:bg-black/20">
-                                            <td className="py-2.5 px-3 text-center text-red-300 font-bold">
-                                                {fIdx + 1}
-                                            </td>
-                                            <td className="py-2.5 px-3">
-                                                <span className="font-bold text-white block">
-                                                    {fin.category_name}
-                                                </span>
-                                                {fin.subcategory_name && (
-                                                    <span className="text-[11px] text-red-200 block">
-                                                        {fin.subcategory_name}
-                                                    </span>
-                                                )}
-                                            </td>
-                                            <td className="py-2.5 px-4 text-right font-mono font-bold text-white">
-                                                {formatRupiah(fin.budget_amount)}
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </section>
-                )}
             </div>
         </AppLayout>
     );

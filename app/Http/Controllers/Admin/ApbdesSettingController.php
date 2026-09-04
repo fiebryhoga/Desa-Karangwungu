@@ -26,13 +26,13 @@ class ApbdesSettingController extends Controller
      * Standard income categories.
      */
     public const OFFICIAL_INCOME_CATEGORIES = [
-        ['category_name' => 'Dana Desa (DD)', 'subcategory_name' => 'Pemerintah Pusat (APBN)'],
-        ['category_name' => 'Alokasi Dana Desa (ADD)', 'subcategory_name' => 'Pemerintah Kabupaten Lamongan'],
-        ['category_name' => 'Bantuan Keuangan APBD Kabupaten (PBK)', 'subcategory_name' => 'Bantuan Keuangan Khusus Kabupaten'],
-        ['category_name' => 'Pendapatan Asli Desa (PAD)', 'subcategory_name' => 'Hasil Tanah Kas Desa & Pemanfaatan Aset'],
-        ['category_name' => 'Bagi Hasil Pajak & Retribusi Daerah (PBH)', 'subcategory_name' => 'Bagi Hasil Pajak & Retribusi Daerah'],
-        ['category_name' => 'Lain-Lain Pendapatan Asli Desa Yang Sah (DLL)', 'subcategory_name' => 'Pendapatan Lain-Lain Yang Sah'],
-        ['category_name' => 'Bantuan Keuangan APBD Provinsi (PBP)', 'subcategory_name' => 'Pemerintah Provinsi Jawa Timur'],
+        ['category_name' => 'Dana Desa (DD)', 'code' => 'DD', 'subcategory_name' => 'Pemerintah Pusat (APBN)'],
+        ['category_name' => 'Alokasi Dana Desa (ADD)', 'code' => 'ADD', 'subcategory_name' => 'Pemerintah Kabupaten Lamongan'],
+        ['category_name' => 'Bantuan Keuangan APBD Kabupaten (PBK)', 'code' => 'PBK', 'subcategory_name' => 'Bantuan Keuangan Khusus Kabupaten'],
+        ['category_name' => 'Pendapatan Asli Desa (PAD)', 'code' => 'PAD', 'subcategory_name' => 'Hasil Tanah Kas Desa & Pemanfaatan Aset'],
+        ['category_name' => 'Bagi Hasil Pajak & Retribusi Daerah (PBH)', 'code' => 'PBH', 'subcategory_name' => 'Bagi Hasil Pajak & Retribusi Daerah'],
+        ['category_name' => 'Lain-Lain Pendapatan Asli Desa Yang Sah (DLL)', 'code' => 'DLL', 'subcategory_name' => 'Pendapatan Lain-Lain Yang Sah'],
+        ['category_name' => 'Bantuan Keuangan APBD Provinsi (PBP)', 'code' => 'PBP', 'subcategory_name' => 'Pemerintah Provinsi Jawa Timur'],
     ];
 
     /**
@@ -72,10 +72,21 @@ class ApbdesSettingController extends Controller
                     'year' => $selectedYear,
                     'type' => 'income',
                     'category_name' => $item['category_name'],
+                    'code' => $item['code'],
                     'subcategory_name' => $item['subcategory_name'],
                     'budget_amount' => 0,
                     'realized_amount' => 0,
                 ];
+            });
+        } else {
+            // Ensure every income has a code (extract from parentheses if null)
+            $incomes = $incomes->map(function ($item) {
+                if (empty($item->code) && !empty($item->category_name)) {
+                    if (preg_match('/\(([^)]+)\)/', $item->category_name, $m)) {
+                        $item->code = strtoupper(trim($m[1]));
+                    }
+                }
+                return $item;
             });
         }
 
@@ -118,20 +129,22 @@ class ApbdesSettingController extends Controller
             'year' => ['required', 'integer', 'min:2000', 'max:2100'],
             'incomes' => ['nullable', 'array'],
             'incomes.*.category_name' => ['required', 'string', 'max:255'],
+            'incomes.*.code' => ['nullable', 'string', 'max:20'],
             'incomes.*.subcategory_name' => ['nullable', 'string', 'max:255'],
-            'incomes.*.budget_amount' => ['required', 'numeric', 'min:0'],
+            'incomes.*.budget_amount' => ['nullable', 'numeric', 'min:0'],
             'incomes.*.realized_amount' => ['nullable', 'numeric', 'min:0'],
 
             'expenses' => ['nullable', 'array'],
             'expenses.*.category_name' => ['required', 'string', 'max:255'],
-            'expenses.*.subcategory_name' => ['required', 'string', 'max:255'],
-            'expenses.*.budget_amount' => ['required', 'numeric', 'min:0'],
+            'expenses.*.subcategory_name' => ['nullable', 'string', 'max:255'],
+            'expenses.*.icon' => ['nullable', 'string', 'max:50'],
+            'expenses.*.budget_amount' => ['nullable', 'numeric', 'min:0'],
             'expenses.*.realized_amount' => ['nullable', 'numeric', 'min:0'],
 
             'financings' => ['nullable', 'array'],
             'financings.*.category_name' => ['required', 'string', 'max:255'],
             'financings.*.subcategory_name' => ['nullable', 'string', 'max:255'],
-            'financings.*.budget_amount' => ['required', 'numeric', 'min:0'],
+            'financings.*.budget_amount' => ['nullable', 'numeric', 'min:0'],
             'financings.*.realized_amount' => ['nullable', 'numeric', 'min:0'],
         ]);
 
@@ -144,13 +157,22 @@ class ApbdesSettingController extends Controller
             // Insert Income Items
             if (!empty($validated['incomes'])) {
                 foreach ($validated['incomes'] as $item) {
+                    $bAmt = (int) ($item['budget_amount'] ?? 0);
+                    $rAmt = isset($item['realized_amount']) && $item['realized_amount'] !== '' ? (int) $item['realized_amount'] : $bAmt;
+
+                    $code = !empty($item['code']) ? strtoupper(trim($item['code'])) : null;
+                    if (!$code && !empty($item['category_name']) && preg_match('/\(([^)]+)\)/', $item['category_name'], $m)) {
+                        $code = strtoupper(trim($m[1]));
+                    }
+
                     ApbdesRecord::create([
                         'year' => $year,
                         'type' => 'income',
                         'category_name' => $item['category_name'],
+                        'code' => $code,
                         'subcategory_name' => $item['subcategory_name'] ?? null,
-                        'budget_amount' => (int) ($item['budget_amount'] ?? 0),
-                        'realized_amount' => (int) ($item['realized_amount'] ?? 0),
+                        'budget_amount' => $bAmt,
+                        'realized_amount' => $rAmt,
                     ]);
                 }
             }
@@ -158,13 +180,17 @@ class ApbdesSettingController extends Controller
             // Insert Expense Items
             if (!empty($validated['expenses'])) {
                 foreach ($validated['expenses'] as $item) {
+                    $bAmt = (int) ($item['budget_amount'] ?? 0);
+                    $rAmt = isset($item['realized_amount']) && $item['realized_amount'] !== '' ? (int) $item['realized_amount'] : $bAmt;
+
                     ApbdesRecord::create([
                         'year' => $year,
                         'type' => 'expense',
                         'category_name' => $item['category_name'],
-                        'subcategory_name' => $item['subcategory_name'],
-                        'budget_amount' => (int) ($item['budget_amount'] ?? 0),
-                        'realized_amount' => (int) ($item['realized_amount'] ?? 0),
+                        'subcategory_name' => !empty($item['subcategory_name']) ? $item['subcategory_name'] : 'Kegiatan Belanja',
+                        'icon' => !empty($item['icon']) ? $item['icon'] : 'Layers',
+                        'budget_amount' => $bAmt,
+                        'realized_amount' => $rAmt,
                     ]);
                 }
             }
@@ -172,13 +198,16 @@ class ApbdesSettingController extends Controller
             // Insert Financing Items
             if (!empty($validated['financings'])) {
                 foreach ($validated['financings'] as $item) {
+                    $bAmt = (int) ($item['budget_amount'] ?? 0);
+                    $rAmt = isset($item['realized_amount']) && $item['realized_amount'] !== '' ? (int) $item['realized_amount'] : $bAmt;
+
                     ApbdesRecord::create([
                         'year' => $year,
                         'type' => 'financing',
                         'category_name' => $item['category_name'],
                         'subcategory_name' => $item['subcategory_name'] ?? null,
-                        'budget_amount' => (int) ($item['budget_amount'] ?? 0),
-                        'realized_amount' => (int) ($item['realized_amount'] ?? 0),
+                        'budget_amount' => $bAmt,
+                        'realized_amount' => $rAmt,
                     ]);
                 }
             }

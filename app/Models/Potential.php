@@ -10,4 +10,9 @@ class Potential extends Model
     use HasFactory;
 
     protected $guarded = [];
+
+    protected $casts = [
+        'features' => 'array',
+        'gallery' => 'array',
+    ];
 }

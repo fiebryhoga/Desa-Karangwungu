@@ -49,6 +49,7 @@ Route::get('/transparansi', [TransparencyController::class, 'index'])->name('tra
 
 // Potensi & UMKM Desa
 Route::get('/potensi', [PotentialController::class, 'index'])->name('potentials.index');
+Route::get('/potensi/{slug}', [PotentialController::class, 'show'])->name('potentials.show');
 
 // Galeri Dokumentasi & Foto Desa
 Route::get('/galeri', [GalleryController::class, 'index'])->name('gallery.index');

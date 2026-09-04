@@ -37,4 +37,19 @@ class PotentialController extends Controller
             'categories' => $categories,
         ]);
     }
+
+    public function show($slug)
+    {
+        $potential = Potential::where('slug', $slug)->firstOrFail();
+
+        $relatedPotentials = Potential::where('id', '!=', $potential->id)
+            ->orderByRaw("CASE WHEN category = ? THEN 0 ELSE 1 END", [$potential->category])
+            ->take(4)
+            ->get();
+
+        return Inertia::render('Potentials/Show', [
+            'potential' => $potential,
+            'relatedPotentials' => $relatedPotentials,
+        ]);
+    }
 }

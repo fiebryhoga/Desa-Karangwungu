@@ -50,6 +50,15 @@ class SeoController extends Controller
             $xml .= '</url>';
         }
 
+        foreach ($potentials as $potential) {
+            $xml .= '<url>';
+            $xml .= '<loc>' . htmlspecialchars($baseUrl . '/potensi/' . $potential->slug) . '</loc>';
+            $xml .= '<lastmod>' . $potential->updated_at->format('Y-m-d') . '</lastmod>';
+            $xml .= '<changefreq>weekly</changefreq>';
+            $xml .= '<priority>0.8</priority>';
+            $xml .= '</url>';
+        }
+
         $xml .= '</urlset>';
 
         return response($xml, 200, [
