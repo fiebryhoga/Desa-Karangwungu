@@ -167,6 +167,52 @@ class ProfileController extends Controller
 
     public function organizations()
     {
-        return Inertia::render('Profile/Organizations');
+        $settings = SiteSetting::getGroup('organizations');
+
+        if (isset($settings['organizations_list']) && is_string($settings['organizations_list'])) {
+            $settings['organizations_list_data'] = json_decode($settings['organizations_list'], true) ?: [];
+        } else {
+            $settings['organizations_list_data'] = is_array($settings['organizations_list'] ?? null) ? $settings['organizations_list'] : [];
+        }
+
+        return Inertia::render('Profile/Organizations', [
+            'organizationsSettings' => $settings,
+        ]);
+    }
+
+    public function organizationShow($id)
+    {
+        $settings = SiteSetting::getGroup('organizations');
+
+        $list = [];
+        if (isset($settings['organizations_list']) && is_string($settings['organizations_list'])) {
+            $list = json_decode($settings['organizations_list'], true) ?: [];
+        } elseif (is_array($settings['organizations_list'] ?? null)) {
+            $list = $settings['organizations_list'];
+        }
+
+        // Find organization by id
+        $organization = null;
+        foreach ($list as $item) {
+            if (isset($item['id']) && strtolower($item['id']) === strtolower($id)) {
+                $organization = $item;
+                break;
+            }
+        }
+
+        if (!$organization) {
+            abort(404, 'Data lembaga atau organisasi kemasyarakatan desa tidak ditemukan.');
+        }
+
+        // Filter other organizations for sidebar recommendations
+        $otherOrganizations = array_values(array_filter($list, function ($item) use ($organization) {
+            return ($item['id'] ?? null) !== ($organization['id'] ?? null);
+        }));
+
+        return Inertia::render('Profile/OrganizationShow', [
+            'organization' => $organization,
+            'otherOrganizations' => $otherOrganizations,
+            'organizationsSettings' => $settings,
+        ]);
     }
 }

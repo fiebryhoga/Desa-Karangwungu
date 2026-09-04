@@ -13,6 +13,7 @@
     <meta name="geo.position" content="-7.0396;112.3551">
     <meta name="ICBM" content="-7.0396, 112.3551">
     <meta name="theme-color" content="#070709">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <defs>
+    <linearGradient id="ktGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fde047" />
+      <stop offset="100%" stop-color="#ca8a04" />
+    </linearGradient>
+    <linearGradient id="ktBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e40af" />
+      <stop offset="100%" stop-color="#1e3a8a" />
+    </linearGradient>
+    <linearGradient id="ktFlame" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#dc2626" />
+      <stop offset="50%" stop-color="#ea580c" />
+      <stop offset="100%" stop-color="#facc15" />
+    </linearGradient>
+  </defs>
+  <!-- Outer Ring Blue -->
+  <circle cx="100" cy="100" r="96" fill="url(#ktBlue)" />
+  <circle cx="100" cy="100" r="88" fill="#1e3a8a" stroke="#facc15" stroke-width="2" />
+  <!-- Center Shield Yellow -->
+  <path d="M100 48 Q140 48 140 85 Q140 125 100 148 Q60 125 60 85 Q60 48 100 48 Z" fill="url(#ktGold)" stroke="#ffffff" stroke-width="2" />
+  
+  <!-- Inner White Disc -->
+  <circle cx="100" cy="96" r="38" fill="#ffffff" stroke="#1e40af" stroke-width="2" />
+  
+  <!-- Lotus Flower (Bunga Teratai) Silhouette -->
+  <path d="M100 74 C94 84 94 98 100 108 C106 98 106 84 100 74 Z" fill="#2563eb" />
+  <path d="M98 84 C85 88 80 102 92 110 C96 102 98 94 98 84 Z" fill="#3b82f6" />
+  <path d="M102 84 C115 88 120 102 108 110 C104 102 102 94 102 84 Z" fill="#3b82f6" />
+  
+  <!-- Eternal Flame (Obor Menyala) at Center -->
+  <path d="M100 68 C96 78 103 83 100 90 C105 84 106 74 100 68 Z" fill="url(#ktFlame)" />
+  
+  <!-- 4-Spoke Wheel of Progress / Roda Bergerak -->
+  <circle cx="100" cy="112" r="8" fill="none" stroke="#1e40af" stroke-width="2.5" />
+  <circle cx="100" cy="112" r="3" fill="#dc2626" />
+
+  <!-- Ribbon at Bottom of Shield -->
+  <path d="M62 138 Q100 152 138 138 L134 148 Q100 162 66 148 Z" fill="#1e40af" stroke="#facc15" stroke-width="1.5" />
+  <text x="100" y="146" font-family="sans-serif" font-size="6.5" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="1">ADITYA KARYA MAHATVA YODHA</text>
+
+  <!-- Circular Text -->
+  <path id="ktPathTop" d="M 26 100 A 74 74 0 0 1 174 100" fill="none" />
+  <text font-family="sans-serif" font-size="12" font-weight="900" fill="#fef08a" letter-spacing="2">
+    <textPath href="#ktPathTop" startOffset="50%" text-anchor="middle">
+      KARANG TARUNA
+    </textPath>
+  </text>
+  <path id="ktPathBottom" d="M 174 100 A 74 74 0 0 1 26 100" fill="none" />
+  <text font-family="sans-serif" font-size="9.5" font-weight="900" fill="#ffffff" letter-spacing="1.5">
+    <textPath href="#ktPathBottom" startOffset="50%" text-anchor="middle">
+      ★ WUNGU SAKTI KARANGWUNGU ★
+    </textPath>
+  </text>
+</svg>

@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bpdGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fde047" />
+      <stop offset="50%" stop-color="#eab308" />
+      <stop offset="100%" stop-color="#ca8a04" />
+    </linearGradient>
+    <linearGradient id="bpdRed" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#991b1b" />
+      <stop offset="100%" stop-color="#450a0a" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.35" />
+    </filter>
+  </defs>
+  <!-- Outer Gold Ring -->
+  <circle cx="100" cy="100" r="96" fill="url(#bpdGold)" filter="url(#shadow)" />
+  <!-- Inner Maroon Ring -->
+  <circle cx="100" cy="100" r="88" fill="url(#bpdRed)" stroke="#fef08a" stroke-width="2" />
+  <!-- Center Cream Disc -->
+  <circle cx="100" cy="100" r="64" fill="#fffbeb" stroke="url(#bpdGold)" stroke-width="3" />
+  
+  <!-- Scales of Justice & Law / BPD Emblem -->
+  <!-- Pillar & Base -->
+  <rect x="97" y="60" width="6" height="75" fill="#854d0e" rx="2" />
+  <path d="M80 135 L120 135 L115 142 L85 142 Z" fill="#ca8a04" />
+  <circle cx="100" cy="58" r="7" fill="#eab308" />
+  <!-- Balance Beam -->
+  <path d="M60 70 L140 70" stroke="#854d0e" stroke-width="4" stroke-linecap="round" />
+  <circle cx="60" cy="70" r="4" fill="#ca8a04" />
+  <circle cx="140" cy="70" r="4" fill="#ca8a04" />
+  <!-- Left Scale -->
+  <path d="M60 72 L48 95 L72 95 Z" fill="none" stroke="#a16207" stroke-width="1.5" />
+  <path d="M44 95 Q60 106 76 95 Z" fill="url(#bpdGold)" stroke="#854d0e" stroke-width="1.5" />
+  <!-- Right Scale -->
+  <path d="M140 72 L128 95 L152 95 Z" fill="none" stroke="#a16207" stroke-width="1.5" />
+  <path d="M124 95 Q140 106 156 95 Z" fill="url(#bpdGold)" stroke="#854d0e" stroke-width="1.5" />
+  <!-- Book of Regulations at Center Base -->
+  <path d="M82 122 C92 118 99 122 100 123 C101 122 108 118 118 122 L118 132 C108 128 101 132 100 133 C99 132 92 128 82 132 Z" fill="#b91c1c" stroke="#fef08a" stroke-width="1" />
+  <path d="M100 123 L100 133" stroke="#fef08a" stroke-width="1" />
+  <!-- Golden Stars -->
+  <polygon points="100,38 103,45 110,45 105,49 107,56 100,52 93,56 95,49 90,45 97,45" fill="#facc15" />
+
+  <!-- Circular Text in Maroon Ring -->
+  <path id="textPathTop" d="M 26 100 A 74 74 0 0 1 174 100" fill="none" />
+  <text font-family="sans-serif" font-size="10.5" font-weight="900" fill="#fef08a" letter-spacing="1.5">
+    <textPath href="#textPathTop" startOffset="50%" text-anchor="middle">
+      BADAN PERMUSYAWARATAN DESA
+    </textPath>
+  </text>
+  <path id="textPathBottom" d="M 174 100 A 74 74 0 0 1 26 100" fill="none" />
+  <text font-family="sans-serif" font-size="11" font-weight="900" fill="#fef08a" letter-spacing="2">
+    <textPath href="#textPathBottom" startOffset="50%" text-anchor="middle">
+      ★ BPD DESA KARANGWUNGU ★
+    </textPath>
+  </text>
+</svg>

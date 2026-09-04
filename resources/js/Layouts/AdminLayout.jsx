@@ -219,6 +219,12 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
             icon: BarChart3,
             active: currentUrl ? currentUrl.startsWith(`/${adminPath}/settings/demographics`) : false,
         },
+        {
+            name: 'Konfigurasi Lembaga Desa',
+            href: `/${adminPath}/settings/organizations`,
+            icon: Users,
+            active: currentUrl ? currentUrl.startsWith(`/${adminPath}/settings/organizations`) : false,
+        },
     ];
 
     const publicModules = [

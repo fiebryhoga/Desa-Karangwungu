@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <defs>
+    <linearGradient id="rtrwRed" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#dc2626" />
+      <stop offset="100%" stop-color="#991b1b" />
+    </linearGradient>
+    <linearGradient id="rtrwGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#facc15" />
+      <stop offset="100%" stop-color="#ca8a04" />
+    </linearGradient>
+  </defs>
+  <!-- Outer Ring -->
+  <circle cx="100" cy="100" r="96" fill="url(#rtrwGold)" />
+  <circle cx="100" cy="100" r="88" fill="url(#rtrwRed)" stroke="#ffffff" stroke-width="2" />
+  <!-- Center White -->
+  <circle cx="100" cy="100" r="64" fill="#ffffff" stroke="#eab308" stroke-width="2.5" />
+  
+  <!-- Indonesian Merah Putih Shield with Houses / Rukun Warga -->
+  <path d="M80 82 L100 64 L120 82 L120 114 L80 114 Z" fill="#fef2f2" stroke="#dc2626" stroke-width="2" />
+  <!-- Roof Red -->
+  <polygon points="76,82 100,60 124,82" fill="#dc2626" />
+  <!-- Door & Windows -->
+  <rect x="94" y="94" width="12" height="20" rx="2" fill="#ca8a04" />
+  <rect x="84" y="88" width="6" height="6" fill="#38bdf8" />
+  <rect x="110" y="88" width="6" height="6" fill="#38bdf8" />
+  
+  <!-- Unity Hands Interlocked underneath -->
+  <path d="M68 116 Q100 134 132 116" fill="none" stroke="#16a34a" stroke-width="4" stroke-linecap="round" />
+  
+  <!-- Banner RT / RW -->
+  <rect x="70" y="122" width="60" height="18" rx="4" fill="#991b1b" stroke="#facc15" stroke-width="1.5" />
+  <text x="100" y="135" font-family="sans-serif" font-size="11" font-weight="900" fill="#ffffff" text-anchor="middle" letter-spacing="1.5">RT / RW</text>
+
+  <!-- Circular Text -->
+  <path id="rtrwPathTop" d="M 26 100 A 74 74 0 0 1 174 100" fill="none" />
+  <text font-family="sans-serif" font-size="9" font-weight="900" fill="#ffffff" letter-spacing="1.2">
+    <textPath href="#rtrwPathTop" startOffset="50%" text-anchor="middle">
+      RUKUN TETANGGA &amp; RUKUN WARGA
+    </textPath>
+  </text>
+  <path id="rtrwPathBottom" d="M 174 100 A 74 74 0 0 1 26 100" fill="none" />
+  <text font-family="sans-serif" font-size="10" font-weight="900" fill="#fef08a" letter-spacing="2">
+    <textPath href="#rtrwPathBottom" startOffset="50%" text-anchor="middle">
+      ★ DESA KARANGWUNGU ★
+    </textPath>
+  </text>
+</svg>

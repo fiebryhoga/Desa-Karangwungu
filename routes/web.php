@@ -26,6 +26,7 @@ Route::prefix('profil')->group(function () {
     Route::get('/kepemimpinan', [ProfileController::class, 'leadership'])->name('profile.leadership');
     Route::get('/perangkat-desa', [ProfileController::class, 'officials'])->name('profile.officials');
     Route::get('/lembaga', [ProfileController::class, 'organizations'])->name('profile.organizations');
+    Route::get('/lembaga/{id}', [ProfileController::class, 'organizationShow'])->name('profile.organizations.show');
     Route::get('/demografi', [ProfileController::class, 'demographics'])->name('profile.demographics');
     Route::get('/fasilitas', [ProfileController::class, 'facilities'])->name('profile.facilities');
 });
@@ -33,6 +34,7 @@ Route::prefix('profil')->group(function () {
 // Fasilitas Umum & Lembaga Alias
 Route::get('/fasilitas', [ProfileController::class, 'facilities'])->name('facilities.index');
 Route::get('/lembaga', [ProfileController::class, 'organizations'])->name('organizations.index');
+Route::get('/lembaga/{id}', [ProfileController::class, 'organizationShow'])->name('organizations.show');
 
 // Layanan Warga & Persuratan Online
 Route::prefix('layanan')->group(function () {
@@ -122,6 +124,12 @@ Route::prefix($adminPath)->middleware(['auth', \App\Http\Middleware\AdminSecurit
     // Konfigurasi Demografi & Statistik Kependudukan
     Route::get('/settings/demographics', [\App\Http\Controllers\Admin\DemographicSettingController::class, 'index'])->name('admin.settings.demographics');
     Route::post('/settings/demographics', [\App\Http\Controllers\Admin\DemographicSettingController::class, 'update'])->name('admin.settings.demographics.update');
+
+    // Konfigurasi Lembaga & Organisasi Kemasyarakatan
+    Route::get('/settings/organizations', [\App\Http\Controllers\Admin\OrganizationSettingController::class, 'index'])->name('admin.settings.organizations');
+    Route::post('/settings/organizations', [\App\Http\Controllers\Admin\OrganizationSettingController::class, 'update'])->name('admin.settings.organizations.update');
+    Route::post('/settings/organizations/upload-logo', [\App\Http\Controllers\Admin\OrganizationSettingController::class, 'uploadLogo'])->name('admin.settings.organizations.upload_logo');
+    Route::post('/settings/organizations/upload-banner', [\App\Http\Controllers\Admin\OrganizationSettingController::class, 'uploadBanner'])->name('admin.settings.organizations.upload_banner');
 
     // Profile & Ganti Password Mandiri
     Route::get('/profile', [\App\Http\Controllers\Admin\AdminProfileController::class, 'edit'])->name('admin.profile.edit');
