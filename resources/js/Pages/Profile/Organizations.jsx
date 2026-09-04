@@ -242,20 +242,7 @@ export default function Organizations({ organizationsSettings = {} }) {
                                             />
                                             <div className="absolute inset-0 bg-gradient-to-t from-red-950 via-red-950/40 to-transparent" />
 
-                                            {/* Badges on Banner */}
-                                            <div className="absolute top-3 left-3 right-3 flex items-center justify-between gap-2">
-                                                <span className="px-2.5 py-1 rounded-lg bg-black/75 backdrop-blur-md border border-amber-400/40 text-amber-300 text-xs font-bold shadow-xs inline-flex items-center gap-1.5 max-w-[70%]">
-                                                    {org.logo ? (
-                                                        <img src={org.logo} alt="" className="h-3.5 w-3.5 object-contain shrink-0" />
-                                                    ) : (
-                                                        <IconComponent className="h-3.5 w-3.5 shrink-0" />
-                                                    )}
-                                                    <span className="truncate">{org.shortName || org.category}</span>
-                                                </span>
-                                                <span className="px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-md border border-white/20 text-white text-xs font-medium shrink-0">
-                                                    {org.memberCount}
-                                                </span>
-                                            </div>
+
                                         </div>
 
                                         {/* 2. Overlapping Large Official Logo */}

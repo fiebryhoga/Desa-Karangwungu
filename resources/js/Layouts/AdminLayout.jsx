@@ -225,6 +225,12 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
             icon: Users,
             active: currentUrl ? currentUrl.startsWith(`/${adminPath}/settings/organizations`) : false,
         },
+        {
+            name: 'Transparansi APBDes',
+            href: `/${adminPath}/settings/apbdes`,
+            icon: DollarSign,
+            active: currentUrl ? currentUrl.startsWith(`/${adminPath}/settings/apbdes`) : false,
+        },
     ];
 
     const publicModules = [
@@ -232,7 +238,7 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
         { name: 'Berita Desa', href: '/berita', icon: Newspaper },
         { name: 'Potensi & UMKM', href: '/potensi', icon: Sparkles },
         { name: 'Galeri Foto', href: '/galeri', icon: Image },
-        { name: 'Transparansi APBDes', href: '/transparansi', icon: DollarSign },
+        { name: 'Pratinjau APBDes Publik', href: '/transparansi', icon: DollarSign },
         { name: 'Layanan Kontak', href: '/kontak', icon: MessageSquare },
     ];
 

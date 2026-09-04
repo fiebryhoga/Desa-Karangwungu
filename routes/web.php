@@ -131,6 +131,12 @@ Route::prefix($adminPath)->middleware(['auth', \App\Http\Middleware\AdminSecurit
     Route::post('/settings/organizations/upload-logo', [\App\Http\Controllers\Admin\OrganizationSettingController::class, 'uploadLogo'])->name('admin.settings.organizations.upload_logo');
     Route::post('/settings/organizations/upload-banner', [\App\Http\Controllers\Admin\OrganizationSettingController::class, 'uploadBanner'])->name('admin.settings.organizations.upload_banner');
 
+    // Konfigurasi Transparansi APBDes Per Tahun
+    Route::get('/settings/apbdes', [\App\Http\Controllers\Admin\ApbdesSettingController::class, 'index'])->name('admin.settings.apbdes');
+    Route::post('/settings/apbdes', [\App\Http\Controllers\Admin\ApbdesSettingController::class, 'update'])->name('admin.settings.apbdes.update');
+    Route::post('/settings/apbdes/year', [\App\Http\Controllers\Admin\ApbdesSettingController::class, 'storeYear'])->name('admin.settings.apbdes.store_year');
+    Route::delete('/settings/apbdes/year/{year}', [\App\Http\Controllers\Admin\ApbdesSettingController::class, 'destroyYear'])->name('admin.settings.apbdes.destroy_year');
+
     // Profile & Ganti Password Mandiri
     Route::get('/profile', [\App\Http\Controllers\Admin\AdminProfileController::class, 'edit'])->name('admin.profile.edit');
     Route::patch('/profile', [\App\Http\Controllers\Admin\AdminProfileController::class, 'update'])->name('admin.profile.update');

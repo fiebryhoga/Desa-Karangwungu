@@ -30,11 +30,12 @@ class HomeController extends Controller
         // Pengaturan Tampilan Beranda dari Panel Admin
         $dashboardSettings = SiteSetting::getGroup('dashboard');
 
-        // Statistik APBDes Ringkas
-        $totalIncome = ApbdesRecord::where('type', 'income')->sum('budget_amount');
-        $totalExpense = ApbdesRecord::where('type', 'expense')->sum('budget_amount');
-        $realizedIncome = ApbdesRecord::where('type', 'income')->sum('realized_amount');
-        $realizedExpense = ApbdesRecord::where('type', 'expense')->sum('realized_amount');
+        // Statistik APBDes Ringkas (Tahun Anggaran Terbaru)
+        $latestApbdesYear = ApbdesRecord::max('year') ?? (int) date('Y');
+        $totalIncome = ApbdesRecord::where('year', $latestApbdesYear)->where('type', 'income')->sum('budget_amount');
+        $totalExpense = ApbdesRecord::where('year', $latestApbdesYear)->where('type', 'expense')->sum('budget_amount');
+        $realizedIncome = ApbdesRecord::where('year', $latestApbdesYear)->where('type', 'income')->sum('realized_amount');
+        $realizedExpense = ApbdesRecord::where('year', $latestApbdesYear)->where('type', 'expense')->sum('realized_amount');
 
         // Statistik Wilayah & Penduduk
         $stats = [
@@ -57,7 +58,13 @@ class HomeController extends Controller
             'stats' => $stats,
             'dashboard_settings' => $dashboardSettings,
             'apbdes_summary' => [
+                'year' => $latestApbdesYear,
                 'income' => $totalIncome,
+                'expense' => $totalExpense,
+                'realized_income' => $realizedIncome,
+                'realized_expense' => $realizedExpense,
+            ],
+        ]);
                 'expense' => $totalExpense,
                 'realized_income' => $realizedIncome,
                 'realized_expense' => $realizedExpense,
