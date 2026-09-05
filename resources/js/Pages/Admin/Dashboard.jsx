@@ -14,6 +14,7 @@ import {
     TrendingUp,
     Shield,
     ExternalLink,
+    Printer,
 } from 'lucide-react';
 
 const BATIK_SILHOUETTE = `data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 60 Q 30 30, 60 60 T 120 60 M0 0 Q 30 -30, 60 0 T 120 0 M0 120 Q 30 90, 60 120 T 120 120 M-30 30 L 30 90 M30 -30 L 90 30 M90 -30 L 150 30 M-30 90 L 30 150 M30 90 L 90 150 M90 90 L 150 150' stroke='%23fde047' stroke-width='2' fill='none' stroke-linecap='round' stroke-dasharray='1 4'/%3E%3Cpath d='M12 48 Q 30 24, 48 48 Q 66 72, 84 48 Q 102 24, 120 48' stroke='%23fde047' stroke-width='1.8' fill='none'/%3E%3Ccircle cx='30' cy='30' r='4' fill='%23fde047'/%3E%3Ccircle cx='90' cy='90' r='4' fill='%23fde047'/%3E%3Ccircle cx='90' cy='30' r='2' fill='%23fde047'/%3E%3Ccircle cx='30' cy='90' r='2' fill='%23fde047'/%3E%3C/svg%3E`;
@@ -183,11 +184,22 @@ export default function Dashboard({ stats = {}, recentLetters = [], recentPosts 
                                                 {letter.letter_type} &bull; <span className="text-amber-600 dark:text-amber-400 font-mono font-semibold">{letter.tracking_code}</span>
                                             </p>
                                         </div>
-                                        <div className="shrink-0 flex flex-col items-end gap-1">
-                                            {getStatusBadge(letter.status)}
-                                            <span className="text-[10px] text-zinc-400 dark:text-zinc-500">
-                                                {formatDateIndo(letter.created_at)}
-                                            </span>
+                                        <div className="shrink-0 flex items-center gap-2">
+                                            <a
+                                                href={`/layanan/surat/pdf/${letter.tracking_code}`}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                title="Cetak PDF Format Resmi"
+                                                className="p-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 transition-colors"
+                                            >
+                                                <Printer className="h-3.5 w-3.5 text-red-600 dark:text-amber-400" />
+                                            </a>
+                                            <div className="flex flex-col items-end gap-1">
+                                                {getStatusBadge(letter.status)}
+                                                <span className="text-[10px] text-zinc-400 dark:text-zinc-500">
+                                                    {formatDateIndo(letter.created_at)}
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 ))}

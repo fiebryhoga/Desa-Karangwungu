@@ -38,6 +38,36 @@
         })();
     </script>
 
+    <!-- Calendar Picker Indicator Styling (Ensures high visibility in dark mode across all browsers) -->
+    <style>
+        input[type="date"] {
+            color-scheme: light;
+        }
+        .dark input[type="date"] {
+            color-scheme: dark !important;
+        }
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            border-radius: 4px;
+            opacity: 0.75;
+            transform: scale(1.15);
+            margin-right: 2px;
+            transition: opacity 0.2s ease, transform 0.2s ease, filter 0.2s ease;
+        }
+        input[type="date"]::-webkit-calendar-picker-indicator:hover {
+            opacity: 1;
+            transform: scale(1.25);
+        }
+        .dark input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1) brightness(1.25) !important;
+            opacity: 0.95 !important;
+        }
+        .dark input[type="date"]::-webkit-calendar-picker-indicator:hover {
+            filter: invert(1) brightness(1.5) drop-shadow(0 0 3px rgba(255, 255, 255, 0.6)) !important;
+            opacity: 1 !important;
+        }
+    </style>
+
     @viteReactRefresh
     @vite(['resources/css/app.css', 'resources/js/app.jsx'])
     @inertiaHead

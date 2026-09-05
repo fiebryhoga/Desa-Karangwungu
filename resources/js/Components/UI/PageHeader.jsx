@@ -14,6 +14,8 @@ export default function PageHeader({
     actions = [],
     bgImage = 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=1600&q=80',
     className = '',
+    contentClassName = '',
+    titleClassName = '',
     children,
 }) {
     return (
@@ -90,7 +92,7 @@ export default function PageHeader({
             </div>
 
             {/* 3. Centered Editorial Content */}
-            <div className="relative z-10 py-4.5 sm:py-5 lg:py-6 px-4 sm:px-6 max-w-2xl mx-auto text-center space-y-2 sm:space-y-2.5">
+            <div className={`relative z-10 py-4.5 sm:py-5 lg:py-6 px-4 sm:px-6 max-w-4xl mx-auto text-center space-y-2 sm:space-y-2.5 ${contentClassName}`}>
                 {badge && (
                     <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-black/40 backdrop-blur-md border border-white/20 text-[10px] sm:text-[11px] font-bold text-amber-300 tracking-wide shadow-xs">
                         <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-pulse" />
@@ -99,7 +101,7 @@ export default function PageHeader({
                 )}
 
                 {title && (
-                    <h1 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-white leading-tight drop-shadow-md">
+                    <h1 className={`text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-white leading-tight drop-shadow-md ${titleClassName}`}>
                         {title}
                     </h1>
                 )}

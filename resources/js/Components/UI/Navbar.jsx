@@ -290,26 +290,12 @@ export default function Navbar() {
                                 <div className="absolute left-0 top-full pt-2 w-72 animate-in fade-in-50 zoom-in-95 duration-100 z-50">
                                     <div className="rounded-xl border border-red-500/40 bg-gradient-to-b from-red-800 via-red-900 to-red-950 text-white backdrop-blur-xl p-2 shadow-2xl space-y-1">
                                         <Link
-                                            href="/layanan"
-                                            className="flex items-start gap-2.5 rounded-lg p-2 text-sm hover:bg-black/30 text-red-100 hover:text-amber-300 transition-colors"
-                                        >
-                                            <Scale className="h-4 w-4 text-amber-300 shrink-0 mt-0.5" />
-                                            <div>
-                                                <div className="font-bold text-white">
-                                                    Produk Hukum Desa
-                                                </div>
-                                                <div className="text-xs text-red-200/80">
-                                                    Perdes, SK Kepala Desa, Regulasi
-                                                </div>
-                                            </div>
-                                        </Link>
-                                        <Link
                                             href="/layanan/ajukan"
-                                            className="flex items-start gap-2.5 rounded-lg p-2 text-sm hover:bg-black/30 text-amber-300 hover:text-amber-200 transition-colors"
+                                            className="flex items-start gap-2.5 rounded-lg p-2 text-sm hover:bg-black/30 text-red-100 hover:text-amber-300 transition-colors"
                                         >
                                             <Sparkles className="h-4 w-4 text-amber-300 shrink-0 mt-0.5" />
                                             <div>
-                                                <div className="font-bold text-amber-300">
+                                                <div className="font-bold text-white">
                                                     Ajukan Surat Mandiri
                                                 </div>
                                                 <div className="text-xs text-red-200/80">
@@ -328,6 +314,20 @@ export default function Navbar() {
                                                 </div>
                                                 <div className="text-xs text-red-200/80">
                                                     Cek status kode tiket permohonan
+                                                </div>
+                                            </div>
+                                        </Link>
+                                        <Link
+                                            href="/layanan"
+                                            className="flex items-start gap-2.5 rounded-lg p-2 text-sm hover:bg-black/30 text-red-100 hover:text-amber-300 transition-colors"
+                                        >
+                                            <Scale className="h-4 w-4 text-amber-300 shrink-0 mt-0.5" />
+                                            <div>
+                                                <div className="font-bold text-white">
+                                                    Produk Hukum Desa
+                                                </div>
+                                                <div className="text-xs text-red-200/80">
+                                                    Perdes, SK Kepala Desa, Regulasi
                                                 </div>
                                             </div>
                                         </Link>
@@ -711,13 +711,6 @@ export default function Navbar() {
                                     {mobileServicesOpen && (
                                         <div className="pl-4 space-y-1 pt-1">
                                             <Link
-                                                href="/layanan"
-                                                onClick={() => setMobileMenuOpen(false)}
-                                                className="block px-3 py-1.5 rounded-md text-xs text-red-100 hover:text-amber-300 hover:bg-black/20"
-                                            >
-                                                Produk Hukum Desa
-                                            </Link>
-                                            <Link
                                                 href="/layanan/ajukan"
                                                 onClick={() => setMobileMenuOpen(false)}
                                                 className="block px-3 py-1.5 rounded-md text-xs font-bold text-amber-300 hover:bg-black/20"
@@ -730,6 +723,13 @@ export default function Navbar() {
                                                 className="block px-3 py-1.5 rounded-md text-xs text-red-100 hover:text-amber-300 hover:bg-black/20"
                                             >
                                                 Lacak Surat
+                                            </Link>
+                                            <Link
+                                                href="/layanan"
+                                                onClick={() => setMobileMenuOpen(false)}
+                                                className="block px-3 py-1.5 rounded-md text-xs text-red-100 hover:text-amber-300 hover:bg-black/20"
+                                            >
+                                                Produk Hukum Desa
                                             </Link>
                                         </div>
                                     )}

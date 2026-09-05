@@ -21,8 +21,8 @@ class DashboardController extends Controller
     {
         $stats = [
             'total_letters' => LetterRequest::count(),
-            'pending_letters' => LetterRequest::where('status', 'pending')->count(),
-            'completed_letters' => LetterRequest::where('status', 'completed')->count(),
+            'pending_letters' => LetterRequest::whereIn('status', ['menunggu', 'pending'])->count(),
+            'completed_letters' => LetterRequest::whereIn('status', ['selesai', 'completed'])->count(),
             'total_posts' => Post::count(),
             'total_potentials' => Potential::count(),
             'total_comments' => Comment::count(),

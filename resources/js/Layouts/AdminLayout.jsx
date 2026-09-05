@@ -37,6 +37,7 @@ import {
     Landmark,
     Newspaper,
     Scale,
+    FileText,
 } from 'lucide-react';
 
 const BATIK_DARK = `data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 60 Q 30 30, 60 60 T 120 60 M0 0 Q 30 -30, 60 0 T 120 0 M0 120 Q 30 90, 60 120 T 120 120 M-30 30 L 30 90 M30 -30 L 90 30 M90 -30 L 150 30 M-30 90 L 30 150 M30 90 L 90 150 M90 90 L 150 150' stroke='%23fde047' stroke-width='2' fill='none' stroke-linecap='round' stroke-dasharray='1 4'/%3E%3Cpath d='M12 48 Q 30 24, 48 48 Q 66 72, 84 48 Q 102 24, 120 48' stroke='%23fde047' stroke-width='1.8' fill='none'/%3E%3Ccircle cx='30' cy='30' r='4' fill='%23fde047'/%3E%3Ccircle cx='90' cy='90' r='4' fill='%23fde047'/%3E%3Ccircle cx='90' cy='30' r='2' fill='%23fde047'/%3E%3Ccircle cx='30' cy='90' r='2' fill='%23fde047'/%3E%3C/svg%3E`;
@@ -249,6 +250,15 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
             href: `/${adminPath}/settings/apbdes`,
             icon: DollarSign,
             active: currentUrl ? currentUrl.startsWith(`/${adminPath}/settings/apbdes`) : false,
+        },
+    ];
+
+    const publicationNav = [
+        {
+            name: 'Permohonan Surat Warga',
+            href: `/${adminPath}/settings/letters`,
+            icon: FileText,
+            active: currentUrl ? currentUrl.startsWith(`/${adminPath}/settings/letters`) : false,
         },
         {
             name: 'Warta & Berita Desa',
@@ -521,7 +531,51 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
                         </div>
                     </div>
 
-                    {/* 3. System & Admin Access Nav (Ditaruh di Bagian Bawah) */}
+                    {/* 3. Publikasi & Layanan Warga */}
+                    <div className="space-y-1">
+                        {!sidebarCollapsed && (
+                            <span className={`px-3 text-[10px] font-bold uppercase tracking-wider ${
+                                isDark ? 'text-zinc-500' : 'text-zinc-400'
+                            }`}>
+                                Publikasi & Layanan Warga
+                            </span>
+                        )}
+                        <div className="mt-1.5 space-y-1">
+                            {publicationNav.map((item) => {
+                                const Icon = item.icon;
+                                return (
+                                    <Link
+                                        key={item.href}
+                                        href={item.href}
+                                        title={item.name}
+                                        onClick={() => setSidebarOpen(false)}
+                                        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all relative group ${
+                                            sidebarCollapsed ? 'justify-center' : ''
+                                        } ${
+                                            item.active
+                                                ? 'bg-gradient-to-r from-red-700 via-red-800 to-red-950 text-amber-300 border border-amber-400/30 shadow-md shadow-red-950/40'
+                                                : isDark
+                                                    ? 'text-zinc-400 hover:text-white hover:bg-zinc-800/60'
+                                                    : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
+                                        }`}
+                                    >
+                                        <Icon className="h-4 w-4 shrink-0" />
+                                        {!sidebarCollapsed && <span className="truncate">{item.name}</span>}
+
+                                        {/* Floating Tooltip in Collapsed Mode */}
+                                        {sidebarCollapsed && (
+                                            <div className="hidden group-hover:flex items-center absolute left-full top-1/2 -translate-y-1/2 ml-3 px-3 py-1.5 rounded-lg bg-zinc-900 text-white text-xs font-bold whitespace-nowrap shadow-2xl border border-zinc-700 z-50 pointer-events-none">
+                                                <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-zinc-900 border-l border-b border-zinc-700 rotate-45" />
+                                                <span>{item.name}</span>
+                                            </div>
+                                        )}
+                                    </Link>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    {/* 4. System & Admin Access Nav (Ditaruh di Bagian Bawah) */}
                     <div className="space-y-1 pt-2 border-t border-zinc-200 dark:border-zinc-800/60">
                         {!sidebarCollapsed && (
                             <span className={`px-3 text-[10px] font-bold uppercase tracking-wider ${
