@@ -15,6 +15,7 @@ import {
     Fish,
     Scale,
     ArrowLeft,
+    ArrowRight,
     MapPin,
     Calendar,
     Mail,
@@ -308,331 +309,246 @@ export default function OrganizationShow({
                             </div>
                         </section>
 
-                        {/* B. VISI, MISI & TUJUAN */}
-                        <div className="group relative overflow-hidden p-6 sm:p-7 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 shadow-xs hover:shadow-md transition-all duration-300 space-y-6">
-                            {/* Siluet Batik Truntum Watermark */}
-                            <div
-                                className="absolute inset-0 pointer-events-none opacity-[0.025] dark:opacity-[0.05] group-hover:opacity-[0.04] transition-opacity duration-500 bg-repeat"
-                                style={{
-                                    backgroundImage: `url("${BATIK_TRUNTUM_PATTERN}")`,
-                                    backgroundSize: "65px 65px",
-                                }}
-                            />
-
-                            <div className="relative z-10 space-y-6">
-                                <div className="flex items-center justify-between gap-4 pb-4 border-b border-zinc-100 dark:border-zinc-800">
-                                    <div className="flex items-center gap-3">
-                                        <div className="h-10 w-10 rounded-xl bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-amber-400 flex items-center justify-center border border-red-100 dark:border-red-900/40 shrink-0">
-                                            <Target className="h-5 w-5" />
-                                        </div>
-                                        <div>
-                                            <span className="text-[10px] font-bold text-red-600 dark:text-amber-400 uppercase tracking-wider block">
-                                                Landasan Cita & Haluan Kerja
-                                            </span>
-                                            <h2 className="text-base sm:text-lg font-black text-zinc-900 dark:text-zinc-100">
-                                                Visi, Misi & Tujuan Lembaga
-                                            </h2>
-                                        </div>
-                                    </div>
-                                    <span className="hidden sm:inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 shrink-0">
-                                        Haluan Pokok
+                        {/* B. VISI, MISI & TUJUAN (Unboxed Editorial Section) */}
+                        <section aria-labelledby="visi-misi-heading" className="space-y-4">
+                            {/* Section Header (Bersih, tanpa badge, tanpa background kotak ikon) */}
+                            <div className="flex items-center gap-2.5 pb-3 border-b border-zinc-200/90 dark:border-zinc-800">
+                                <Target className="h-5 w-5 text-red-600 dark:text-amber-400 shrink-0" />
+                                <div>
+                                    <span className="text-[10px] font-bold text-red-600 dark:text-amber-400 uppercase tracking-wider block">
+                                        Landasan Cita & Haluan Kerja
                                     </span>
+                                    <h2 id="visi-misi-heading" className="text-base sm:text-lg font-black text-zinc-900 dark:text-zinc-100 leading-tight">
+                                        Visi, Misi & Tujuan Lembaga
+                                    </h2>
+                                </div>
+                            </div>
+
+                            {/* 1. Visi Card (Desain signature red gradient, batik watermark, dan quotes) */}
+                            <div className="relative overflow-hidden rounded-lg bg-gradient-to-r from-red-800 via-red-900 to-[#2c0508] p-5 sm:p-6 text-white border border-amber-400/40 shadow-md space-y-3 group/visi">
+                                {/* Siluet Batik Truntum */}
+                                <div
+                                    className="absolute inset-0 pointer-events-none opacity-10 sm:opacity-15 group-hover/visi:opacity-20 transition-opacity duration-500 bg-repeat"
+                                    style={{
+                                        backgroundImage: `url("${BATIK_TRUNTUM_PATTERN}")`,
+                                        backgroundSize: "60px 60px",
+                                    }}
+                                />
+                                <div className="relative z-10 space-y-2.5">
+                                    <div className="flex items-center justify-between">
+                                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-black/40 text-amber-300 text-[10px] font-black tracking-widest uppercase border border-amber-400/40">
+                                            <Compass className="h-3.5 w-3.5 text-amber-400" />
+                                            <span>VISI UTAMA</span>
+                                        </span>
+                                        <Quote className="h-7 w-7 text-amber-300/30 shrink-0" />
+                                    </div>
+                                    <p className="text-sm sm:text-base font-bold text-amber-100 italic leading-relaxed">
+                                        "{vision}"
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* 2. Misi & Tujuan Grid */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+                                {/* Misi */}
+                                <div className="space-y-2.5">
+                                    <div className="flex items-center gap-2">
+                                        <div className="h-2 w-2 rounded-full bg-red-600 dark:bg-amber-400" />
+                                        <h3 className="text-xs sm:text-sm font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">
+                                            Misi Strategis ({missions.length})
+                                        </h3>
+                                    </div>
+                                    <ul className="space-y-2">
+                                        {missions.map((misi, mIdx) => (
+                                            <li
+                                                key={mIdx}
+                                                className="flex items-start gap-3 p-3.5 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200/85 dark:border-zinc-800 hover:border-red-400/50 dark:hover:border-amber-400/50 hover:shadow-xs transition-all text-xs text-zinc-700 dark:text-zinc-300 leading-relaxed font-medium group/item"
+                                            >
+                                                <span className="h-5 w-5 rounded-md bg-gradient-to-br from-red-600 to-red-800 text-amber-200 text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5 shadow-xs border border-amber-400/30">
+                                                    {mIdx + 1}
+                                                </span>
+                                                <span>{misi}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
                                 </div>
 
-                                {/* 1. Visi Card */}
-                                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-red-800 via-red-900 to-[#2c0508] p-5 sm:p-6 text-white border border-amber-400/40 shadow-md space-y-3 group/visi">
-                                    {/* Siluet Batik Truntum */}
+                                {/* Tujuan */}
+                                <div className="space-y-2.5">
+                                    <div className="flex items-center gap-2">
+                                        <div className="h-2 w-2 rounded-full bg-amber-500" />
+                                        <h3 className="text-xs sm:text-sm font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">
+                                            Tujuan Pokok ({objectives.length})
+                                        </h3>
+                                    </div>
+                                    <ul className="space-y-2">
+                                        {objectives.map((tujuan, tIdx) => (
+                                            <li
+                                                key={tIdx}
+                                                className="flex items-start gap-3 p-3.5 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200/85 dark:border-zinc-800 hover:border-amber-400/70 dark:hover:border-amber-400/50 hover:shadow-xs transition-all text-xs text-zinc-700 dark:text-zinc-300 leading-relaxed font-medium group/item"
+                                            >
+                                                <CheckCircle2 className="h-4 w-4 text-amber-500 dark:text-amber-400 shrink-0 mt-0.5" />
+                                                <span>{tujuan}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </div>
+                        </section>
+
+                        {/* C. TUGAS POKOK & FUNGSI (TUPOKSI) (Unboxed Editorial Section) */}
+                        <section aria-labelledby="tupoksi-heading" className="space-y-4">
+                            {/* Section Header (Bersih, tanpa badge background) */}
+                            <div className="flex items-center justify-between gap-3 pb-3 border-b border-zinc-200/90 dark:border-zinc-800">
+                                <div className="flex items-center gap-2.5">
+                                    <Briefcase className="h-5 w-5 text-red-600 dark:text-amber-400 shrink-0" />
+                                    <div>
+                                        <span className="text-[10px] font-bold text-red-600 dark:text-amber-400 uppercase tracking-wider block">
+                                            Mandat & Wewenang
+                                        </span>
+                                        <h2 id="tupoksi-heading" className="text-base sm:text-lg font-black text-zinc-900 dark:text-zinc-100 leading-tight">
+                                            Tugas Pokok & Fungsi (Tupoksi)
+                                        </h2>
+                                    </div>
+                                </div>
+                                <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
+                                    {duties.length} Poin Mandat
+                                </span>
+                            </div>
+
+                            {/* Duties Grid */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                {duties.map((duty, idx) => (
                                     <div
-                                        className="absolute inset-0 pointer-events-none opacity-10 sm:opacity-15 group-hover/visi:opacity-20 transition-opacity duration-500 bg-repeat"
-                                        style={{
-                                            backgroundImage: `url("${BATIK_TRUNTUM_PATTERN}")`,
-                                            backgroundSize: "60px 60px",
-                                        }}
-                                    />
-                                    <div className="relative z-10 space-y-2.5">
-                                        <div className="flex items-center justify-between">
-                                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-black/40 text-amber-300 text-[10px] font-black tracking-widest uppercase border border-amber-400/40">
-                                                <Compass className="h-3.5 w-3.5 text-amber-400" />
-                                                <span>VISI UTAMA</span>
-                                            </span>
-                                            <Quote className="h-7 w-7 text-amber-300/30 shrink-0" />
-                                        </div>
-                                        <p className="text-sm sm:text-base font-bold text-amber-100 italic leading-relaxed">
-                                            "{vision}"
+                                        key={idx}
+                                        className="group/duty relative p-3.5 sm:p-4 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200/85 dark:border-zinc-800 hover:border-red-500/40 dark:hover:border-amber-400/40 hover:shadow-xs transition-all flex items-start gap-3.5"
+                                    >
+                                        <span className="h-6 w-6 rounded-md bg-gradient-to-br from-red-600 to-red-800 text-amber-200 text-xs font-black flex items-center justify-center shrink-0 mt-0.5 shadow-xs border border-amber-400/30">
+                                            {idx + 1}
+                                        </span>
+                                        <p className="text-xs sm:text-[13px] text-zinc-700 dark:text-zinc-300 leading-relaxed font-medium group-hover/duty:text-zinc-900 dark:group-hover/duty:text-zinc-100 transition-colors">
+                                            {duty}
                                         </p>
                                     </div>
-                                </div>
-
-                                {/* 2. Misi & Tujuan Grid */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-1">
-                                    {/* Misi */}
-                                    <div className="space-y-3">
-                                        <div className="flex items-center gap-2">
-                                            <div className="h-2 w-2 rounded-full bg-red-600 dark:bg-amber-400" />
-                                            <h3 className="text-xs sm:text-sm font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">
-                                                Misi Strategis ({missions.length})
-                                            </h3>
-                                        </div>
-                                        <ul className="space-y-2.5">
-                                            {missions.map((misi, mIdx) => (
-                                                <li
-                                                    key={mIdx}
-                                                    className="flex items-start gap-3 p-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200/80 dark:border-zinc-700/60 hover:border-red-400/50 dark:hover:border-amber-400/50 hover:bg-white dark:hover:bg-zinc-800 hover:shadow-xs transition-all text-xs text-zinc-700 dark:text-zinc-300 leading-relaxed font-medium group/item"
-                                                >
-                                                    <span className="h-5 w-5 rounded-lg bg-gradient-to-br from-red-600 to-red-800 text-amber-200 text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5 shadow-xs border border-amber-400/30">
-                                                        {mIdx + 1}
-                                                    </span>
-                                                    <span>{misi}</span>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-
-                                    {/* Tujuan */}
-                                    <div className="space-y-3">
-                                        <div className="flex items-center gap-2">
-                                            <div className="h-2 w-2 rounded-full bg-amber-500" />
-                                            <h3 className="text-xs sm:text-sm font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-wider">
-                                                Tujuan Pokok ({objectives.length})
-                                            </h3>
-                                        </div>
-                                        <ul className="space-y-2.5">
-                                            {objectives.map((tujuan, tIdx) => (
-                                                <li
-                                                    key={tIdx}
-                                                    className="flex items-start gap-3 p-3.5 rounded-xl bg-amber-50/40 dark:bg-zinc-800/60 border border-amber-200/60 dark:border-zinc-700/60 hover:border-amber-400/70 hover:bg-amber-50/70 dark:hover:bg-zinc-800 hover:shadow-xs transition-all text-xs text-zinc-700 dark:text-zinc-300 leading-relaxed font-medium group/item"
-                                                >
-                                                    <CheckCircle2 className="h-4 w-4 text-amber-500 dark:text-amber-400 shrink-0 mt-0.5" />
-                                                    <span>{tujuan}</span>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                </div>
+                                ))}
                             </div>
-                        </div>
+                        </section>
 
-                        {/* C. TUGAS POKOK & FUNGSI (TUPOKSI) */}
-                        <div className="group relative overflow-hidden p-6 sm:p-7 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 shadow-xs hover:shadow-md transition-all duration-300 space-y-5">
-                            {/* Siluet Batik Truntum Watermark */}
-                            <div
-                                className="absolute inset-0 pointer-events-none opacity-[0.025] dark:opacity-[0.05] group-hover:opacity-[0.04] transition-opacity duration-500 bg-repeat"
-                                style={{
-                                    backgroundImage: `url("${BATIK_TRUNTUM_PATTERN}")`,
-                                    backgroundSize: "65px 65px",
-                                }}
-                            />
-
-                            <div className="relative z-10 space-y-5">
-                                <div className="flex items-center justify-between gap-4 pb-4 border-b border-zinc-100 dark:border-zinc-800">
-                                    <div className="flex items-center gap-3">
-                                        <div className="h-10 w-10 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-center border border-amber-100 dark:border-amber-900/40 shrink-0">
-                                            <Briefcase className="h-5 w-5" />
-                                        </div>
-                                        <div>
-                                            <span className="text-[10px] font-bold text-red-600 dark:text-amber-400 uppercase tracking-wider block">
-                                                Mandat & Wewenang
-                                            </span>
-                                            <h2 className="text-base sm:text-lg font-black text-zinc-900 dark:text-zinc-100">
-                                                Tugas Pokok & Fungsi (Tupoksi)
-                                            </h2>
-                                        </div>
+                        {/* D. PROGRAM KERJA (Unboxed Editorial Section) */}
+                        <section aria-labelledby="proker-heading" className="space-y-4">
+                            {/* Section Header (Bersih, tanpa badge background) */}
+                            <div className="flex items-center justify-between gap-3 pb-3 border-b border-zinc-200/90 dark:border-zinc-800">
+                                <div className="flex items-center gap-2.5">
+                                    <Sparkles className="h-5 w-5 text-red-600 dark:text-amber-400 shrink-0" />
+                                    <div>
+                                        <span className="text-[10px] font-bold text-red-600 dark:text-amber-400 uppercase tracking-wider block">
+                                            Aksi Nyata & Kegiatan
+                                        </span>
+                                        <h2 id="proker-heading" className="text-base sm:text-lg font-black text-zinc-900 dark:text-zinc-100 leading-tight">
+                                            Program Kerja & Agenda Prioritas
+                                        </h2>
                                     </div>
-                                    <span className="hidden sm:inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 shrink-0">
-                                        {duties.length} Poin Mandat
-                                    </span>
                                 </div>
+                                <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
+                                    {programs.length} Agenda Prioritas
+                                </span>
+                            </div>
 
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                                    {duties.map((duty, idx) => (
+                            {/* Programs List */}
+                            <div className="space-y-2.5">
+                                {programs.map((program, idx) => {
+                                    const title = typeof program === 'string' ? program : program.title || 'Agenda Kegiatan';
+                                    const desc = typeof program === 'object' ? program.description : null;
+                                    return (
                                         <div
                                             key={idx}
-                                            className="flex items-start gap-3.5 p-4 rounded-xl bg-zinc-50/80 dark:bg-zinc-800/50 border border-zinc-200/80 dark:border-zinc-800 hover:border-amber-400/50 hover:bg-white dark:hover:bg-zinc-800 hover:shadow-sm transition-all duration-300 group/duty"
+                                            className="group/prog relative p-3.5 sm:p-4 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200/85 dark:border-zinc-800 hover:border-red-500/40 dark:hover:border-amber-400/40 hover:shadow-xs transition-all flex items-start gap-3.5"
                                         >
-                                            <div className="h-7 w-7 rounded-xl bg-gradient-to-br from-red-700 via-red-800 to-red-950 text-amber-300 font-bold text-xs flex items-center justify-center shrink-0 shadow-xs border border-amber-400/30 group-hover/duty:scale-105 transition-transform">
-                                                {idx + 1}
+                                            <div className="h-6 w-6 rounded-md bg-gradient-to-br from-red-600 to-red-800 text-amber-200 flex items-center justify-center shrink-0 mt-0.5 shadow-xs border border-amber-400/30">
+                                                <CheckCircle2 className="h-3.5 w-3.5" />
                                             </div>
-                                            <p className="text-xs text-zinc-700 dark:text-zinc-300 leading-relaxed font-medium">
-                                                {duty}
-                                            </p>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* D. PROGRAM KERJA */}
-                        <div className="group relative overflow-hidden p-6 sm:p-7 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 shadow-xs hover:shadow-md transition-all duration-300 space-y-5">
-                            {/* Siluet Batik Truntum Watermark */}
-                            <div
-                                className="absolute inset-0 pointer-events-none opacity-[0.025] dark:opacity-[0.05] group-hover:opacity-[0.04] transition-opacity duration-500 bg-repeat"
-                                style={{
-                                    backgroundImage: `url("${BATIK_TRUNTUM_PATTERN}")`,
-                                    backgroundSize: "65px 65px",
-                                }}
-                            />
-
-                            <div className="relative z-10 space-y-5">
-                                <div className="flex items-center justify-between pb-4 border-b border-zinc-100 dark:border-zinc-800">
-                                    <div className="flex items-center gap-3">
-                                        <div className="h-10 w-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-100 dark:border-emerald-900/40 shrink-0">
-                                            <Sparkles className="h-5 w-5" />
-                                        </div>
-                                        <div>
-                                            <span className="text-[10px] font-bold text-red-600 dark:text-amber-400 uppercase tracking-wider block">
-                                                Aksi Nyata & Kegiatan
-                                            </span>
-                                            <h2 className="text-base sm:text-lg font-black text-zinc-900 dark:text-zinc-100">
-                                                Program Kerja & Agenda Prioritas
-                                            </h2>
-                                        </div>
-                                    </div>
-                                    <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-900/40">
-                                        {programs.length} Program
-                                    </span>
-                                </div>
-
-                                <div className="space-y-3">
-                                    {programs.map((program, idx) => (
-                                        <div
-                                            key={idx}
-                                            className="flex items-start gap-3.5 p-4 rounded-xl bg-gradient-to-r from-red-50/25 via-white to-amber-50/15 dark:from-zinc-850 dark:via-zinc-800/80 dark:to-zinc-850 border border-zinc-200/90 dark:border-zinc-750 hover:border-emerald-500/40 hover:shadow-xs transition-all group/prog"
-                                        >
-                                            <div className="h-7 w-7 rounded-xl bg-red-700 text-amber-300 flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
-                                                <CheckCircle2 className="h-4 w-4" />
-                                            </div>
-                                            <div className="space-y-1 flex-1 min-w-0">
-                                                <div className="flex items-center justify-between gap-2">
-                                                    <h4 className="text-xs sm:text-sm font-black text-zinc-900 dark:text-zinc-100">
-                                                        {typeof program === 'string' ? program : program.title || 'Agenda Kegiatan'}
+                                            <div className="flex-1 min-w-0 space-y-1">
+                                                <div className="flex items-start justify-between gap-3">
+                                                    <h4 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-100 leading-snug group-hover/prog:text-red-700 dark:group-hover/prog:text-amber-300 transition-colors">
+                                                        {title}
                                                     </h4>
-                                                    <span className="text-[10px] font-bold text-zinc-400 shrink-0">
-                                                        #{idx + 1}
+                                                    <span className="text-[10px] font-mono font-bold text-zinc-400 dark:text-zinc-500 shrink-0 bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded">
+                                                        #{String(idx + 1).padStart(2, '0')}
                                                     </span>
                                                 </div>
-                                                {typeof program === 'object' && program.description && (
+                                                {desc && (
                                                     <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                                                        {program.description}
+                                                        {desc}
                                                     </p>
                                                 )}
                                             </div>
                                         </div>
-                                    ))}
-                                </div>
+                                    );
+                                })}
                             </div>
-                        </div>
+                        </section>
 
-                        {/* E. SUSUNAN STRUKTUR PENGURUS */}
-                        <div className="group relative overflow-hidden p-6 sm:p-7 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 shadow-xs hover:shadow-md transition-all duration-300 space-y-5">
-                            {/* Siluet Batik Truntum Watermark */}
-                            <div
-                                className="absolute inset-0 pointer-events-none opacity-[0.025] dark:opacity-[0.05] group-hover:opacity-[0.04] transition-opacity duration-500 bg-repeat"
-                                style={{
-                                    backgroundImage: `url("${BATIK_TRUNTUM_PATTERN}")`,
-                                    backgroundSize: "65px 65px",
-                                }}
-                            />
+                        {/* E. SUSUNAN STRUKTUR PENGURUS (Unboxed Editorial Section) */}
+                        <section aria-labelledby="struktur-heading" className="space-y-4">
+                            {/* Section Header (Bersih, tanpa badge background) */}
+                            <div className="flex items-center justify-between pb-3 border-b border-zinc-200/90 dark:border-zinc-800">
+                                <div className="flex items-center gap-2.5">
+                                    <Users className="h-5 w-5 text-red-600 dark:text-amber-400 shrink-0" />
+                                    <div>
+                                        <span className="text-[10px] font-bold text-red-600 dark:text-amber-400 uppercase tracking-wider block">
+                                            Aparatur & Keanggotaan
+                                        </span>
+                                        <h2 id="struktur-heading" className="text-base sm:text-lg font-black text-zinc-900 dark:text-zinc-100 leading-tight">
+                                            Susunan Struktur Pengurus
+                                        </h2>
+                                    </div>
+                                </div>
+                                <span className="text-xs font-semibold text-zinc-500 dark:text-zinc-400">
+                                    {structure.length} Pengurus
+                                </span>
+                            </div>
 
-                            <div className="relative z-10 space-y-5">
-                                <div className="flex items-center justify-between pb-4 border-b border-zinc-100 dark:border-zinc-800">
-                                    <div className="flex items-center gap-3">
-                                        <div className="h-10 w-10 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-100 dark:border-blue-900/40 shrink-0">
-                                            <Users className="h-5 w-5" />
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                {structure.map((item, idx) => (
+                                    <div
+                                        key={idx}
+                                        className="flex items-center gap-3.5 p-3.5 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200/85 dark:border-zinc-800 hover:border-red-400/50 dark:hover:border-amber-400/50 hover:shadow-xs transition-all group"
+                                    >
+                                        <div className="h-11 w-11 rounded-lg overflow-hidden bg-red-950 shrink-0 border border-amber-400/40 flex items-center justify-center shadow-xs">
+                                            {item.photo ? (
+                                                <img
+                                                    src={item.photo}
+                                                    alt={item.name}
+                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                                                    loading="lazy"
+                                                />
+                                            ) : (
+                                                <span className="text-amber-300 font-bold text-xs select-none">
+                                                    {getInitials(item.name)}
+                                                </span>
+                                            )}
                                         </div>
-                                        <div>
-                                            <span className="text-[10px] font-bold text-red-600 dark:text-amber-400 uppercase tracking-wider block">
-                                                Aparatur & Keanggotaan
+                                        <div className="min-w-0 flex-1">
+                                            <span className="text-[10px] font-bold text-red-700 dark:text-amber-400 uppercase tracking-wider block truncate">
+                                                {item.role}
                                             </span>
-                                            <h2 className="text-base sm:text-lg font-black text-zinc-900 dark:text-zinc-100">
-                                                Susunan Struktur Pengurus
-                                            </h2>
+                                            <h4 className="text-xs sm:text-sm font-black text-zinc-900 dark:text-zinc-100 truncate">
+                                                {item.name}
+                                            </h4>
+                                            <span className="text-[10px] text-zinc-500 dark:text-zinc-400 block">
+                                                Periode: {organization.period || '2020 - 2026'}
+                                            </span>
                                         </div>
                                     </div>
-                                    <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300">
-                                        {structure.length} Pengurus
-                                    </span>
-                                </div>
-
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                                    {structure.map((item, idx) => (
-                                        <div
-                                            key={idx}
-                                            className="flex items-center gap-3.5 p-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200/80 dark:border-zinc-700/80 hover:border-red-400/50 dark:hover:border-amber-400/50 hover:bg-white dark:hover:bg-zinc-800 hover:shadow-xs transition-all group"
-                                        >
-                                            <div className="h-11 w-11 rounded-xl overflow-hidden bg-red-950 shrink-0 border border-amber-400/40 flex items-center justify-center shadow-xs">
-                                                {item.photo ? (
-                                                    <img
-                                                        src={item.photo}
-                                                        alt={item.name}
-                                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                                                        loading="lazy"
-                                                    />
-                                                ) : (
-                                                    <span className="text-amber-300 font-bold text-xs select-none">
-                                                        {getInitials(item.name)}
-                                                    </span>
-                                                )}
-                                            </div>
-                                            <div className="min-w-0 flex-1">
-                                                <span className="text-[10px] font-bold text-red-700 dark:text-amber-400 uppercase tracking-wider block truncate">
-                                                    {item.role}
-                                                </span>
-                                                <h4 className="text-xs sm:text-sm font-black text-zinc-900 dark:text-zinc-100 truncate">
-                                                    {item.name}
-                                                </h4>
-                                                <span className="text-[10px] text-zinc-500 dark:text-zinc-400 block">
-                                                    Periode: {organization.period || '2020 - 2026'}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
+                                ))}
                             </div>
-                        </div>
-
-                        {/* Bagikan Informasi Lembaga */}
-                        <div className="p-5 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 shadow-xs flex flex-wrap items-center justify-between gap-3">
-                            <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-                                <Share2 className="h-4 w-4 text-red-600 dark:text-amber-400" />
-                                <span>Bagikan Informasi Lembaga:</span>
-                            </span>
-
-                            <div className="flex items-center gap-2">
-                                <a
-                                    href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`Profil ${organization.name}: ${currentUrl}`)}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition-colors"
-                                >
-                                    <Share2 className="h-3.5 w-3.5" />
-                                    <span>WhatsApp</span>
-                                </a>
-
-                                <button
-                                    type="button"
-                                    onClick={handleCopyUrl}
-                                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 transition-colors cursor-pointer border border-zinc-200 dark:border-zinc-700"
-                                >
-                                    {copied ? (
-                                        <>
-                                            <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-                                            <span className="text-emerald-700 dark:text-emerald-400 font-bold">Tautan Disalin!</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Share2 className="h-3.5 w-3.5" />
-                                            <span>Salin Tautan</span>
-                                        </>
-                                    )}
-                                </button>
-                            </div>
-                        </div>
+                        </section>
                     </div>
 
                     {/* RIGHT COLUMN: Sidebar (4 COLS) */}
                     <div className="lg:col-span-4 space-y-5">
                         {/* 1. KETUA / PIMPINAN CARD */}
-                        <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-b from-red-800 via-red-900 to-[#2e0508] text-white shadow-md border border-amber-400/40 p-6 space-y-4">
+                        <div className="group relative overflow-hidden rounded-lg bg-gradient-to-b from-red-800 via-red-900 to-[#2e0508] text-white shadow-md border border-amber-400/40 p-6 space-y-4">
                             {/* Siluet Batik Truntum Overlay */}
                             <div
                                 className="absolute inset-0 pointer-events-none opacity-10 group-hover:opacity-15 transition-opacity duration-500 bg-repeat"
@@ -654,7 +570,7 @@ export default function OrganizationShow({
 
                                 <div className="flex flex-col items-center text-center space-y-3 pt-1">
                                     {/* Leader Portrait */}
-                                    <div className="h-28 w-28 rounded-2xl overflow-hidden bg-red-950 border-2 border-amber-400 shadow-lg ring-4 ring-amber-400/20 flex items-center justify-center">
+                                    <div className="h-28 w-28 rounded-lg overflow-hidden bg-red-950 border-2 border-amber-400 shadow-lg ring-4 ring-amber-400/20 flex items-center justify-center">
                                         {leader.photo && !leaderPhotoError ? (
                                             <img
                                                 src={leader.photo}
@@ -682,125 +598,167 @@ export default function OrganizationShow({
                         </div>
 
                         {/* 2. INFORMASI SEKRETARIAT & LAYANAN */}
-                        <div className="group relative overflow-hidden p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 shadow-xs space-y-4">
+                        <div className="group relative overflow-hidden p-5 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 shadow-xs space-y-4">
                             {/* Siluet Batik Truntum Watermark */}
                             <div
-                                className="absolute inset-0 pointer-events-none opacity-[0.025] dark:opacity-[0.05] group-hover:opacity-[0.04] transition-opacity duration-500 bg-repeat"
+                                className="absolute inset-0 pointer-events-none opacity-[0.02] dark:opacity-[0.04] bg-repeat"
                                 style={{
                                     backgroundImage: `url("${BATIK_TRUNTUM_PATTERN}")`,
                                     backgroundSize: "65px 65px",
                                 }}
                             />
 
-                            <div className="relative z-10 space-y-4">
-                                <h3 className="text-sm font-black text-zinc-900 dark:text-zinc-100 flex items-center gap-2 pb-3 border-b border-zinc-100 dark:border-zinc-800">
-                                    <MapPin className="h-4 w-4 text-red-600 dark:text-amber-400" />
-                                    <span>Sekretariat & Koordinasi</span>
-                                </h3>
+                            <div className="relative z-10 space-y-3.5">
+                                <div className="flex items-center gap-2 pb-3 border-b border-zinc-200/90 dark:border-zinc-800">
+                                    <MapPin className="h-4 w-4 text-red-600 dark:text-amber-400 shrink-0" />
+                                    <h3 className="text-sm font-black text-zinc-900 dark:text-zinc-100">
+                                        Sekretariat & Koordinasi
+                                    </h3>
+                                </div>
 
-                                <div className="space-y-3 text-xs text-zinc-600 dark:text-zinc-300">
-                                    <div className="flex items-start gap-3 p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200/80 dark:border-zinc-700/60">
-                                        <div className="h-8 w-8 rounded-lg bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
-                                            <MapPin className="h-4 w-4" />
-                                        </div>
+                                <div className="space-y-3 text-xs">
+                                    <div className="flex items-start gap-3">
+                                        <MapPin className="h-4 w-4 text-red-600 dark:text-amber-400 shrink-0 mt-0.5" />
                                         <div className="space-y-0.5 flex-1 min-w-0">
-                                            <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block">Alamat Sekretariat:</span>
-                                            <p className="font-semibold text-zinc-800 dark:text-zinc-200 leading-relaxed">
+                                            <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider block">
+                                                Alamat Sekretariat
+                                            </span>
+                                            <p className="font-semibold text-zinc-800 dark:text-zinc-200 leading-relaxed text-xs sm:text-[13px]">
                                                 {organization.secretariat || 'Kompleks Balai Desa Karangwungu, Kec. Karanggeneng, Kab. Lamongan, Jawa Timur 62254'}
                                             </p>
                                         </div>
                                     </div>
 
-                                    <div className="flex items-start gap-3 p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200/80 dark:border-zinc-700/60">
-                                        <div className="h-8 w-8 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
-                                            <Calendar className="h-4 w-4" />
-                                        </div>
+                                    <div className="flex items-start gap-3 pt-3 border-t border-zinc-100 dark:border-zinc-800/80">
+                                        <Calendar className="h-4 w-4 text-red-600 dark:text-amber-400 shrink-0 mt-0.5" />
                                         <div className="space-y-0.5 flex-1 min-w-0">
-                                            <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block">Jadwal Koordinasi:</span>
-                                            <p className="font-semibold text-zinc-800 dark:text-zinc-200 leading-relaxed">
+                                            <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider block">
+                                                Jadwal Koordinasi
+                                            </span>
+                                            <p className="font-semibold text-zinc-800 dark:text-zinc-200 leading-relaxed text-xs sm:text-[13px]">
                                                 {organization.meeting_schedule || 'Setiap Minggu Ke-1 & Koordinasi Rutin Bulanan'}
                                             </p>
                                         </div>
                                     </div>
 
-                                    <div className="flex items-start gap-3 p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200/80 dark:border-zinc-700/60">
-                                        <div className="h-8 w-8 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 mt-0.5">
-                                            <Mail className="h-4 w-4" />
-                                        </div>
+                                    <div className="flex items-start gap-3 pt-3 border-t border-zinc-100 dark:border-zinc-800/80">
+                                        <Mail className="h-4 w-4 text-red-600 dark:text-amber-400 shrink-0 mt-0.5" />
                                         <div className="space-y-0.5 flex-1 min-w-0">
-                                            <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block">Email Resmi:</span>
-                                            <p className="font-medium text-red-600 dark:text-amber-400 font-mono text-xs break-all">
+                                            <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider block">
+                                                Email Resmi
+                                            </span>
+                                            <a
+                                                href={`mailto:${organization.email || 'pemdes@karangwungu-lamongan.desa.id'}`}
+                                                className="font-mono text-xs font-semibold text-red-600 dark:text-amber-400 hover:underline block break-all"
+                                            >
                                                 {organization.email || 'pemdes@karangwungu-lamongan.desa.id'}
-                                            </p>
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        {/* 3. REKOMENDASI LEMBAGA LAINNYA */}
+                        {/* 3. REKOMENDASI LEMBAGA LAINNYA (Unboxed, mengikuti referensi card ServicesSection) */}
                         {otherOrganizations.length > 0 && (
-                            <div className="group relative overflow-hidden p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 shadow-xs space-y-4">
-                                {/* Siluet Batik Truntum Watermark */}
-                                <div
-                                    className="absolute inset-0 pointer-events-none opacity-[0.025] dark:opacity-[0.05] group-hover:opacity-[0.04] transition-opacity duration-500 bg-repeat"
-                                    style={{
-                                        backgroundImage: `url("${BATIK_TRUNTUM_PATTERN}")`,
-                                        backgroundSize: "65px 65px",
-                                    }}
-                                />
-
-                                <div className="relative z-10 space-y-3">
-                                    <div className="flex items-center justify-between pb-3 border-b border-zinc-100 dark:border-zinc-800">
+                            <div className="space-y-3 pt-1">
+                                <div className="flex items-center justify-between pb-2.5 border-b border-zinc-200/90 dark:border-zinc-800">
+                                    <div className="flex items-center gap-2">
+                                        <Users className="h-4 w-4 text-red-600 dark:text-amber-400 shrink-0" />
                                         <h3 className="text-sm font-black text-zinc-900 dark:text-zinc-100">
                                             Lembaga Desa Lainnya
                                         </h3>
-                                        <Link
-                                            href="/profil/lembaga"
-                                            className="text-[11px] font-bold text-red-600 dark:text-amber-400 hover:underline"
-                                        >
-                                            Lihat Semua
-                                        </Link>
                                     </div>
+                                    <Link
+                                        href="/profil/lembaga"
+                                        className="text-[11px] font-bold text-red-600 dark:text-amber-400 hover:underline inline-flex items-center gap-1"
+                                    >
+                                        <span>Lihat Semua</span>
+                                        <ArrowRight className="h-3 w-3" />
+                                    </Link>
+                                </div>
 
-                                    <div className="space-y-2">
-                                        {otherOrganizations.slice(0, 5).map((other) => {
-                                            const OtherIcon = getIconComponent(other.icon, Users);
-                                            return (
-                                                <Link
-                                                    key={other.id}
-                                                    href={`/profil/lembaga/${other.id}`}
-                                                    className="flex items-center justify-between p-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 hover:bg-red-50/80 dark:hover:bg-red-950/30 border border-zinc-200/80 dark:border-zinc-700/80 hover:border-red-300 dark:hover:border-red-900/50 transition-all group/other cursor-pointer"
-                                                >
-                                                    <div className="flex items-center gap-2.5 min-w-0">
-                                                        <div className="h-8 w-8 rounded-lg bg-white dark:bg-zinc-800 p-1 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center shrink-0">
-                                                            {other.logo ? (
-                                                                <img
-                                                                    src={other.logo}
-                                                                    alt={other.shortName || other.name}
-                                                                    className="w-full h-full object-contain"
-                                                                />
-                                                            ) : (
-                                                                <OtherIcon className="h-3.5 w-3.5 text-red-600 dark:text-amber-400" />
-                                                            )}
-                                                        </div>
-                                                        <div className="min-w-0">
-                                                            <h4 className="text-xs font-bold text-zinc-900 dark:text-zinc-100 group-hover/other:text-red-700 dark:group-hover/other:text-amber-400 transition-colors truncate">
-                                                                {other.shortName || other.name}
-                                                            </h4>
-                                                            <span className="text-[10px] text-zinc-500 dark:text-zinc-400 block truncate">
-                                                                {other.tagline || 'Lembaga Desa Karangwungu'}
-                                                            </span>
-                                                        </div>
+                                <div className="space-y-2.5">
+                                    {otherOrganizations.slice(0, 5).map((other) => {
+                                        const OtherIcon = getIconComponent(other.icon, Users);
+                                        return (
+                                            <Link
+                                                key={other.id}
+                                                href={`/profil/lembaga/${other.id}`}
+                                                className="group relative overflow-hidden p-3 sm:p-3.5 rounded-lg bg-gradient-to-br from-white via-red-50/40 to-amber-50/30 dark:from-zinc-900 dark:via-[#1c080b] dark:to-zinc-950 backdrop-blur-xl border border-red-500/20 dark:border-red-900/40 hover:border-amber-500/70 dark:hover:border-amber-400/60 shadow-xs hover:shadow-md hover:shadow-red-950/10 transition-all duration-200 hover:-translate-y-0.5 flex items-center justify-between gap-3 cursor-pointer pl-4"
+                                            >
+                                                {/* Aksen Gradasi Garis Tipis Vertikal: Merah - Hitam - Kuning */}
+                                                <div className="absolute left-0 inset-y-0 w-1 sm:w-1.5 bg-gradient-to-b from-red-600 via-zinc-900 to-amber-400 opacity-85 group-hover:opacity-100 transition-opacity" />
+
+                                                {/* Bias Gradasi Halus di Sudut Belakang */}
+                                                <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full bg-gradient-to-br from-red-600/10 via-zinc-900/5 to-amber-500/15 blur-xl pointer-events-none group-hover:scale-125 transition-transform duration-500" />
+
+                                                <div className="relative z-10 flex items-center gap-3 min-w-0">
+                                                    <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-amber-500/15 via-red-500/10 to-amber-500/5 border border-amber-500/30 text-amber-500 dark:text-amber-400 flex items-center justify-center shrink-0 p-1.5 group-hover:scale-105 group-hover:bg-gradient-to-br group-hover:from-red-600 group-hover:to-amber-500 group-hover:text-white group-hover:border-amber-300 transition-all shadow-xs">
+                                                        {other.logo ? (
+                                                            <img
+                                                                src={other.logo}
+                                                                alt={other.shortName || other.name}
+                                                                className="w-full h-full object-contain"
+                                                            />
+                                                        ) : (
+                                                            <OtherIcon className="h-4 w-4" />
+                                                        )}
                                                     </div>
-                                                    <ChevronRight className="h-4 w-4 text-zinc-400 group-hover/other:text-red-600 dark:group-hover/other:text-amber-400 group-hover/other:translate-x-0.5 transition-transform shrink-0" />
-                                                </Link>
-                                            );
-                                        })}
-                                    </div>
+                                                    <div className="min-w-0">
+                                                        <h4 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-300 transition-colors truncate">
+                                                            {other.shortName || other.name}
+                                                        </h4>
+                                                        <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate mt-0.5">
+                                                            {other.tagline || 'Lembaga Desa Karangwungu'}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <ArrowRight className="relative z-10 h-4 w-4 text-zinc-400 dark:text-zinc-500 group-hover:text-amber-500 dark:group-hover:text-amber-400 group-hover:translate-x-1 transition-all shrink-0 ml-1" />
+                                            </Link>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         )}
+                    </div>
+                </div>
+
+                {/* Bagikan Informasi Lembaga (Posisi di paling bawah seluruh halaman, baik di mobile maupun desktop) */}
+                <div className="mt-8 p-4 sm:p-5 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 shadow-xs flex flex-wrap items-center justify-between gap-3">
+                    <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+                        <Share2 className="h-4 w-4 text-red-600 dark:text-amber-400" />
+                        <span>Bagikan Informasi Lembaga:</span>
+                    </span>
+
+                    <div className="flex items-center gap-2">
+                        <a
+                            href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`Profil ${organization.name}: ${currentUrl}`)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition-colors"
+                        >
+                            <Share2 className="h-3.5 w-3.5" />
+                            <span>WhatsApp</span>
+                        </a>
+
+                        <button
+                            type="button"
+                            onClick={handleCopyUrl}
+                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 transition-colors cursor-pointer border border-zinc-200 dark:border-zinc-700"
+                        >
+                            {copied ? (
+                                <>
+                                    <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                                    <span className="text-emerald-700 dark:text-emerald-400 font-bold">Tautan Disalin!</span>
+                                </>
+                            ) : (
+                                <>
+                                    <Share2 className="h-3.5 w-3.5" />
+                                    <span>Salin Tautan</span>
+                                </>
+                            )}
+                        </button>
                     </div>
                 </div>
             </div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from '@inertiajs/react';
 import AppLayout from '../../Layouts/AppLayout';
 import SeoHead from '../../Components/SEO/SeoHead';
@@ -14,7 +14,6 @@ import {
     Home,
     Wheat,
     Fish,
-    Search,
     CheckCircle2,
     Scale,
     Sparkles,
@@ -28,8 +27,6 @@ import {
 const BATIK_TRUNTUM_PATTERN = `data:image/svg+xml,%3Csvg width='70' height='70' viewBox='0 0 70 70' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23fbbf24' stroke='%23fbbf24'%3E%3Ccircle cx='35' cy='35' r='2.2' /%3E%3Cpath d='M35 24 C32 29, 32 32, 35 35 C38 32, 38 29, 35 24 Z' stroke-width='0.8' fill='none' /%3E%3Cpath d='M35 46 C32 41, 32 38, 35 35 C38 38, 38 41, 35 46 Z' stroke-width='0.8' fill='none' /%3E%3Cpath d='M24 35 C29 32, 32 32, 35 35 C32 38, 29 38, 24 35 Z' stroke-width='0.8' fill='none' /%3E%3Cpath d='M46 35 C41 32, 38 32, 35 35 C38 38, 41 38, 46 35 Z' stroke-width='0.8' fill='none' /%3E%3Ccircle cx='28' cy='28' r='1.2' /%3E%3Ccircle cx='42' cy='28' r='1.2' /%3E%3Ccircle cx='28' cy='42' r='1.2' /%3E%3Ccircle cx='42' cy='42' r='1.2' /%3E%3Ccircle cx='35' cy='35' r='15' fill='none' stroke='%23fbbf24' stroke-width='0.8' stroke-dasharray='2 3' opacity='0.75' /%3E%3Cpath d='M0 0 L70 70 M70 0 L0 70' stroke='%23fbbf24' stroke-width='0.6' stroke-dasharray='1 4' opacity='0.5' /%3E%3Ccircle cx='35' cy='7' r='1' /%3E%3Ccircle cx='35' cy='63' r='1' /%3E%3Ccircle cx='7' cy='35' r='1' /%3E%3Ccircle cx='63' cy='35' r='1' /%3E%3Ccircle cx='0' cy='0' r='2.2' /%3E%3Ccircle cx='0' cy='0' r='15' fill='none' stroke='%23fbbf24' stroke-width='0.8' stroke-dasharray='2 3' opacity='0.75' /%3E%3Ccircle cx='70' cy='0' r='2.2' /%3E%3Ccircle cx='70' cy='0' r='15' fill='none' stroke='%23fbbf24' stroke-width='0.8' stroke-dasharray='2 3' opacity='0.75' /%3E%3Ccircle cx='0' cy='70' r='2.2' /%3E%3Ccircle cx='0' cy='70' r='15' fill='none' stroke='%23fbbf24' stroke-width='0.8' stroke-dasharray='2 3' opacity='0.75' /%3E%3Ccircle cx='70' cy='70' r='2.2' /%3E%3Ccircle cx='70' cy='70' r='15' fill='none' stroke='%23fbbf24' stroke-width='0.8' stroke-dasharray='2 3' opacity='0.75' /%3E%3C/g%3E%3C/svg%3E`;
 
 export default function Organizations({ organizationsSettings = {} }) {
-    const [searchQuery, setSearchQuery] = useState('');
-
     // Parse organizations list from backend settings
     let rawOrgs = [];
     if (organizationsSettings.organizations_list_data && Array.isArray(organizationsSettings.organizations_list_data)) {
@@ -57,17 +54,7 @@ export default function Organizations({ organizationsSettings = {} }) {
     const avatarUrl = (name) =>
         `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=7f1d1d&color=fcd34d&size=256&bold=true&font-size=0.35`;
 
-    // Filter Logic
-    const filteredOrganizations = organizationsData.filter((org) => {
-        const q = searchQuery.trim().toLowerCase();
-        return (
-            q === '' ||
-            (org.name || '').toLowerCase().includes(q) ||
-            (org.description || '').toLowerCase().includes(q) ||
-            (org.leader?.name || '').toLowerCase().includes(q) ||
-            (org.tagline || '').toLowerCase().includes(q)
-        );
-    });
+
 
     return (
         <AppLayout>
@@ -89,41 +76,9 @@ export default function Organizations({ organizationsSettings = {} }) {
                     subtitle="Wadah aspirasi, musyawarah perwakilan warga, pemberdayaan perempuan, kepemudaan, gotong royong swadaya, serta ketertiban lingkungan Desa Karangwungu."
                 />
 
-                {/* 2. SEARCH & COUNT TOOLBAR */}
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <div className="flex items-center gap-2 text-xs text-zinc-600 dark:text-zinc-400">
-                        <span className="font-bold text-zinc-900 dark:text-zinc-100">
-                            {filteredOrganizations.length} Lembaga & Organisasi
-                        </span>
-                        <span>Desa Karangwungu</span>
-                    </div>
-
-                    {/* Search Box */}
-                    <div className="relative w-full sm:w-80">
-                        <Search className="absolute left-3 top-2.5 h-4 w-4 text-red-600 dark:text-amber-400" />
-                        <input
-                            type="text"
-                            placeholder="Cari nama lembaga atau pengurus..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-9 pr-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-amber-400"
-                        />
-                    </div>
-                </div>
-
-                {/* 3. ORGANIZATIONS GRID */}
-                {filteredOrganizations.length === 0 ? (
-                    <div className="p-12 rounded-2xl bg-white dark:bg-zinc-900 border border-dashed border-zinc-300 dark:border-zinc-800 text-center space-y-2">
-                        <p className="text-base font-bold text-zinc-700 dark:text-zinc-300">
-                            Tidak ada lembaga atau organisasi ditemukan.
-                        </p>
-                        <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                            Silakan coba kata kunci pencarian lain.
-                        </p>
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {filteredOrganizations.map((org) => {
+                {/* 2. ORGANIZATIONS GRID */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {organizationsData.map((org) => {
                             const IconComponent = org.icon;
                             return (
                                 <div
@@ -246,7 +201,6 @@ export default function Organizations({ organizationsSettings = {} }) {
                             );
                         })}
                     </div>
-                )}
             </div>
         </AppLayout>
     );

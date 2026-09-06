@@ -1,19 +1,41 @@
-import React, { useState, useMemo } from 'react';
+import React from 'react';
 import { Link } from '@inertiajs/react';
 import AppLayout from '../../Layouts/AppLayout';
 import SeoHead from '../../Components/SEO/SeoHead';
 import PageHeader from '../../Components/UI/PageHeader';
-import Badge from '../../Components/UI/Badge';
 import {
     Search,
     CheckCircle2,
     ArrowRight,
     FileCheck,
-    FileText,
     Info,
     ChevronRight,
     Scale,
+    Briefcase,
+    Home,
+    ShieldCheck,
+    HeartHandshake,
+    Users,
+    FileText,
+    FileSignature,
+    Layers,
 } from 'lucide-react';
+
+const BATIK_PARANG_PATTERN = `data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23fbbf24' stroke='%23fbbf24'%3E%3Cpath d='M0 0 L80 80 M0 40 L40 80 M40 0 L80 40' stroke-width='1.2' fill='none' stroke-linecap='round' opacity='0.75'/%3E%3Cpath d='M-5 15 L65 85 M15 -5 L85 65' stroke-width='0.7' fill='none' stroke-dasharray='2 3' opacity='0.5'/%3E%3Cpath d='M14 26 C10 22 10 14 18 14 C26 14 28 22 22 26 C18 28 16 28 14 26 Z' fill='%23fbbf24' fill-opacity='0.25' stroke-width='0.9'/%3E%3Cpath d='M54 66 C50 62 50 54 58 54 C66 54 68 62 62 66 C58 68 56 68 54 66 Z' fill='%23fbbf24' fill-opacity='0.25' stroke-width='0.9'/%3E%3Cpath d='M54 26 C50 22 50 14 58 14 C66 14 68 22 62 26 C58 28 56 28 54 26 Z' fill='%23fbbf24' fill-opacity='0.25' stroke-width='0.9'/%3E%3Cpath d='M14 66 C10 62 10 54 18 54 C26 54 28 62 22 66 C18 68 16 68 14 66 Z' fill='%23fbbf24' fill-opacity='0.25' stroke-width='0.9'/%3E%3Cpolygon points='40,16 44,20 40,24 36,20' fill='%23fbbf24' stroke-width='0.5'/%3E%3Cpolygon points='20,36 24,40 20,44 16,40' fill='%23fbbf24' stroke-width='0.5'/%3E%3Cpolygon points='60,36 64,40 60,44 56,40' fill='%23fbbf24' stroke-width='0.5'/%3E%3Cpolygon points='40,56 44,60 40,64 36,60' fill='%23fbbf24' stroke-width='0.5'/%3E%3Ccircle cx='0' cy='0' r='2' /%3E%3Ccircle cx='80' cy='0' r='2' /%3E%3Ccircle cx='0' cy='80' r='2' /%3E%3Ccircle cx='80' cy='80' r='2' /%3E%3Ccircle cx='40' cy='40' r='2.2' /%3E%3Ccircle cx='20' cy='20' r='1.2' /%3E%3Ccircle cx='60' cy='60' r='1.2' /%3E%3Ccircle cx='60' cy='20' r='1.2' /%3E%3Ccircle cx='20' cy='60' r='1.2' /%3E%3C/g%3E%3C/svg%3E`;
+
+const getServiceIcon = (id = '') => {
+    const key = (id || '').toLowerCase();
+    if (key.includes('sktm') || key.includes('tidak-mampu') || key.includes('kurang-mampu')) return ShieldCheck;
+    if (key.includes('sku') || key.includes('usaha')) return Briefcase;
+    if (key.includes('domisili') || key.includes('skd') || key.includes('tinggal')) return Home;
+    if (key.includes('kelahiran') || key.includes('lahir') || key.includes('bayi')) return Baby;
+    if (key.includes('kematian') || key.includes('meninggal') || key.includes('wafat')) return HeartHandshake;
+    if (key.includes('nikah') || key.includes('kawin')) return Users;
+    if (key.includes('kehilangan') || key.includes('hilang')) return Search;
+    if (key.includes('wali') || key.includes('hakim')) return Scale;
+    if (key.includes('kuasa')) return FileSignature;
+    return FileText;
+};
 
 const DEFAULT_SERVICES = [
     {
@@ -28,36 +50,14 @@ const DEFAULT_SERVICES = [
         ],
     },
     {
-        id: 'sku',
-        title: 'Surat Keterangan Usaha (SKU)',
-        short_name: 'SKU',
-        description: 'Menerangkan kepemilikan kegiatan usaha aktif di Desa Karangwungu untuk pengajuan kredit bank (KUR BRI/BNI/Mandiri), modal usaha, atau perizinan.',
+        id: 'domisili-usaha',
+        title: 'Surat Keterangan Domisili Usaha',
+        short_name: 'Domisili Usaha',
+        description: 'Surat keterangan resmi dari Pemerintah Desa Karangwungu yang menerangkan domisili tinggal pemohon serta keberadaan/domisili tempat usaha atau kantor yang beroperasi di wilayah Desa Karangwungu.',
         requirements: [
-            'Warga berdomisili atau menjalankan usaha di wilayah Desa Karangwungu',
-            'Memiliki kegiatan usaha / UMKM yang sedang aktif berjalan',
-            'Mendapatkan Surat Pengantar dari Ketua RT / RW lokasi usaha',
-        ],
-    },
-    {
-        id: 'domisili',
-        title: 'Surat Keterangan Domisili',
-        short_name: 'Domisili',
-        description: 'Keterangan tempat tinggal sah di wilayah RT/RW Desa Karangwungu untuk melamar kerja, pendaftaran sekolah, atau perbankan.',
-        requirements: [
-            'Bertempat tinggal atau menetap di lingkungan RT/RW Desa Karangwungu',
-            'Menunjukkan identitas kependudukan (KTP / KK asli atau bukti tinggal bagi pendatang)',
-            'Mendapatkan Surat Pengantar dari Ketua RT / RW dusun setempat',
-        ],
-    },
-    {
-        id: 'kelahiran',
-        title: 'Surat Keterangan Kelahiran',
-        short_name: 'Kelahiran',
-        description: 'Pengantar desa atas kelahiran anak guna pembuatan Akta Kelahiran dan penambahan anggota keluarga di KK Disdukcapil Lamongan.',
-        requirements: [
-            'Kelahiran anak dari orang tua yang merupakan warga Desa Karangwungu',
-            'Memiliki surat keterangan lahir dari bidan, dokter, atau fasilitas kesehatan',
-            'Menyertakan identitas orang tua (KTP & Kartu Keluarga Desa Karangwungu)',
+            'Pemohon memiliki identitas kependudukan (KTP / KK sah)',
+            'Memiliki tempat usaha atau kantor yang berdomisili/beroperasi di Desa Karangwungu',
+            'Mendapatkan Surat Pengantar dari Ketua RT / RW setempat',
         ],
     },
     {
@@ -69,17 +69,6 @@ const DEFAULT_SERVICES = [
             'Almarhum / Almarhumah tercatat sebagai warga Desa Karangwungu',
             'Pelapor merupakan ahli waris sah atau anggota keluarga dalam satu KK',
             'Mendapatkan Surat Pengantar dari Ketua RT / RW setempat',
-        ],
-    },
-    {
-        id: 'pengantar-nikah',
-        title: 'Surat Pengantar Nikah (N1-N4)',
-        short_name: 'Pengantar Nikah',
-        description: 'Berkas pengantar resmi (formulir N1 hingga N4) bagi calon pengantin untuk pendaftaran di KUA Kecamatan Karanggeneng.',
-        requirements: [
-            'Calon mempelai merupakan warga Desa Karangwungu',
-            'Status perkawinan jelas (jejaka, perawan, duda, atau janda)',
-            'Mendapatkan Surat Pengantar dari Ketua RT / RW dusun setempat',
         ],
     },
     {
@@ -97,23 +86,6 @@ const DEFAULT_SERVICES = [
 
 export default function Request({ services = [] }) {
     const letterServices = services && services.length > 0 ? services : DEFAULT_SERVICES;
-    const [searchQuery, setSearchQuery] = useState('');
-
-    // Filter services by search query
-    const filteredServices = useMemo(() => {
-        const q = searchQuery.toLowerCase().trim();
-        if (!q) return letterServices;
-
-        return letterServices.filter((service) => {
-            const matchesTitle = service.title?.toLowerCase().includes(q);
-            const matchesShortName = service.short_name?.toLowerCase().includes(q);
-            const matchesDesc = service.description?.toLowerCase().includes(q);
-            const matchesReq = Array.isArray(service.requirements) &&
-                service.requirements.some((r) => r.toLowerCase().includes(q));
-
-            return matchesTitle || matchesShortName || matchesDesc || matchesReq;
-        });
-    }, [letterServices, searchQuery]);
 
     return (
         <AppLayout>
@@ -149,65 +121,46 @@ export default function Request({ services = [] }) {
                     ]}
                 />
 
-                {/* 2. TOOLBAR: SEARCH & COUNT */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-xs">
-                    {/* Search Bar */}
-                    <div className="relative flex-1 max-w-lg">
-                        <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-zinc-400" />
-                        <input
-                            type="text"
-                            placeholder="Cari jenis surat (contoh: SKTM, SKU, Domisili)..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-amber-400 focus:border-red-500 dark:focus:border-amber-500"
-                        />
-                        {searchQuery && (
-                            <button
-                                onClick={() => setSearchQuery('')}
-                                className="absolute right-3 top-3 text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
-                            >
-                                Bersihkan
-                            </button>
-                        )}
-                    </div>
-
-                    <div className="text-xs text-zinc-500 dark:text-zinc-400">
-                        Tersedia <strong>{filteredServices.length}</strong> jenis permohonan surat resmi
-                    </div>
-                </div>
-
-                {/* 3. SERVICES CARDS GRID */}
-                {filteredServices.length === 0 ? (
-                    <div className="p-12 text-center rounded-xl bg-white dark:bg-zinc-900 border border-dashed border-zinc-300 dark:border-zinc-800 space-y-3">
-                        <FileText className="h-10 w-10 text-zinc-400 mx-auto" />
-                        <h3 className="text-base font-bold text-zinc-900 dark:text-white">
-                            Tidak Ditemukan Surat yang Sesuai
-                        </h3>
-                        <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-sm mx-auto">
-                            Tidak ada jenis surat yang cocok dengan kata kunci &ldquo;{searchQuery}&rdquo;. Silakan coba kata kunci lain.
-                        </p>
-                        <button
-                            onClick={() => setSearchQuery('')}
-                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
-                        >
-                            Lihat Semua Surat
-                        </button>
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {filteredServices.map((service) => (
+                {/* 2. SERVICES CARDS GRID */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {letterServices.map((service) => {
+                        const IconComponent = getServiceIcon(service.id);
+                        return (
                             <div
                                 key={service.id}
-                                className="group flex flex-col justify-between rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-red-400 dark:hover:border-amber-400/60 p-6 shadow-xs hover:shadow-lg transition-all"
+                                className="group relative rounded-lg overflow-hidden bg-gradient-to-b from-[#74151e] via-[#5c1018] to-[#420a11] dark:from-[#2a0509] dark:via-[#1a0305] dark:to-[#0d0103] text-white shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between border border-amber-400/40 dark:border-amber-500/35 hover:border-amber-400/80 p-5 sm:p-6"
                             >
-                                <div className="space-y-4">
+                                {/* Siluet Motif Batik Parang Kencana Background Layer */}
+                                <div
+                                    className="absolute inset-0 pointer-events-none opacity-[0.045] sm:opacity-[0.045] dark:opacity-[0.06] group-hover:opacity-[0.12] dark:group-hover:opacity-[0.10] transition-opacity duration-500 bg-repeat"
+                                    style={{
+                                        backgroundImage: `url("${BATIK_PARANG_PATTERN}")`,
+                                        backgroundSize: '80px 80px',
+                                    }}
+                                />
+
+                                {/* Ambient Glow di Sudut Atas */}
+                                <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-gradient-to-br from-amber-400/15 via-red-500/8 to-transparent blur-2xl pointer-events-none group-hover:scale-125 transition-transform duration-500" />
+
+                                <div className="relative z-10 space-y-4">
+                                    {/* Header Bar: Icon Box + Short Name Badge */}
+                                    <div className="flex items-center justify-between gap-3">
+                                        <div className="h-11 w-11 rounded-lg bg-black/40 border border-amber-400/50 text-amber-300 flex items-center justify-center shrink-0 shadow-md group-hover:scale-105 group-hover:bg-amber-400 group-hover:text-zinc-950 transition-all">
+                                            <IconComponent className="h-5 w-5" />
+                                        </div>
+
+                                        <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-black/40 border border-amber-400/50 text-amber-300 text-[10px] font-bold tracking-wider shadow-xs">
+                                            {service.short_name || 'SURAT'}
+                                        </span>
+                                    </div>
+
                                     {/* Title & Description */}
-                                    <div>
-                                        <h3 className="text-base font-bold text-zinc-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-amber-400 transition-colors leading-snug">
+                                    <div className="space-y-1.5">
+                                        <h3 className="text-base sm:text-lg font-black text-white group-hover:text-amber-300 transition-colors leading-snug">
                                             {service.title}
                                         </h3>
                                         {service.description && (
-                                            <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-2 leading-relaxed">
+                                            <p className="text-xs text-red-100/85 dark:text-zinc-300 leading-relaxed">
                                                 {service.description}
                                             </p>
                                         )}
@@ -215,15 +168,15 @@ export default function Request({ services = [] }) {
 
                                     {/* Persyaratan Dokumen (Hanya muncul jika ada / tidak kosong) */}
                                     {Array.isArray(service.requirements) && service.requirements.length > 0 && (
-                                        <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800 space-y-2">
-                                            <span className="text-xs font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5">
-                                                <FileCheck className="h-3.5 w-3.5 text-red-600 dark:text-amber-400" />
-                                                <span>Persyaratan:</span>
+                                        <div className="pt-3.5 border-t border-white/15 dark:border-white/15 space-y-2">
+                                            <span className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+                                                <FileCheck className="h-3.5 w-3.5 text-amber-400" />
+                                                <span>Persyaratan Berkas:</span>
                                             </span>
-                                            <ul className="space-y-1.5 text-xs text-zinc-600 dark:text-zinc-400">
+                                            <ul className="space-y-1.5 text-xs text-red-100/90 dark:text-zinc-200">
                                                 {service.requirements.map((req, idx) => (
                                                     <li key={idx} className="flex items-start gap-2">
-                                                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                                                        <CheckCircle2 className="h-3.5 w-3.5 text-amber-400 shrink-0 mt-0.5" />
                                                         <span className="leading-tight">{req}</span>
                                                     </li>
                                                 ))}
@@ -233,77 +186,113 @@ export default function Request({ services = [] }) {
                                 </div>
 
                                 {/* Action Button: Navigate directly to the dedicated form page */}
-                                <div className="pt-5 mt-5 border-t border-zinc-100 dark:border-zinc-800">
+                                <div className="relative z-10 pt-4 mt-5 border-t border-white/15 dark:border-white/15">
                                     <Link
                                         href={`/layanan/ajukan/${service.id}`}
-                                        className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white shadow-sm transition-all group/btn"
+                                        className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-amber-100 hover:text-white border border-amber-400/40 shadow-md hover:shadow-lg transition-all group/btn cursor-pointer"
                                     >
                                         <span>Buat Formulir Surat Ini</span>
                                         <ArrowRight className="h-3.5 w-3.5 group-hover/btn:translate-x-0.5 transition-transform" />
                                     </Link>
                                 </div>
                             </div>
-                        ))}
-                    </div>
-                )}
-
-                {/* 4. ALUR PELAYANAN MANDIRI */}
-                <div className="p-6 sm:p-8 rounded-2xl bg-gradient-to-r from-red-900/10 via-amber-900/10 to-red-900/10 border border-red-500/20 dark:border-amber-500/20 space-y-6">
-                    <div className="max-w-2xl">
-                        <Badge variant="gold">Alur Layanan</Badge>
-                        <h2 className="text-xl sm:text-2xl font-extrabold text-zinc-900 dark:text-white mt-2">
-                            Alur Pengajuan Surat Mandiri
-                        </h2>
-                        <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 mt-1">
+                        );
+                    })}
+                </div>
+                {/* 3. ALUR PELAYANAN MANDIRI (Unboxed Editorial Section) */}
+                <section aria-labelledby="alur-layanan-heading" className="space-y-5 pt-2">
+                    {/* Section Header (Unboxed editorial, tanpa kerangka div) */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3.5 border-b border-zinc-200/90 dark:border-zinc-800 gap-2">
+                        <div className="flex items-center gap-2.5">
+                            <Layers className="h-5 w-5 text-red-600 dark:text-amber-400 shrink-0" />
+                            <div>
+                                <span className="text-[10px] font-bold text-red-600 dark:text-amber-400 uppercase tracking-wider block">
+                                    Panduan & Prosedur
+                                </span>
+                                <h2 id="alur-layanan-heading" className="text-base sm:text-lg font-black text-zinc-900 dark:text-zinc-100 leading-tight">
+                                    Alur Pengajuan Surat Mandiri
+                                </h2>
+                            </div>
+                        </div>
+                        <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-md">
                             Sistem persuratan terpadu Desa Karangwungu dirancang praktis, transparan, dan terverifikasi.
                         </p>
                     </div>
 
+                    {/* Step Cards Grid */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div className="p-4 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-2 shadow-xs">
-                            <span className="h-6 w-6 rounded-full bg-red-600 text-white font-bold text-xs flex items-center justify-center">
-                                1
-                            </span>
-                            <h4 className="text-xs font-bold text-zinc-900 dark:text-white">Pilih Jenis Surat</h4>
-                            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                                Klik tombol <strong>Buat Formulir Surat Ini</strong> pada jenis surat yang Anda perlukan.
-                            </p>
-                        </div>
+                        {[
+                            {
+                                num: '01',
+                                stepOrder: '1 dari 4',
+                                title: 'Pilih Jenis Surat',
+                                desc: 'Tentukan jenis surat permohonan yang Anda butuhkan dari katalog resmi di atas.',
+                                status: 'Pilih Surat',
+                                icon: FileText,
+                            },
+                            {
+                                num: '02',
+                                stepOrder: '2 dari 4',
+                                title: 'Isi Formulir Khusus',
+                                desc: 'Masuk ke form formulir online dan lengkapi data pemohon sesuai KTP/KK.',
+                                status: 'Input Data',
+                                icon: FileSignature,
+                            },
+                            {
+                                num: '03',
+                                stepOrder: '3 dari 4',
+                                title: 'Dapatkan Kode Tiket',
+                                desc: 'Simpan kode tracking unik (KW-xxxx) untuk memantau proses verifikasi berkas.',
+                                status: 'Kode Tracking',
+                                icon: Search,
+                            },
+                            {
+                                num: '04',
+                                stepOrder: '4 dari 4',
+                                title: 'Verifikasi & Cetak',
+                                desc: 'Surat resmi diverifikasi perangkat desa, bertanda tangan dan siap diambil/dicetak.',
+                                status: 'Dokumen Terbit',
+                                icon: CheckCircle2,
+                            },
+                        ].map((step) => {
+                            const StepIcon = step.icon;
+                            return (
+                                <div
+                                    key={step.num}
+                                    className="group/step relative p-4 sm:p-5 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200/85 dark:border-zinc-800 hover:border-red-500/40 dark:hover:border-amber-400/40 hover:shadow-xs transition-all flex flex-col justify-between space-y-3.5"
+                                >
+                                    <div className="space-y-3">
+                                        <div className="flex items-center justify-between">
+                                            <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-red-600 to-red-800 text-amber-200 flex items-center justify-center font-mono font-black text-xs shadow-xs border border-amber-400/30">
+                                                {step.num}
+                                            </div>
+                                            <div className="h-7 w-7 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 flex items-center justify-center group-hover/step:text-red-600 dark:group-hover/step:text-amber-400 transition-colors">
+                                                <StepIcon className="h-3.5 w-3.5" />
+                                            </div>
+                                        </div>
 
-                        <div className="p-4 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-2 shadow-xs">
-                            <span className="h-6 w-6 rounded-full bg-red-600 text-white font-bold text-xs flex items-center justify-center">
-                                2
-                            </span>
-                            <h4 className="text-xs font-bold text-zinc-900 dark:text-white">Isi Formulir Khusus</h4>
-                            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                                Masuk ke halaman form khusus surat tersebut dan lengkapi data pemohon sesuai KTP/KK.
-                            </p>
-                        </div>
+                                        <div className="space-y-1">
+                                            <h4 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white group-hover/step:text-red-600 dark:group-hover/step:text-amber-400 transition-colors leading-snug">
+                                                {step.title}
+                                            </h4>
+                                            <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                                                {step.desc}
+                                            </p>
+                                        </div>
+                                    </div>
 
-                        <div className="p-4 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-2 shadow-xs">
-                            <span className="h-6 w-6 rounded-full bg-red-600 text-white font-bold text-xs flex items-center justify-center">
-                                3
-                            </span>
-                            <h4 className="text-xs font-bold text-zinc-900 dark:text-white">Dapatkan Kode Tiket</h4>
-                            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                                Simpan kode tracking (KW-xxxx) untuk memantau proses verifikasi berkas oleh perangkat desa.
-                            </p>
-                        </div>
-
-                        <div className="p-4 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-2 shadow-xs">
-                            <span className="h-6 w-6 rounded-full bg-red-600 text-white font-bold text-xs flex items-center justify-center">
-                                4
-                            </span>
-                            <h4 className="text-xs font-bold text-zinc-900 dark:text-white">Verifikasi & Cetak PDF</h4>
-                            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                                Dokumen surat resmi diterbitkan dengan nomor kedinasan dan siap dicetak/diunduh.
-                            </p>
-                        </div>
+                                    <div className="pt-2.5 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center justify-between text-[11px] text-zinc-400 dark:text-zinc-500">
+                                        <span>Langkah {step.stepOrder}</span>
+                                        <span className="font-semibold text-zinc-600 dark:text-zinc-300">{step.status}</span>
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </div>
 
                     {/* Bantuan & Kontak Info */}
-                    <div className="pt-4 border-t border-zinc-200 dark:border-zinc-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs text-zinc-600 dark:text-zinc-400">
-                        <div className="flex items-center gap-2">
+                    <div className="p-4 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                        <div className="flex items-center gap-2 text-zinc-600 dark:text-zinc-400">
                             <Info className="h-4 w-4 text-red-600 dark:text-amber-400 shrink-0" />
                             <span>
                                 Layanan Balai Desa Karangwungu buka <strong>Senin - Jumat (08.00 - 15.00 WIB)</strong> di Jl. Raya Sumberwudi-Maduran.
@@ -311,13 +300,13 @@ export default function Request({ services = [] }) {
                         </div>
                         <Link
                             href="/kontak"
-                            className="font-bold text-red-600 dark:text-amber-400 hover:underline inline-flex items-center gap-1"
+                            className="font-bold text-red-600 dark:text-amber-400 hover:underline inline-flex items-center gap-1 shrink-0"
                         >
                             <span>Hubungi Pelayanan Desa</span>
                             <ChevronRight className="h-3.5 w-3.5" />
                         </Link>
                     </div>
-                </div>
+                </section>
             </div>
         </AppLayout>
     );

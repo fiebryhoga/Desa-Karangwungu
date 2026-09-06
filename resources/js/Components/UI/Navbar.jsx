@@ -514,9 +514,9 @@ export default function Navbar() {
                         <span className="text-[10px] tracking-tight">Beranda</span>
                     </Link>
 
-                    {/* 2. Layanan Online */}
+                    {/* 2. Layanan Online (Mengarah langsung ke Pengajuan Surat) */}
                     <Link
-                        href="/layanan"
+                        href="/layanan/ajukan"
                         className={`flex flex-col items-center justify-center py-1 rounded-lg transition-all duration-200 ${
                             isActive("/layanan")
                                 ? "text-amber-300 font-bold"

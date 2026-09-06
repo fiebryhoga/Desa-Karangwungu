@@ -2,13 +2,12 @@ import React, { useState } from 'react';
 import { Link, router } from '@inertiajs/react';
 import {
     Briefcase,
-    Home as HomeIcon,
     ShieldCheck,
     Search,
     ArrowRight,
-    Baby,
     HeartHandshake,
     FileText,
+    FileSignature,
 } from 'lucide-react';
 
 export default function ServicesSection() {
@@ -23,16 +22,16 @@ export default function ServicesSection() {
 
     const services = [
         {
-            title: 'Surat Keterangan Usaha (SKU)',
-            desc: 'Legalitas resmi untuk toko, pertanian, perikanan tambak & modal bank.',
-            href: '/layanan/ajukan?type=sku',
+            title: 'Surat Keterangan Domisili Usaha',
+            desc: 'Legalitas resmi domisili usaha untuk toko, UMKM, pertanian & permodalan.',
+            href: '/layanan/ajukan?type=domisili-usaha',
             icon: Briefcase,
         },
         {
-            title: 'Surat Keterangan Domisili',
-            desc: 'Bukti tempat tinggal resmi kependudukan dan persyaratan kerja.',
-            href: '/layanan/ajukan?type=domisili',
-            icon: HomeIcon,
+            title: 'Surat Kuasa',
+            desc: 'Pelimpahan wewenang resmi pengurusan dokumen & administrasi desa.',
+            href: '/layanan/ajukan?type=kuasa',
+            icon: FileSignature,
         },
         {
             title: 'Surat Keterangan Tidak Mampu (SKTM)',
@@ -41,10 +40,10 @@ export default function ServicesSection() {
             icon: ShieldCheck,
         },
         {
-            title: 'Surat Keterangan Kelahiran',
-            desc: 'Pencatatan kelahiran baru untuk Akta Kelahiran dan penambahan KK.',
-            href: '/layanan/ajukan?type=kelahiran',
-            icon: Baby,
+            title: 'Surat Keterangan Kehilangan',
+            desc: 'Pengantar kehilangan berkas kependudukan & dokumen berharga.',
+            href: '/layanan/ajukan?type=kehilangan',
+            icon: Search,
         },
         {
             title: 'Surat Keterangan Kematian',
