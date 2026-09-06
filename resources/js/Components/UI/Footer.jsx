@@ -17,6 +17,7 @@ import {
     YoutubeIcon,
     TiktokIcon,
     TwitterIcon,
+    WhatsappIcon,
 } from '@/Components/UI/SocialIcons';
 
 export default function Footer() {
@@ -32,6 +33,77 @@ export default function Footer() {
     const tagline = general.site_tagline || village.tagline || 'Portal resmi informasi publik dan pelayanan administrasi daring Pemerintah Desa Karangwungu dalam mewujudkan tata kelola desa yang transparan, maju, agamis, dan melayani.';
     const rawWa = general.contact_whatsapp ? general.contact_whatsapp.replace(/[^0-9]/g, '') : '6281234567890';
     const waUrl = general.social_whatsapp_url || `https://wa.me/${rawWa}?text=Halo%20Admin%20Desa%20Karangwungu`;
+
+    const renderSocialIcons = () => (
+        <>
+            {general.social_whatsapp_active === '1' && (
+                <a
+                    href={general.social_whatsapp_url || waUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="WhatsApp Desa"
+                    className="h-8 w-8 rounded-lg bg-emerald-600/30 hover:bg-emerald-600 border border-emerald-400/30 text-white flex items-center justify-center transition-all hover:scale-105"
+                >
+                    <WhatsappIcon className="h-4 w-4" />
+                </a>
+            )}
+            {general.social_instagram_active === '1' && general.social_instagram_url && (
+                <a
+                    href={general.social_instagram_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="Instagram Desa"
+                    className="h-8 w-8 rounded-lg bg-pink-600/30 hover:bg-pink-600 border border-pink-400/30 text-white flex items-center justify-center transition-all hover:scale-105"
+                >
+                    <InstagramIcon className="h-4 w-4" />
+                </a>
+            )}
+            {general.social_facebook_active === '1' && general.social_facebook_url && (
+                <a
+                    href={general.social_facebook_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="Facebook Desa"
+                    className="h-8 w-8 rounded-lg bg-blue-600/30 hover:bg-blue-600 border border-blue-400/30 text-white flex items-center justify-center transition-all hover:scale-105"
+                >
+                    <FacebookIcon className="h-4 w-4" />
+                </a>
+            )}
+            {general.social_youtube_active === '1' && general.social_youtube_url && (
+                <a
+                    href={general.social_youtube_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="YouTube Desa"
+                    className="h-8 w-8 rounded-lg bg-red-600/30 hover:bg-red-600 border border-red-400/30 text-white flex items-center justify-center transition-all hover:scale-105"
+                >
+                    <YoutubeIcon className="h-4 w-4" />
+                </a>
+            )}
+            {general.social_tiktok_active === '1' && general.social_tiktok_url && (
+                <a
+                    href={general.social_tiktok_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="TikTok Desa"
+                    className="h-8 w-8 rounded-lg bg-zinc-900/50 hover:bg-zinc-900 border border-white/20 text-white flex items-center justify-center transition-all hover:scale-105"
+                >
+                    <TiktokIcon className="h-4 w-4" />
+                </a>
+            )}
+            {general.social_twitter_active === '1' && general.social_twitter_url && (
+                <a
+                    href={general.social_twitter_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="X (Twitter) Desa"
+                    className="h-8 w-8 rounded-lg bg-sky-600/30 hover:bg-sky-600 border border-sky-400/30 text-white flex items-center justify-center transition-all hover:scale-105"
+                >
+                    <TwitterIcon className="h-4 w-4" />
+                </a>
+            )}
+        </>
+    );
 
     return (
         <footer className="relative bg-gradient-to-b from-red-700 via-red-800 to-red-900 dark:from-red-800 dark:via-red-900 dark:to-red-950 text-red-100 border-t border-red-500/50 shadow-2xl transition-colors overflow-hidden">
@@ -49,7 +121,7 @@ export default function Footer() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
                     <div className="flex items-center gap-3 text-left w-full sm:w-auto">
                         <div className="h-9 w-9 rounded-lg bg-black/30 border border-white/20 text-emerald-400 flex items-center justify-center shrink-0 shadow-xs">
-                            <MessageCircle className="h-4.5 w-4.5" />
+                            <WhatsappIcon className="h-4.5 w-4.5" />
                         </div>
                         <div>
                             <h4 className="text-xs sm:text-sm font-bold text-white">
@@ -67,7 +139,7 @@ export default function Footer() {
                         rel="noopener noreferrer"
                         className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white text-xs font-bold shadow-md transition-all cursor-pointer shrink-0"
                     >
-                        <MessageCircle className="h-4 w-4" />
+                        <WhatsappIcon className="h-4 w-4" />
                         <span>Hubungi WhatsApp Desa</span>
                     </a>
                 </div>
@@ -101,78 +173,14 @@ export default function Footer() {
                             </div>
                         </div>
 
-                        <p className="hidden sm:block text-xs sm:text-sm text-red-100/90 leading-relaxed font-normal">
+                        {/* Deskripsi Singkat / Tagline Publik (Muncul di Mobile & Desktop) */}
+                        <p className="text-xs sm:text-sm text-red-100/90 leading-relaxed font-normal">
                             {tagline}
                         </p>
 
-                        {/* Social Media Links Active List */}
-                        <div className="flex items-center gap-2 pt-1 flex-wrap">
-                            {general.social_whatsapp_active === '1' && (
-                                <a
-                                    href={general.social_whatsapp_url || waUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    title="WhatsApp Desa"
-                                    className="h-8 w-8 rounded-lg bg-emerald-600/30 hover:bg-emerald-600 border border-emerald-400/30 text-white flex items-center justify-center transition-all hover:scale-105"
-                                >
-                                    <MessageCircle className="h-4 w-4" />
-                                </a>
-                            )}
-                            {general.social_instagram_active === '1' && general.social_instagram_url && (
-                                <a
-                                    href={general.social_instagram_url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    title="Instagram Desa"
-                                    className="h-8 w-8 rounded-lg bg-pink-600/30 hover:bg-pink-600 border border-pink-400/30 text-white flex items-center justify-center transition-all hover:scale-105"
-                                >
-                                    <InstagramIcon className="h-4 w-4" />
-                                </a>
-                            )}
-                            {general.social_facebook_active === '1' && general.social_facebook_url && (
-                                <a
-                                    href={general.social_facebook_url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    title="Facebook Desa"
-                                    className="h-8 w-8 rounded-lg bg-blue-600/30 hover:bg-blue-600 border border-blue-400/30 text-white flex items-center justify-center transition-all hover:scale-105"
-                                >
-                                    <FacebookIcon className="h-4 w-4" />
-                                </a>
-                            )}
-                            {general.social_youtube_active === '1' && general.social_youtube_url && (
-                                <a
-                                    href={general.social_youtube_url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    title="YouTube Desa"
-                                    className="h-8 w-8 rounded-lg bg-red-600/30 hover:bg-red-600 border border-red-400/30 text-white flex items-center justify-center transition-all hover:scale-105"
-                                >
-                                    <YoutubeIcon className="h-4 w-4" />
-                                </a>
-                            )}
-                            {general.social_tiktok_active === '1' && general.social_tiktok_url && (
-                                <a
-                                    href={general.social_tiktok_url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    title="TikTok Desa"
-                                    className="h-8 w-8 rounded-lg bg-zinc-900/50 hover:bg-zinc-900 border border-white/20 text-white flex items-center justify-center transition-all hover:scale-105"
-                                >
-                                    <TiktokIcon className="h-4 w-4" />
-                                </a>
-                            )}
-                            {general.social_twitter_active === '1' && general.social_twitter_url && (
-                                <a
-                                    href={general.social_twitter_url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    title="X (Twitter) Desa"
-                                    className="h-8 w-8 rounded-lg bg-sky-600/30 hover:bg-sky-600 border border-sky-400/30 text-white flex items-center justify-center transition-all hover:scale-105"
-                                >
-                                    <TwitterIcon className="h-4 w-4" />
-                                </a>
-                            )}
+                        {/* Social Media Links (Desktop: Tampil di bawah tagline Kolom 1) */}
+                        <div className="hidden sm:flex items-center gap-2 pt-1 flex-wrap">
+                            {renderSocialIcons()}
                         </div>
                     </div>
 
@@ -301,6 +309,11 @@ export default function Footer() {
                             </div>
                         </div>
 
+                        {/* Media Sosial Resmi Desa (Khusus Mobile: Digabung di Kontak & Balai Desa) */}
+                        <div className="sm:hidden pt-1.5 flex items-center gap-2 flex-wrap">
+                            {renderSocialIcons()}
+                        </div>
+
                         {/* External Portal Links */}
                         <div className="flex items-center gap-2 pt-1 text-[11px] flex-wrap">
                             {general.related_link_1_active === '1' && general.related_link_1_url && (
@@ -342,7 +355,7 @@ export default function Footer() {
             </div>
 
             {/* 4. BOTTOM BAR: COPYRIGHT */}
-            <div className="relative z-10 border-t border-red-500/30 bg-black/35 py-4 px-4 sm:px-6 lg:px-8">
+            <div className="relative z-10 border-t border-red-500/30 bg-black/35 pt-4 pb-20 sm:pb-4 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2 text-[11px] text-red-200/90 text-center sm:text-left">
                     <p>
                         &copy; {currentYear} <strong className="text-white">{general.site_name || 'Pemerintah Desa Karangwungu'}</strong>, {general.site_subdistrict || 'Kec. Karanggeneng'}, {general.site_regency || 'Kab. Lamongan'}.
@@ -356,9 +369,9 @@ export default function Footer() {
                             Transparansi
                         </Link>
                         <span>&bull;</span>
-                        <a href="/sitemap.xml" target="_blank" className="hover:text-amber-300 text-red-200 transition-colors">
-                            Sitemap
-                        </a>
+                        <Link href="/layanan/tracking" className="hover:text-amber-300 text-red-200 transition-colors">
+                            Lacak Surat
+                        </Link>
                     </p>
                 </div>
             </div>

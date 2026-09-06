@@ -23,6 +23,7 @@ import {
     Check,
     ChevronDown,
 } from 'lucide-react';
+import { WhatsappIcon } from '@/Components/UI/SocialIcons';
 
 export default function Contact({ feedbacks = [] }) {
     const { props } = usePage();
@@ -101,7 +102,7 @@ export default function Contact({ feedbacks = [] }) {
 
                         <div className="flex items-start gap-3.5">
                             <div className="w-10 h-10 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/20">
-                                <MessageCircle className="w-5 h-5" />
+                                <WhatsappIcon className="w-5 h-5" />
                             </div>
                             <div className="space-y-1">
                                 <span className="text-[10px] font-black tracking-widest text-emerald-600 dark:text-emerald-400 uppercase">
@@ -296,7 +297,7 @@ export default function Contact({ feedbacks = [] }) {
                                         rel="noopener noreferrer"
                                         className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-colors cursor-pointer"
                                     >
-                                        <MessageCircle className="h-4 w-4" />
+                                        <WhatsappIcon className="h-4 w-4" />
                                         <span>Hubungi via WhatsApp</span>
                                     </a>
                                 )}

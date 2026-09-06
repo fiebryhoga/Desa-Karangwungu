@@ -123,7 +123,7 @@ export default function WelcomeSection({
                                 </div>
                             )}
                             {paragraphs.map((p, idx) => (
-                                <p key={idx} className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed font-normal text-justify">
+                                <p key={idx} className="text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed font-medium text-justify">
                                     {p}
                                 </p>
                             ))}
@@ -132,7 +132,7 @@ export default function WelcomeSection({
                         {/* CTA Navigation Buttons */}
                         <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3.5">
                             <Link
-                                href="/profil/sejarah"
+                                href="/profil/visi-misi"
                                 className="inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 rounded-lg bg-red-700 hover:bg-red-800 text-white text-xs sm:text-sm font-semibold shadow-lg hover:shadow-red-900/30 transition-all hover:scale-[1.02] border border-red-600 cursor-pointer"
                             >
                                 <Compass className="h-4 w-4 text-amber-300" />

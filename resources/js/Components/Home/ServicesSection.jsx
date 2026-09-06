@@ -17,7 +17,7 @@ export default function ServicesSection() {
     const handleTrackingSubmit = (e) => {
         e.preventDefault();
         if (trackingCode.trim()) {
-            router.get(`/layanan/tracking?code=${encodeURIComponent(trackingCode.trim())}`);
+            router.get(`/layanan/lacak?code=${encodeURIComponent(trackingCode.trim())}`);
         }
     };
 
@@ -87,14 +87,14 @@ export default function ServicesSection() {
                         </div>
 
                         {/* Kotak Lacak Berkas Terintegrasi */}
-                        <div className="p-4 rounded-2xl bg-white/90 dark:bg-zinc-900/90 text-zinc-900 dark:text-white border border-zinc-200/90 dark:border-zinc-800/90 shadow-sm backdrop-blur-xl space-y-2.5">
+                        <div className="p-4 rounded-lg bg-white/90 dark:bg-zinc-900/90 text-zinc-900 dark:text-white border border-zinc-200/90 dark:border-zinc-800/90 shadow-sm backdrop-blur-xl space-y-2.5">
                             <div className="flex items-center justify-between text-xs font-bold text-zinc-800 dark:text-zinc-200">
                                 <span className="flex items-center gap-1.5">
                                     <Search className="h-3.5 w-3.5 text-red-600 dark:text-red-400" />
                                     <span>Lacak Status Permohonan Surat</span>
                                 </span>
                                 <Link
-                                    href="/layanan/tracking"
+                                    href="/layanan/lacak"
                                     className="text-[10px] font-semibold text-zinc-500 dark:text-zinc-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
                                 >
                                     Riwayat &rarr;
@@ -106,11 +106,11 @@ export default function ServicesSection() {
                                     value={trackingCode}
                                     onChange={(e) => setTrackingCode(e.target.value)}
                                     placeholder="Masukkan NIK atau Kode Tiket..."
-                                    className="flex-1 px-3.5 py-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-800/90 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 text-xs focus:outline-hidden focus:border-red-500 transition-all"
+                                    className="flex-1 px-3.5 py-2.5 rounded-lg bg-zinc-100 dark:bg-zinc-800/90 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 text-xs focus:outline-hidden focus:border-red-500 transition-all"
                                 />
                                 <button
                                     type="submit"
-                                    className="px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-semibold shadow-md transition-all cursor-pointer flex items-center gap-1 shrink-0"
+                                    className="px-4 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-semibold shadow-md transition-all cursor-pointer flex items-center gap-1 shrink-0"
                                 >
                                     <span>Lacak</span>
                                     <ArrowRight className="h-3.5 w-3.5" />
@@ -119,7 +119,7 @@ export default function ServicesSection() {
                         </div>
 
                         {/* Alur 3 Langkah Sederhana */}
-                        <div className="flex items-center justify-between gap-2 text-[11px] font-medium text-zinc-600 dark:text-zinc-400 bg-zinc-100/80 dark:bg-zinc-900/60 p-2.5 rounded-xl border border-zinc-200/80 dark:border-zinc-800/80">
+                        <div className="flex items-center justify-between gap-2 text-[11px] font-medium text-zinc-600 dark:text-zinc-400 bg-zinc-100/80 dark:bg-zinc-900/60 p-2.5 rounded-lg border border-zinc-200/80 dark:border-zinc-800/80">
                             <div className="flex items-center gap-1.5">
                                 <span className="h-5 w-5 rounded-full bg-red-600 text-white flex items-center justify-center text-[10px] font-bold shrink-0">1</span>
                                 <span>Pilih Surat</span>
@@ -137,7 +137,7 @@ export default function ServicesSection() {
                         </div>
                     </div>
 
-                    {/* KOLOM KANAN (7 Cols): 6 Kartu Layanan Ramping (Grid 2 Kolom x 3 Baris) dengan Aksen Emas & Merah */}
+                    {/* KOLOM KANAN (7 Cols): 6 Kartu Layanan Ramping (Grid 2 Kolom x 3 Baris) dengan Aksen Gradasi Merah-Hitam-Kuning */}
                     <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5">
                         {services.map((item, idx) => {
                             const IconComponent = item.icon;
@@ -145,10 +145,16 @@ export default function ServicesSection() {
                                 <Link
                                     key={idx}
                                     href={item.href}
-                                    className="group p-3.5 sm:p-4 rounded-2xl bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl border border-zinc-200/90 dark:border-zinc-800/90 hover:border-amber-500/70 dark:hover:border-amber-400/60 shadow-xs hover:shadow-lg hover:shadow-amber-500/10 transition-all duration-200 hover:-translate-y-0.5 flex items-center justify-between gap-3 cursor-pointer"
+                                    className="group relative overflow-hidden p-3.5 sm:p-4 rounded-lg bg-gradient-to-br from-white via-red-50/40 to-amber-50/30 dark:from-zinc-900 dark:via-[#1c080b] dark:to-zinc-950 backdrop-blur-xl border border-red-500/20 dark:border-red-900/40 hover:border-amber-500/70 dark:hover:border-amber-400/60 shadow-xs hover:shadow-lg hover:shadow-red-950/10 transition-all duration-200 hover:-translate-y-0.5 flex items-center justify-between gap-3 cursor-pointer pl-4 sm:pl-4.5"
                                 >
-                                    <div className="flex items-center gap-3 min-w-0">
-                                        <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-amber-500/15 via-red-500/10 to-amber-500/5 border border-amber-500/30 text-amber-500 dark:text-amber-400 flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:bg-gradient-to-br group-hover:from-red-600 group-hover:to-amber-600 group-hover:text-white group-hover:border-amber-300 transition-all shadow-xs">
+                                    {/* Aksen Gradasi Garis Tipis Vertikal: Merah - Hitam - Kuning (Sedikit saja ga full) */}
+                                    <div className="absolute left-0 inset-y-0 w-1 sm:w-1.5 bg-gradient-to-b from-red-600 via-zinc-900 to-amber-400 opacity-85 group-hover:opacity-100 transition-opacity" />
+
+                                    {/* Bias Gradasi Halus di Sudut Belakang */}
+                                    <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full bg-gradient-to-br from-red-600/10 via-zinc-900/5 to-amber-500/15 blur-xl pointer-events-none group-hover:scale-125 transition-transform duration-500" />
+
+                                    <div className="relative z-10 flex items-center gap-3 min-w-0">
+                                        <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-amber-500/15 via-red-500/10 to-amber-500/5 border border-amber-500/30 text-amber-500 dark:text-amber-400 flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:bg-gradient-to-br group-hover:from-red-600 group-hover:to-amber-500 group-hover:text-white group-hover:border-amber-300 transition-all shadow-xs">
                                             <IconComponent className="h-5 w-5" />
                                         </div>
                                         <div className="min-w-0">
@@ -160,7 +166,7 @@ export default function ServicesSection() {
                                             </p>
                                         </div>
                                     </div>
-                                    <ArrowRight className="h-4 w-4 text-zinc-400 dark:text-zinc-600 group-hover:text-amber-500 dark:group-hover:text-amber-400 group-hover:translate-x-1 transition-all shrink-0 ml-1" />
+                                    <ArrowRight className="relative z-10 h-4 w-4 text-zinc-400 dark:text-zinc-500 group-hover:text-amber-500 dark:group-hover:text-amber-400 group-hover:translate-x-1 transition-all shrink-0 ml-1" />
                                 </Link>
                             );
                         })}

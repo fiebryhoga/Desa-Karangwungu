@@ -300,15 +300,15 @@ export default function NewsIndex({
                                 </p>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <div className="grid grid-cols-2 gap-3 sm:gap-5">
                                 {(headlinePost && !filters.search && !filters.category ? gridPosts : allPosts).map((post) => (
                                     <Link
                                         key={post.id}
                                         href={`/berita/${post.slug}`}
-                                        className="group rounded-2xl overflow-hidden flex flex-col bg-gradient-to-b from-red-700 via-red-800 to-red-950 dark:from-red-900/90 dark:via-red-950 dark:to-[#1a0507] text-white shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 cursor-pointer justify-between"
+                                        className="group rounded-xl sm:rounded-2xl overflow-hidden flex flex-col bg-gradient-to-b from-red-700 via-red-800 to-red-950 dark:from-red-900/90 dark:via-red-950 dark:to-[#1a0507] text-white shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 cursor-pointer justify-between"
                                     >
                                         <div>
-                                            <div className="h-44 w-full overflow-hidden bg-zinc-950 relative">
+                                            <div className="h-28 sm:h-44 w-full overflow-hidden bg-zinc-950 relative">
                                                 <img
                                                     src={
                                                         post.image ||
@@ -318,39 +318,39 @@ export default function NewsIndex({
                                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                                     loading="lazy"
                                                 />
-                                                <div className="absolute top-2.5 left-2.5">
-                                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-amber-300 text-[10px] font-bold shadow-xs">
+                                                <div className="absolute top-2 left-2 sm:top-2.5 sm:left-2.5">
+                                                    <span className="inline-flex items-center px-2 py-0.5 sm:px-2.5 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-amber-300 text-[8px] sm:text-[10px] font-bold shadow-xs">
                                                         {post.category}
                                                     </span>
                                                 </div>
                                             </div>
 
-                                            <div className="p-4 space-y-2">
-                                                <div className="flex items-center gap-2.5 text-[11px] text-red-200/70">
-                                                    <span className="flex items-center gap-1">
-                                                        <Calendar className="h-3 w-3 text-amber-300" />
-                                                        <span>{formatDateIndo(post.published_at)}</span>
+                                            <div className="p-2.5 sm:p-4 space-y-1 sm:space-y-2">
+                                                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2.5 text-[9px] sm:text-[11px] text-red-200/70">
+                                                    <span className="flex items-center gap-1 truncate">
+                                                        <Calendar className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-amber-300 shrink-0" />
+                                                        <span className="truncate">{formatDateIndo(post.published_at)}</span>
                                                     </span>
-                                                    <span>&bull;</span>
-                                                    <span className="flex items-center gap-1">
-                                                        <Eye className="h-3 w-3 text-amber-300" />
+                                                    <span className="hidden sm:inline">&bull;</span>
+                                                    <span className="flex items-center gap-1 shrink-0">
+                                                        <Eye className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-amber-300" />
                                                         <span>{post.views}x</span>
                                                     </span>
                                                 </div>
 
-                                                <h4 className="text-sm font-bold text-white group-hover:text-amber-300 transition-colors line-clamp-2 leading-snug">
+                                                <h4 className="text-xs sm:text-sm font-bold text-white group-hover:text-amber-300 transition-colors line-clamp-2 leading-snug">
                                                     {post.title}
                                                 </h4>
 
-                                                <p className="text-xs text-red-100/80 line-clamp-2 leading-relaxed">
+                                                <p className="text-[10px] sm:text-xs text-red-100/80 line-clamp-2 leading-relaxed">
                                                     {post.excerpt}
                                                 </p>
                                             </div>
                                         </div>
 
-                                        <div className="p-4 pt-2 border-t border-white/10 text-xs font-bold text-amber-300 flex items-center justify-between">
+                                        <div className="p-2.5 sm:p-4 pt-1 sm:pt-2 border-t border-white/10 text-[9px] sm:text-xs font-bold text-amber-300 flex items-center justify-between">
                                             <span>Baca Selengkapnya</span>
-                                            <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                                            <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4 group-hover:translate-x-1 transition-transform" />
                                         </div>
                                     </Link>
                                 ))}

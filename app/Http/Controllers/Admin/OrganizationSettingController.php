@@ -58,10 +58,17 @@ class OrganizationSettingController extends Controller
     /**
      * Upload custom organization logo file (SVG, PNG, JPG, WebP).
      */
+    /**
+     * Upload custom organization logo file (SVG, PNG, JPG, WebP).
+     */
     public function uploadLogo(Request $request)
     {
         $request->validate([
-            'logo_file' => 'required|file|mimes:svg,png,jpg,jpeg,webp,gif|max:3072',
+            'logo_file' => 'required|file|mimes:svg,png,jpg,jpeg,webp,gif|max:10240',
+        ], [
+            'logo_file.required' => 'Berkas logo wajib dipilih.',
+            'logo_file.mimes' => 'Format file logo harus berupa SVG, PNG, JPG, JPEG, WebP, atau GIF.',
+            'logo_file.max' => 'Ukuran file logo maksimal 10 MB.',
         ]);
 
         $file = $request->file('logo_file');
@@ -89,7 +96,11 @@ class OrganizationSettingController extends Controller
     public function uploadBanner(Request $request)
     {
         $request->validate([
-            'banner_file' => 'required|file|mimes:png,jpg,jpeg,webp|max:5120',
+            'banner_file' => 'required|file|mimes:png,jpg,jpeg,webp|max:25600',
+        ], [
+            'banner_file.required' => 'Berkas foto banner wajib dipilih.',
+            'banner_file.mimes' => 'Format file foto banner harus berupa JPG, PNG, JPEG, atau WebP.',
+            'banner_file.max' => 'Ukuran file foto banner maksimal 25 MB.',
         ]);
 
         $file = $request->file('banner_file');
@@ -117,7 +128,11 @@ class OrganizationSettingController extends Controller
     public function uploadLeaderPhoto(Request $request)
     {
         $request->validate([
-            'leader_photo_file' => 'required|file|mimes:png,jpg,jpeg,webp|max:5120',
+            'leader_photo_file' => 'required|file|mimes:png,jpg,jpeg,webp|max:25600',
+        ], [
+            'leader_photo_file.required' => 'Berkas foto pimpinan wajib dipilih.',
+            'leader_photo_file.mimes' => 'Format file foto pimpinan harus berupa JPG, PNG, JPEG, atau WebP.',
+            'leader_photo_file.max' => 'Ukuran file foto pimpinan maksimal 25 MB.',
         ]);
 
         $file = $request->file('leader_photo_file');

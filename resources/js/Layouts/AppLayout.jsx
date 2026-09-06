@@ -43,7 +43,7 @@ export default function AppLayout({ children }) {
     };
 
     return (
-        <div className="min-h-screen flex flex-col bg-texture-main text-zinc-900 dark:text-zinc-100 antialiased selection:bg-red-800 selection:text-amber-300 pb-16 lg:pb-0">
+        <div className="min-h-screen flex flex-col bg-texture-main text-zinc-900 dark:text-zinc-100 antialiased selection:bg-red-800 selection:text-amber-300">
             {/* Accessibility: Skip to Main Content */}
             <a
                 href="#main-content"

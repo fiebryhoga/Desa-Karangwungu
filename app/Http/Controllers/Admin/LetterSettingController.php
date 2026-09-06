@@ -157,6 +157,7 @@ class LetterSettingController extends Controller
             'letter_date' => $letter->letter_date ? $letter->letter_date->format('Y-m-d') : now()->format('Y-m-d'),
             'letter_date_formatted' => $letter->formatted_letter_date,
             'purpose' => $letter->purpose,
+            'extra_data' => is_array($letter->extra_data) ? $letter->extra_data : [],
             'status' => $letter->status,
             'admin_notes' => $letter->admin_notes,
             'created_at' => $letter->created_at ? $letter->created_at->timezone('Asia/Jakarta')->translatedFormat('d F Y, H:i') : '-',
@@ -195,6 +196,7 @@ class LetterSettingController extends Controller
             'citizen_email' => 'nullable|email|max:255',
             'citizen_address' => 'nullable|string|max:500',
             'purpose' => 'nullable|string|max:1000',
+            'extra_data' => 'nullable|array',
         ]);
 
         if (!empty($validated['citizen_address'])) {

@@ -11,7 +11,30 @@ import {
     UserCheck,
     Fish,
     LandPlot,
+    Activity,
+    Store,
+    Shield,
+    Briefcase,
 } from "lucide-react";
+import { getIconComponent } from "@/Utils/iconRegistry";
+
+const ICON_MAP = {
+    Home: HomeIcon,
+    HomeIcon: HomeIcon,
+    Users: Users,
+    User: User,
+    UserCheck: UserCheck,
+    LandPlot: LandPlot,
+    Wheat: Wheat,
+    Fish: Fish,
+    Building2: Building2,
+    Building: Building2,
+    Activity: Activity,
+    Store: Store,
+    MapPin: MapPin,
+    Shield: Shield,
+    Briefcase: Briefcase,
+};
 
 function AnimatedNumber({ value, duration = 1500 }) {
     const [count, setCount] = React.useState(0);
@@ -81,6 +104,9 @@ export default function OverviewSection({
     overviewCards = [],
     overviewLocation,
     overviewContent,
+    demographicsMetrics = [],
+    demographicsSectionTitle,
+    demographicsSectionSubtitle,
 }) {
     const displayLocation = overviewLocation || "Kecamatan Karanggeneng, Kabupaten Lamongan";
     const defaultParagraphs = [
@@ -107,7 +133,7 @@ export default function OverviewSection({
     const card3Title = card3.title || "Wirausaha & Guyub Rukun";
     const card3Image = card3.image || "https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=600&q=80";
 
-    const demographicMetrics = [
+    const defaultMetrics = [
         {
             label: "Kepala Keluarga",
             value: stats.total_families || 985,
@@ -134,19 +160,19 @@ export default function OverviewSection({
         },
         {
             label: "Luas Wilayah",
-            value: stats.total_area_ha || 123,
+            value: stats.total_area_ha || 245.8,
             suffix: "Ha",
             icon: LandPlot,
         },
         {
             label: "Sawah Pertanian",
-            value: stats.agriculture_area_ha || 70,
+            value: stats.agriculture_area_ha || 160.5,
             suffix: "Ha",
             icon: Wheat,
         },
         {
             label: "Tambak Perikanan",
-            value: stats.fishery_area_ha || 11,
+            value: stats.fishery_area_ha || 52.3,
             suffix: "Ha",
             icon: Fish,
         },
@@ -157,6 +183,38 @@ export default function OverviewSection({
             icon: Building2,
         },
     ];
+
+    // Filter metrics that are explicitly active
+    const activeCustomMetrics = Array.isArray(demographicsMetrics)
+        ? demographicsMetrics.filter((m) => m && m.enabled !== false)
+        : [];
+
+    const displayMetrics = activeCustomMetrics.length > 0
+        ? activeCustomMetrics.map((item) => {
+            const IconComp = typeof item.icon === 'string'
+                ? getIconComponent(item.icon, ICON_MAP[item.icon] || Activity)
+                : (item.icon || Activity);
+            const val = (item.source_key && stats[item.source_key] !== undefined)
+                ? stats[item.source_key]
+                : (item.value !== undefined ? item.value : 0);
+            return {
+                label: item.label,
+                value: val,
+                suffix: item.suffix || '',
+                icon: IconComp,
+            };
+        })
+        : defaultMetrics;
+
+    const getGridColsClass = (count) => {
+        if (count <= 2) return "grid-cols-2";
+        if (count === 3) return "grid-cols-2 sm:grid-cols-3";
+        if (count === 4) return "grid-cols-2 sm:grid-cols-4";
+        if (count === 5) return "grid-cols-2 sm:grid-cols-3 lg:grid-cols-5";
+        if (count === 6) return "grid-cols-2 sm:grid-cols-3 lg:grid-cols-6";
+        if (count === 7) return "grid-cols-2 sm:grid-cols-4 lg:grid-cols-7";
+        return "grid-cols-2 sm:grid-cols-4 lg:grid-cols-8";
+    };
 
     return (
         <section
@@ -175,7 +233,7 @@ export default function OverviewSection({
                                 <span>Selayang Pandang Desa</span>
                             </div>
                             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-zinc-900 dark:text-white tracking-tight leading-tight">
-                                Mengenal Lebih Dekat{" "}
+                                Mengenal Lebih Dekat
                                 <br className="hidden sm:inline" />
                                 Desa Karangwungu
                             </h2>
@@ -188,7 +246,7 @@ export default function OverviewSection({
                         </div>
 
                         {/* Narrative Paragraph (Justified & Clean) */}
-                        <div className="font-normal space-y-2.5 text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed text-justify">
+                        <div className="font-medium space-y-2.5 text-xs sm:text-sm text-zinc-700 dark:text-zinc-300 leading-relaxed text-justify">
                             {paragraphs.map((p, idx) => (
                                 <p key={idx} className={idx > 0 ? "text-zinc-600 dark:text-zinc-400" : ""}>
                                     {p}
@@ -212,54 +270,54 @@ export default function OverviewSection({
                     <div className="lg:col-span-6">
                         <div className="grid grid-cols-2 gap-3.5 sm:gap-4">
                             {/* Card 1: Large Featured (Panen Sawah) */}
-                            <div className="col-span-2 relative rounded-2xl overflow-hidden aspect-[16/7] bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800 group shadow-md">
+                            <div className="col-span-2 relative rounded-2xl overflow-hidden aspect-[16/7] bg-zinc-950 border border-red-900/25 dark:border-red-900/40 hover:border-red-500/40 group shadow-md transition-all duration-300">
                                 <img
                                     src={card1Image}
                                     alt={card1Title}
                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                                     loading="lazy"
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent flex flex-col justify-end p-4 sm:p-5 text-white">
-                                    <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider">
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 via-30% to-transparent flex flex-col justify-end p-4 sm:p-5 text-white">
+                                    <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider drop-shadow-xs">
                                         {card1Badge}
                                     </span>
-                                    <h4 className="text-sm sm:text-base font-bold text-white leading-tight mt-0.5">
+                                    <h4 className="text-sm sm:text-base font-bold text-white leading-tight mt-0.5 drop-shadow-md">
                                         {card1Title}
                                     </h4>
                                 </div>
                             </div>
 
                             {/* Card 2: Tambak Perikanan */}
-                            <div className="relative rounded-2xl overflow-hidden aspect-[4/3] bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800 group shadow-md">
+                            <div className="relative rounded-2xl overflow-hidden aspect-[4/3] bg-zinc-950 border border-red-900/25 dark:border-red-900/40 hover:border-red-500/40 group shadow-md transition-all duration-300">
                                 <img
                                     src={card2Image}
                                     alt={card2Title}
                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                                     loading="lazy"
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent flex flex-col justify-end p-3 sm:p-4 text-white">
-                                    <span className="text-[9px] font-bold text-sky-400 uppercase tracking-wider">
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 via-30% to-transparent flex flex-col justify-end p-3 sm:p-4 text-white">
+                                    <span className="text-[9px] font-bold text-sky-400 uppercase tracking-wider drop-shadow-xs">
                                         {card2Badge}
                                     </span>
-                                    <h4 className="text-xs sm:text-sm font-bold text-white leading-tight mt-0.5">
+                                    <h4 className="text-xs sm:text-sm font-bold text-white leading-tight mt-0.5 drop-shadow-md">
                                         {card2Title}
                                     </h4>
                                 </div>
                             </div>
 
                             {/* Card 3: UMKM & Guyub Rukun */}
-                            <div className="relative rounded-2xl overflow-hidden aspect-[4/3] bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800 group shadow-md">
+                            <div className="relative rounded-2xl overflow-hidden aspect-[4/3] bg-zinc-950 border border-red-900/25 dark:border-red-900/40 hover:border-red-500/40 group shadow-md transition-all duration-300">
                                 <img
                                     src={card3Image}
                                     alt={card3Title}
                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                                     loading="lazy"
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent flex flex-col justify-end p-3 sm:p-4 text-white">
-                                    <span className="text-[9px] font-bold text-emerald-400 uppercase tracking-wider">
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 via-30% to-transparent flex flex-col justify-end p-3 sm:p-4 text-white">
+                                    <span className="text-[9px] font-bold text-emerald-400 uppercase tracking-wider drop-shadow-xs">
                                         {card3Badge}
                                     </span>
-                                    <h4 className="text-xs sm:text-sm font-bold text-white leading-tight mt-0.5">
+                                    <h4 className="text-xs sm:text-sm font-bold text-white leading-tight mt-0.5 drop-shadow-md">
                                         {card3Title}
                                     </h4>
                                 </div>
@@ -272,15 +330,15 @@ export default function OverviewSection({
                 <div className="pt-3.5 sm:pt-4 border-t border-zinc-200/80 dark:border-zinc-800/80 space-y-2.5">
                     <div className="flex items-center justify-between">
                         <h3 className="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-zinc-900 dark:text-white">
-                            Statistik Demografi & Wilayah Desa
+                            {demographicsSectionTitle || "Statistik Demografi & Wilayah Desa"}
                         </h3>
                         <span className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400">
-                            Data Terverifikasi 2026
+                            {demographicsSectionSubtitle || "Data Terverifikasi 2026"}
                         </span>
                     </div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 sm:gap-2.5">
-                        {demographicMetrics.map((item, idx) => {
+                    <div className={`grid ${getGridColsClass(displayMetrics.length)} gap-2 sm:gap-2.5`}>
+                        {displayMetrics.map((item, idx) => {
                             const IconComponent = item.icon;
                             return (
                                 <div

@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from '@inertiajs/react';
-import { Sparkles, Search, ArrowRight } from 'lucide-react';
+import { Sparkles, Search, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function HeroSection({
+    heroImages = [],
     heroImage = '/assets/images/hero.jpg',
     badge = 'Kecamatan Karanggeneng • Kabupaten Lamongan',
     title = "Website Resmi\nDesa Karangwungu",
@@ -12,22 +13,57 @@ export default function HeroSection({
     const displayTitle = title || "Website Resmi\nDesa Karangwungu";
     const displayDescription = description || 'Mewujudkan tata kelola desa yang transparan, pelayanan surat mandiri cepat, masyarakat religius, serta berdaya saing berbasis potensi pertanian dan perikanan tambak modern.';
 
+    // Maksimal 5 Foto Hero Slider
+    const slides = (
+        Array.isArray(heroImages) && heroImages.length > 0
+            ? heroImages
+            : [heroImage]
+    ).filter(Boolean).slice(0, 5);
+
+    const [currentIndex, setCurrentIndex] = useState(0);
+
+    // Auto-play slider setiap 3 detik (tetap berjalan walau kursor di atas hero)
+    useEffect(() => {
+        if (slides.length <= 1) return;
+        const timer = setInterval(() => {
+            setCurrentIndex((prev) => (prev + 1) % slides.length);
+        }, 4000);
+        return () => clearInterval(timer);
+    }, [slides.length]);
+
+    const prevSlide = () => {
+        setCurrentIndex((prev) => (prev - 1 + slides.length) % slides.length);
+    };
+
+    const nextSlide = () => {
+        setCurrentIndex((prev) => (prev + 1) % slides.length);
+    };
+
     return (
-        <section className="relative min-h-[calc(100vh-64px)] flex flex-col justify-between overflow-hidden">
-            {/* 1. Gambar Background Utama */}
-            <div
-                className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-1000 scale-100"
-                style={{
-                    backgroundImage: `url('${heroImage}')`,
-                }}
-            />
+        <section
+            className="relative min-h-[calc(100vh-64px)] flex flex-col justify-between overflow-hidden group/hero"
+        >
+            {/* 1. Multi-photo Crossfade Background Slider */}
+            {slides.map((img, idx) => (
+                <div
+                    key={idx}
+                    className={`absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-1000 ease-in-out ${
+                        idx === currentIndex
+                            ? 'opacity-100 scale-100'
+                            : 'opacity-0 scale-105 pointer-events-none'
+                    }`}
+                    style={{
+                        backgroundImage: `url('${img}')`,
+                    }}
+                />
+            ))}
 
             {/* 2. Layer Overlay Sinematik: Gelap di atas & kiri, menyatu ke bawah */}
             <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/30 to-black/50" />
             <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent" />
 
-            {/* Overlay Bawah: Menyatu mulus dengan latar halaman */}
-            <div className="absolute inset-x-0 bottom-0 h-16 sm:h-40 bg-gradient-to-t from-[#fafafa] via-[#fafafa]/80 to-transparent dark:from-[#060608] dark:via-[#060608]/80 dark:to-transparent pointer-events-none" />
+            {/* Overlay Bawah: Menyatu mulus dengan latar halaman (lebih tipis & elegan) */}
+            <div className="absolute inset-x-0 bottom-0 h-10 sm:h-20 bg-gradient-to-t from-[#fafafa] via-[#fafafa]/50 to-transparent dark:from-[#060608] dark:via-[#060608]/50 dark:to-transparent pointer-events-none" />
 
             {/* Spacer Atas */}
             <div className="hidden sm:block sm:h-6" />
@@ -102,34 +138,78 @@ export default function HeroSection({
                 </div>
             </div>
 
-            {/* 4. Bottom Scroll Guide Indicator (Smooth & Presisi ke Awal Sambutan) */}
-            <div className="hidden sm:block relative pb-6 text-center z-10">
-                <a
-                    href="#sambutan"
-                    onClick={(e) => {
-                        e.preventDefault();
-                        const target = document.getElementById('sambutan');
-                        if (target) {
-                            const navHeight = 70;
-                            const targetPosition =
-                                target.getBoundingClientRect().top +
-                                window.pageYOffset -
-                                navHeight;
-                            window.scrollTo({
-                                top: targetPosition,
-                                behavior: 'smooth',
-                            });
-                        }
-                    }}
-                    className="inline-flex flex-col items-center gap-1 text-xs font-bold text-zinc-800 dark:text-zinc-200 hover:text-red-600 dark:hover:text-amber-400 transition-colors group cursor-pointer"
-                >
-                    <span className="text-[11px] font-bold tracking-wide drop-shadow-xs">
-                        Jelajahi Profil Desa
-                    </span>
-                    <div className="h-6 w-3.5 rounded-full border-2 border-zinc-700 dark:border-white/70 flex items-start justify-center p-0.5 group-hover:border-red-600 dark:group-hover:border-amber-400 transition-colors">
-                        <div className="h-1.5 w-1 rounded-full bg-red-600 animate-bounce" />
+            {/* Navigasi Panah Kiri & Kanan (Muncul Elegan saat Hover / Sentuh) */}
+            {slides.length > 1 && (
+                <>
+                    <button
+                        type="button"
+                        onClick={prevSlide}
+                        aria-label="Foto Sebelumnya"
+                        className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-20 h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-black/40 hover:bg-black/70 text-white/80 hover:text-amber-300 border border-white/20 backdrop-blur-md flex items-center justify-center transition-all opacity-75 sm:opacity-0 sm:group-hover/hero:opacity-100 cursor-pointer shadow-lg active:scale-95"
+                    >
+                        <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6 transition-transform hover:-translate-x-0.5" />
+                    </button>
+                    <button
+                        type="button"
+                        onClick={nextSlide}
+                        aria-label="Foto Selanjutnya"
+                        className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-20 h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-black/40 hover:bg-black/70 text-white/80 hover:text-amber-300 border border-white/20 backdrop-blur-md flex items-center justify-center transition-all opacity-75 sm:opacity-0 sm:group-hover/hero:opacity-100 cursor-pointer shadow-lg active:scale-95"
+                    >
+                        <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6 transition-transform hover:translate-x-0.5" />
+                    </button>
+                </>
+            )}
+
+            {/* 4. Bottom Controls: Slider Dots & Scroll Guide */}
+            <div className="relative pb-6 text-center z-20 flex flex-col items-center gap-3">
+                {/* Dots Indikator Slide Minimalis */}
+                {slides.length > 1 && (
+                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/40 backdrop-blur-md border border-white/15 shadow-md">
+                        {slides.map((_, idx) => (
+                            <button
+                                key={idx}
+                                type="button"
+                                onClick={() => setCurrentIndex(idx)}
+                                aria-label={`Pindah ke foto ${idx + 1}`}
+                                className={`transition-all duration-300 rounded-full cursor-pointer ${
+                                    idx === currentIndex
+                                        ? 'w-4 sm:w-5 h-1 sm:h-1.5 bg-amber-400'
+                                        : 'w-1 sm:w-1.5 h-1 sm:h-1.5 bg-white/50 hover:bg-white'
+                                }`}
+                            />
+                        ))}
                     </div>
-                </a>
+                )}
+
+                {/* Bottom Scroll Guide Indicator (Smooth & Presisi ke Awal Sambutan) */}
+                <div className="hidden sm:block">
+                    <a
+                        href="#sambutan"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            const target = document.getElementById('sambutan');
+                            if (target) {
+                                const navHeight = 70;
+                                const targetPosition =
+                                    target.getBoundingClientRect().top +
+                                    window.pageYOffset -
+                                    navHeight;
+                                window.scrollTo({
+                                    top: targetPosition,
+                                    behavior: 'smooth',
+                                });
+                            }
+                        }}
+                        className="inline-flex flex-col items-center gap-1 text-xs font-bold text-white hover:text-amber-300 transition-colors group cursor-pointer"
+                    >
+                        <span className="text-[11px] font-bold tracking-wide text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)]">
+                            Jelajahi Profil Desa
+                        </span>
+                        <div className="h-6 w-3.5 rounded-full border-2 border-white/90 flex items-start justify-center p-0.5 group-hover:border-amber-300 transition-colors drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)]">
+                            <div className="h-1.5 w-1 rounded-full bg-red-500 animate-bounce shadow-xs" />
+                        </div>
+                    </a>
+                </div>
             </div>
         </section>
     );

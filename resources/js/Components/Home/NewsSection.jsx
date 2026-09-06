@@ -40,8 +40,8 @@ export default function NewsSection({ latestPosts = [] }) {
                     </Link>
                 </div>
 
-                {/* 2. Grid 4 News Cards (1 Baris 4 Kolom di Desktop) */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+                {/* 2. Grid 4 News Cards (2 Kolom di Mobile, 4 Kolom di Desktop) */}
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
                     {displayPosts.map((post) => (
                         <Link
                             key={post.id}

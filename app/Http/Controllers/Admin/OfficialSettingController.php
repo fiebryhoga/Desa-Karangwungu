@@ -53,6 +53,17 @@ class OfficialSettingController extends Controller
      */
     public function update(Request $request)
     {
+        // Sanitize non-file values sent via FormData (such as string "null" or empty strings)
+        if (!$request->hasFile('kades_photo_file')) {
+            $request->request->remove('kades_photo_file');
+        }
+        if (!$request->hasFile('bpd_photo_file')) {
+            $request->request->remove('bpd_photo_file');
+        }
+        if (!$request->hasFile('official_photo_files')) {
+            $request->request->remove('official_photo_files');
+        }
+
         $validated = $request->validate([
             'sotk_title' => ['nullable', 'string', 'max:255'],
             'sotk_subtitle' => ['nullable', 'string', 'max:500'],
@@ -63,13 +74,18 @@ class OfficialSettingController extends Controller
             'kades_nip' => ['nullable', 'string', 'max:100'],
             'kades_phone' => ['nullable', 'string', 'max:50'],
             'kades_photo' => ['nullable', 'string'],
-            'kades_photo_file' => ['nullable', 'image', 'max:5120'],
+            'kades_photo_file' => ['nullable', 'file', 'image', 'max:5120'],
             'kades_category' => ['nullable', 'string', 'max:100'],
             'kades_role_desc' => ['nullable', 'string', 'max:1000'],
             'kades_basis' => ['nullable', 'string', 'max:255'],
             'kades_summary' => ['nullable', 'string', 'max:2000'],
             'kades_tasks' => ['nullable'],
             'kades_authorities' => ['nullable', 'string', 'max:1000'],
+            'kades_address' => ['nullable', 'string', 'max:500'],
+            'kades_birth_info' => ['nullable', 'string', 'max:255'],
+            'kades_gender' => ['nullable', 'string', 'max:50'],
+            'kades_inauguration_date' => ['nullable', 'string', 'max:100'],
+            'kades_end_tenure_date' => ['nullable', 'string', 'max:100'],
 
             // 2. Ketua BPD
             'bpd_name' => ['required', 'string', 'max:255'],
@@ -77,13 +93,18 @@ class OfficialSettingController extends Controller
             'bpd_nip' => ['nullable', 'string', 'max:100'],
             'bpd_phone' => ['nullable', 'string', 'max:50'],
             'bpd_photo' => ['nullable', 'string'],
-            'bpd_photo_file' => ['nullable', 'image', 'max:5120'],
+            'bpd_photo_file' => ['nullable', 'file', 'image', 'max:5120'],
             'bpd_category' => ['nullable', 'string', 'max:100'],
             'bpd_role_desc' => ['nullable', 'string', 'max:1000'],
             'bpd_basis' => ['nullable', 'string', 'max:255'],
             'bpd_summary' => ['nullable', 'string', 'max:2000'],
             'bpd_tasks' => ['nullable'],
             'bpd_authorities' => ['nullable', 'string', 'max:1000'],
+            'bpd_address' => ['nullable', 'string', 'max:500'],
+            'bpd_birth_info' => ['nullable', 'string', 'max:255'],
+            'bpd_gender' => ['nullable', 'string', 'max:50'],
+            'bpd_inauguration_date' => ['nullable', 'string', 'max:100'],
+            'bpd_end_tenure_date' => ['nullable', 'string', 'max:100'],
 
             // 3. Jajaran Perangkat & Staf Desa
             'officials_list' => ['nullable'],
@@ -95,18 +116,20 @@ class OfficialSettingController extends Controller
         }
 
         // Handle Kades photo upload
-        if ($request->hasFile('kades_photo_file')) {
+        if ($request->hasFile('kades_photo_file') && $request->file('kades_photo_file')->isValid()) {
             $file = $request->file('kades_photo_file');
-            $filename = 'kades_' . time() . '.' . $file->getClientOriginalExtension();
+            $ext = $file->getClientOriginalExtension() ?: 'jpg';
+            $filename = 'kades_' . time() . '.' . $ext;
             $file->move($uploadDir, $filename);
             $validated['kades_photo'] = '/uploads/officials/' . $filename;
         }
         unset($validated['kades_photo_file']);
 
         // Handle BPD photo upload
-        if ($request->hasFile('bpd_photo_file')) {
+        if ($request->hasFile('bpd_photo_file') && $request->file('bpd_photo_file')->isValid()) {
             $file = $request->file('bpd_photo_file');
-            $filename = 'bpd_' . time() . '.' . $file->getClientOriginalExtension();
+            $ext = $file->getClientOriginalExtension() ?: 'jpg';
+            $filename = 'bpd_' . time() . '.' . $ext;
             $file->move($uploadDir, $filename);
             $validated['bpd_photo'] = '/uploads/officials/' . $filename;
         }
@@ -114,11 +137,11 @@ class OfficialSettingController extends Controller
 
         // Encode tasks arrays
         if (isset($validated['kades_tasks']) && is_array($validated['kades_tasks'])) {
-            $validated['kades_tasks'] = json_encode($validated['kades_tasks'], JSON_UNESCAPED_UNICODE);
+            $validated['kades_tasks'] = json_encode(array_values($validated['kades_tasks']), JSON_UNESCAPED_UNICODE);
         }
 
         if (isset($validated['bpd_tasks']) && is_array($validated['bpd_tasks'])) {
-            $validated['bpd_tasks'] = json_encode($validated['bpd_tasks'], JSON_UNESCAPED_UNICODE);
+            $validated['bpd_tasks'] = json_encode(array_values($validated['bpd_tasks']), JSON_UNESCAPED_UNICODE);
         }
 
         // Handle officials_list
@@ -131,8 +154,9 @@ class OfficialSettingController extends Controller
         // Handle individual officials photo files if any
         if ($request->hasFile('official_photo_files')) {
             foreach ($request->file('official_photo_files') as $idx => $file) {
-                if ($file && isset($officialsList[$idx])) {
-                    $filename = 'official_' . $idx . '_' . time() . '.' . $file->getClientOriginalExtension();
+                if ($file && $file->isValid() && isset($officialsList[$idx])) {
+                    $ext = $file->getClientOriginalExtension() ?: 'jpg';
+                    $filename = 'official_' . $idx . '_' . time() . '.' . $ext;
                     $file->move($uploadDir, $filename);
                     $officialsList[$idx]['photo'] = '/uploads/officials/' . $filename;
                 }
@@ -140,13 +164,13 @@ class OfficialSettingController extends Controller
         }
         unset($validated['official_photo_files']);
 
-        $validated['officials_list'] = json_encode($officialsList, JSON_UNESCAPED_UNICODE);
+        $validated['officials_list'] = json_encode(array_values($officialsList), JSON_UNESCAPED_UNICODE);
 
         // Save to SiteSetting
         SiteSetting::setGroup('officials', $validated);
 
         // Synchronize with VillageOfficial database table
-        $this->syncVillageOfficials($validated, $officialsList);
+        $this->syncVillageOfficials($validated, array_values($officialsList));
 
         // Record audit activity log
         AdminActivityLog::record(

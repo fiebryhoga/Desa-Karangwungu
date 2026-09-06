@@ -42,7 +42,9 @@ import {
     ChevronRight,
     Upload,
     Loader2,
+    Crop,
 } from 'lucide-react';
+import ImageCropModal from '@/Components/Admin/ImageCropModal';
 
 export default function OrganizationsSettings({ settings = {} }) {
     const { props } = usePage();
@@ -78,23 +80,19 @@ export default function OrganizationsSettings({ settings = {} }) {
     const [uploadingBanner, setUploadingBanner] = useState(false);
     const [uploadingLeaderPhoto, setUploadingLeaderPhoto] = useState(false);
 
+    // Banner Crop Modal State (Rasio 2.4:1 sesuai cover card)
+    const [bannerCropModalOpen, setBannerCropModalOpen] = useState(false);
+    const [bannerImageToCrop, setBannerImageToCrop] = useState(null);
+
+    // Leader Photo Crop Modal State (Rasio 1:1 Persegi sesuai bingkai kartu)
+    const [leaderCropModalOpen, setLeaderCropModalOpen] = useState(false);
+    const [leaderImageToCrop, setLeaderImageToCrop] = useState(null);
+
     const handleSubmit = () => {
         post(`/${adminPath}/settings/organizations`, {
             preserveScroll: true,
         });
     };
-
-    // Category options
-    const categoryOptions = [
-        'BPD',
-        'PKK',
-        'Karang Taruna',
-        'LPM',
-        'Satlinmas',
-        'RT / RW',
-        'Kelompok Tani & Tambak',
-        'Lainnya',
-    ];
 
     // Delete Confirmation Modal State
     const [deleteConfirmOrg, setDeleteConfirmOrg] = useState(null);
@@ -122,7 +120,6 @@ export default function OrganizationsSettings({ settings = {} }) {
             name: 'Lembaga Baru',
             shortName: '',
             tagline: '',
-            category: 'Lainnya',
             icon: 'Users',
             logo: '',
             image: '',
@@ -169,7 +166,8 @@ export default function OrganizationsSettings({ settings = {} }) {
             if (response.ok && resData?.url) {
                 handleUpdateOrg(selectedIndex, 'logo', resData.url);
             } else {
-                throw new Error(resData?.message || 'Gagal mengunggah logo');
+                const errorMsg = resData?.errors?.logo_file?.[0] || resData?.message || 'Gagal mengunggah logo';
+                throw new Error(errorMsg);
             }
         } catch (err) {
             console.error('Error uploading logo:', err);
@@ -180,14 +178,35 @@ export default function OrganizationsSettings({ settings = {} }) {
         }
     };
 
-    // Asynchronous upload handler for custom organization banner photo
-    const handleBannerFileUpload = async (e) => {
+    // Handle file selection for banner: open Crop Modal first (2.4:1 ratio)
+    const handleBannerFileSelect = (e) => {
         const file = e.target.files?.[0];
         if (!file || selectedIndex === null) return;
 
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            setBannerImageToCrop(event.target.result);
+            setBannerCropModalOpen(true);
+        };
+        reader.readAsDataURL(file);
+        e.target.value = '';
+    };
+
+    // Trigger crop on existing banner image
+    const handleReCropBanner = () => {
+        if (selectedOrg?.image) {
+            setBannerImageToCrop(selectedOrg.image);
+            setBannerCropModalOpen(true);
+        }
+    };
+
+    // When crop is confirmed in ImageCropModal, upload the cropped file
+    const handleBannerCropComplete = async (croppedFile) => {
+        if (!croppedFile || selectedIndex === null) return;
+
         setUploadingBanner(true);
         const formData = new FormData();
-        formData.append('banner_file', file);
+        formData.append('banner_file', croppedFile);
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
         try {
@@ -203,25 +222,46 @@ export default function OrganizationsSettings({ settings = {} }) {
             if (response.ok && resData?.url) {
                 handleUpdateOrg(selectedIndex, 'image', resData.url);
             } else {
-                throw new Error(resData?.message || 'Gagal mengunggah foto banner');
+                const errorMsg = resData?.errors?.banner_file?.[0] || resData?.message || 'Gagal mengunggah foto banner';
+                throw new Error(errorMsg);
             }
         } catch (err) {
             console.error('Error uploading banner:', err);
             alert(`Gagal mengunggah foto banner: ${err.message || 'Terjadi kesalahan'}`);
         } finally {
             setUploadingBanner(false);
-            e.target.value = '';
         }
     };
 
-    // Asynchronous upload handler for leader portrait photo
-    const handleLeaderPhotoUpload = async (e) => {
+    // Handle file selection for leader photo: open Crop Modal first (1:1 ratio)
+    const handleLeaderFileSelect = (e) => {
         const file = e.target.files?.[0];
         if (!file || selectedIndex === null) return;
 
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            setLeaderImageToCrop(event.target.result);
+            setLeaderCropModalOpen(true);
+        };
+        reader.readAsDataURL(file);
+        e.target.value = '';
+    };
+
+    // Trigger crop on existing leader photo
+    const handleReCropLeader = () => {
+        if (selectedOrg?.leader?.photo) {
+            setLeaderImageToCrop(selectedOrg.leader.photo);
+            setLeaderCropModalOpen(true);
+        }
+    };
+
+    // When crop is confirmed in ImageCropModal, upload the cropped file
+    const handleLeaderCropComplete = async (croppedFile) => {
+        if (!croppedFile || selectedIndex === null) return;
+
         setUploadingLeaderPhoto(true);
         const formData = new FormData();
-        formData.append('leader_photo_file', file);
+        formData.append('leader_photo_file', croppedFile);
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
         try {
@@ -237,14 +277,14 @@ export default function OrganizationsSettings({ settings = {} }) {
             if (response.ok && resData?.url) {
                 handleUpdateLeader(selectedIndex, 'photo', resData.url);
             } else {
-                throw new Error(resData?.message || 'Gagal mengunggah foto pimpinan');
+                const errorMsg = resData?.errors?.leader_photo_file?.[0] || resData?.message || 'Gagal mengunggah foto pimpinan';
+                throw new Error(errorMsg);
             }
         } catch (err) {
             console.error('Error uploading leader photo:', err);
             alert(`Gagal mengunggah foto pimpinan: ${err.message || 'Terjadi kesalahan'}`);
         } finally {
             setUploadingLeaderPhoto(false);
-            e.target.value = '';
         }
     };
 
@@ -356,7 +396,6 @@ export default function OrganizationsSettings({ settings = {} }) {
         if (!q) return true;
         return (
             (org.name || '').toLowerCase().includes(q) ||
-            (org.category || '').toLowerCase().includes(q) ||
             (org.shortName || '').toLowerCase().includes(q)
         );
     });
@@ -520,7 +559,7 @@ export default function OrganizationsSettings({ settings = {} }) {
                                                             {item.name || 'Lembaga Baru'}
                                                         </h4>
                                                         <span className="text-[10px] text-zinc-500 dark:text-zinc-400 block truncate">
-                                                            {item.category} • {item.memberCount || 'Kader'}
+                                                            {item.shortName ? `${item.shortName} • ` : ''}{item.memberCount || 'Kader'}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -584,15 +623,10 @@ export default function OrganizationsSettings({ settings = {} }) {
                                             )}
                                         </div>
                                         <div className="min-w-0">
-                                            <div className="flex items-center gap-2">
-                                                <span className="px-2 py-0.5 rounded-md bg-black/40 text-amber-300 text-[10px] font-bold border border-white/20">
-                                                    {selectedOrg.category}
-                                                </span>
-                                            </div>
-                                            <h2 className="text-base sm:text-lg font-black text-white truncate leading-tight mt-0.5">
+                                            <h2 className="text-base sm:text-lg font-black text-white truncate leading-tight">
                                                 {selectedOrg.name || 'Lembaga Desa'}
                                             </h2>
-                                            <p className="text-xs text-amber-200/90 truncate italic">
+                                            <p className="text-xs text-amber-200/90 truncate italic mt-0.5">
                                                 "{selectedOrg.tagline || 'Semboyan Lembaga'}"
                                             </p>
                                         </div>
@@ -671,7 +705,7 @@ export default function OrganizationsSettings({ settings = {} }) {
                                                     />
                                                 </div>
 
-                                                <div>
+                                                <div className="sm:col-span-2">
                                                     <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
                                                         Singkatan / Short Name
                                                     </label>
@@ -682,21 +716,6 @@ export default function OrganizationsSettings({ settings = {} }) {
                                                         placeholder="BPD"
                                                         className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-xs text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-red-500"
                                                     />
-                                                </div>
-
-                                                <div>
-                                                    <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
-                                                        Kategori Lembaga
-                                                    </label>
-                                                    <select
-                                                        value={selectedOrg.category}
-                                                        onChange={(e) => handleUpdateOrg(selectedIndex, 'category', e.target.value)}
-                                                        className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-xs text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-red-500"
-                                                    >
-                                                        {categoryOptions.map((cat) => (
-                                                            <option key={cat} value={cat}>{cat}</option>
-                                                        ))}
-                                                    </select>
                                                 </div>
 
                                                 <div className="sm:col-span-2">
@@ -838,22 +857,34 @@ export default function OrganizationsSettings({ settings = {} }) {
                                                 <div className="space-y-2 pt-3 border-t border-zinc-200 dark:border-zinc-700">
                                                     <div className="flex items-center justify-between">
                                                         <label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
-                                                            Foto Sampul / Banner Lembaga
+                                                            Foto Sampul / Banner Lembaga (Rasio Card 2.4:1)
                                                         </label>
-                                                        <span className="text-[11px] text-zinc-400">
-                                                            Format: JPG, PNG, WebP (Maks 5MB)
+                                                        <span className="text-[11px] text-amber-600 dark:text-amber-400 font-medium">
+                                                            Format: JPG, PNG, WebP (Maks 25MB) • Crop 2.4:1
                                                         </span>
                                                     </div>
 
                                                     <div className="flex flex-col sm:flex-row sm:items-center gap-4 p-3 rounded-lg bg-white dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-700">
-                                                        {/* Banner Box Preview */}
-                                                        <div className="h-20 w-32 rounded-lg bg-zinc-900 overflow-hidden shrink-0 border border-zinc-300 dark:border-zinc-700 shadow-sm">
+                                                        {/* Banner Box Preview (2.4:1 aspect ratio) */}
+                                                        <div className="h-20 w-44 rounded-lg bg-zinc-900 overflow-hidden shrink-0 border border-zinc-300 dark:border-zinc-700 shadow-sm relative group">
                                                             {selectedOrg.image ? (
-                                                                <img
-                                                                    src={selectedOrg.image}
-                                                                    alt="Banner"
-                                                                    className="w-full h-full object-cover"
-                                                                />
+                                                                <>
+                                                                    <img
+                                                                        src={selectedOrg.image}
+                                                                        alt="Banner"
+                                                                        className="w-full h-full object-cover"
+                                                                    />
+                                                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={handleReCropBanner}
+                                                                            className="px-2.5 py-1 rounded bg-black/75 text-amber-300 text-[10px] font-bold flex items-center gap-1 cursor-pointer"
+                                                                        >
+                                                                            <Crop className="h-3 w-3" />
+                                                                            <span>Crop Ulang</span>
+                                                                        </button>
+                                                                    </div>
+                                                                </>
                                                             ) : (
                                                                 <div className="w-full h-full flex items-center justify-center text-[10px] text-zinc-500">
                                                                     Belum Ada Foto
@@ -861,7 +892,7 @@ export default function OrganizationsSettings({ settings = {} }) {
                                                             )}
                                                         </div>
 
-                                                        {/* Upload & Delete Actions */}
+                                                        {/* Upload, Crop & Delete Actions */}
                                                         <div className="flex-1 space-y-1.5">
                                                             <div className="flex flex-wrap items-center gap-2">
                                                                 <label className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold shadow-xs transition-colors cursor-pointer ${
@@ -872,36 +903,47 @@ export default function OrganizationsSettings({ settings = {} }) {
                                                                     {uploadingBanner ? (
                                                                         <>
                                                                             <Loader2 className="h-4 w-4 animate-spin" />
-                                                                            <span>Mengunggah Foto...</span>
+                                                                            <span>Menyimpan Foto...</span>
                                                                         </>
                                                                     ) : (
                                                                         <>
-                                                                            <Upload className="h-4 w-4" />
-                                                                            <span>{selectedOrg.image ? 'Ganti Foto Banner' : 'Unggah Foto Banner'}</span>
+                                                                            <Crop className="h-4 w-4 text-amber-400" />
+                                                                            <span>{selectedOrg.image ? 'Ganti & Crop Foto' : 'Pilih & Crop Foto Sampul'}</span>
                                                                         </>
                                                                     )}
                                                                     <input
                                                                         type="file"
                                                                         accept=".png,.jpg,.jpeg,.webp"
-                                                                        onChange={handleBannerFileUpload}
+                                                                        onChange={handleBannerFileSelect}
                                                                         disabled={uploadingBanner}
                                                                         className="hidden"
                                                                     />
                                                                 </label>
 
                                                                 {selectedOrg.image && (
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={() => handleUpdateOrg(selectedIndex, 'image', '')}
-                                                                        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-zinc-100 hover:bg-red-100 hover:text-red-700 dark:bg-zinc-800 dark:hover:bg-red-950/60 dark:hover:text-red-300 text-xs font-semibold text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700 transition-colors cursor-pointer"
-                                                                    >
-                                                                        <Trash2 className="h-3.5 w-3.5 text-red-500" />
-                                                                        <span>Hapus Foto</span>
-                                                                    </button>
+                                                                    <>
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={handleReCropBanner}
+                                                                            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-xs font-semibold text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700 transition-colors cursor-pointer"
+                                                                            title="Potong ulang foto dengan rasio 2.4:1"
+                                                                        >
+                                                                            <Crop className="h-3.5 w-3.5 text-amber-500" />
+                                                                            <span>Crop Ulang (2.4:1)</span>
+                                                                        </button>
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => handleUpdateOrg(selectedIndex, 'image', '')}
+                                                                            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-zinc-100 hover:bg-red-100 hover:text-red-700 dark:bg-zinc-800 dark:hover:bg-red-950/60 dark:hover:text-red-300 text-xs font-semibold text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700 transition-colors cursor-pointer"
+                                                                        >
+                                                                            <Trash2 className="h-3.5 w-3.5 text-red-500" />
+                                                                            <span>Hapus Foto</span>
+                                                                        </button>
+                                                                    </>
                                                                 )}
                                                             </div>
                                                             <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
-                                                                Foto lanskap untuk latar header kartu dan halaman rincian lembaga desa.
+                                                                Foto otomatis dipotong dengan rasio 2.4:1 agar pas presisi dengan ukuran bingkai sampul card di tampilan frontend.
                                                             </p>
                                                         </div>
                                                     </div>
@@ -936,16 +978,29 @@ export default function OrganizationsSettings({ settings = {} }) {
                                                     <span>Data Ketua / Pimpinan Lembaga</span>
                                                 </h4>
 
-                                                {/* Upload Foto Pimpinan & Preview */}
+                                                {/* Upload Foto Pimpinan & Preview (1:1 Persegi) */}
                                                 <div className="flex flex-col sm:flex-row sm:items-center gap-4 p-3 rounded-lg bg-white dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-700">
-                                                    {/* Foto Portrait Box Preview */}
-                                                    <div className="h-20 w-20 rounded-lg overflow-hidden bg-red-950 border-2 border-amber-400 p-0.5 flex items-center justify-center shrink-0 shadow-sm">
+                                                    {/* Foto Portrait Box Preview (1:1 aspect ratio matching frontend) */}
+                                                    <div className="h-20 w-20 rounded-lg overflow-hidden bg-red-950 border-2 border-amber-400 p-0.5 flex items-center justify-center shrink-0 shadow-sm relative group">
                                                         {selectedOrg.leader?.photo ? (
-                                                            <img
-                                                                src={selectedOrg.leader.photo}
-                                                                alt={selectedOrg.leader?.name || 'Pimpinan'}
-                                                                className="w-full h-full object-cover rounded-[6px]"
-                                                            />
+                                                            <>
+                                                                <img
+                                                                    src={selectedOrg.leader.photo}
+                                                                    alt={selectedOrg.leader?.name || 'Pimpinan'}
+                                                                    className="w-full h-full object-cover rounded-[6px]"
+                                                                />
+                                                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-[6px]">
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={handleReCropLeader}
+                                                                        className="px-1.5 py-1 rounded bg-black/75 text-amber-300 text-[10px] font-bold flex items-center gap-0.5 cursor-pointer"
+                                                                        title="Crop Ulang"
+                                                                    >
+                                                                        <Crop className="h-3 w-3" />
+                                                                        <span>Crop</span>
+                                                                    </button>
+                                                                </div>
+                                                            </>
                                                         ) : (
                                                             <div className="w-full h-full flex items-center justify-center bg-red-950 text-amber-300 font-extrabold text-xl tracking-wider select-none">
                                                                 {(selectedOrg.leader?.name || 'PL').split(' ').filter(Boolean).map(w => w[0]).slice(0, 2).join('').toUpperCase()}
@@ -964,36 +1019,47 @@ export default function OrganizationsSettings({ settings = {} }) {
                                                                 {uploadingLeaderPhoto ? (
                                                                     <>
                                                                         <Loader2 className="h-4 w-4 animate-spin" />
-                                                                        <span>Mengunggah Foto...</span>
+                                                                        <span>Menyimpan Foto...</span>
                                                                     </>
                                                                 ) : (
                                                                     <>
-                                                                        <Upload className="h-4 w-4" />
-                                                                        <span>{selectedOrg.leader?.photo ? 'Ganti Foto Pimpinan' : 'Unggah Foto Pimpinan'}</span>
+                                                                        <Crop className="h-4 w-4 text-amber-300" />
+                                                                        <span>{selectedOrg.leader?.photo ? 'Ganti & Crop Foto' : 'Pilih & Crop Foto Pimpinan'}</span>
                                                                     </>
                                                                 )}
                                                                 <input
                                                                     type="file"
                                                                     accept=".png,.jpg,.jpeg,.webp"
-                                                                    onChange={handleLeaderPhotoUpload}
+                                                                    onChange={handleLeaderFileSelect}
                                                                     disabled={uploadingLeaderPhoto}
                                                                     className="hidden"
                                                                 />
                                                             </label>
 
                                                             {selectedOrg.leader?.photo && (
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => handleUpdateLeader(selectedIndex, 'photo', '')}
-                                                                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-zinc-100 hover:bg-red-100 hover:text-red-700 dark:bg-zinc-800 dark:hover:bg-red-950/60 dark:hover:text-red-300 text-xs font-semibold text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700 transition-colors cursor-pointer"
-                                                                >
-                                                                    <Trash2 className="h-3.5 w-3.5 text-red-500" />
-                                                                    <span>Hapus Foto (Gunakan Inisial)</span>
-                                                                </button>
+                                                                <>
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={handleReCropLeader}
+                                                                        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-xs font-semibold text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700 transition-colors cursor-pointer"
+                                                                        title="Potong ulang foto dengan rasio 1:1 persegi"
+                                                                    >
+                                                                        <Crop className="h-3.5 w-3.5 text-amber-500" />
+                                                                        <span>Crop Ulang (1:1)</span>
+                                                                    </button>
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => handleUpdateLeader(selectedIndex, 'photo', '')}
+                                                                        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-zinc-100 hover:bg-red-100 hover:text-red-700 dark:bg-zinc-800 dark:hover:bg-red-950/60 dark:hover:text-red-300 text-xs font-semibold text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700 transition-colors cursor-pointer"
+                                                                    >
+                                                                        <Trash2 className="h-3.5 w-3.5 text-red-500" />
+                                                                        <span>Hapus Foto (Inisial)</span>
+                                                                    </button>
+                                                                </>
                                                             )}
                                                         </div>
                                                         <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
-                                                            Format: JPG, PNG, WebP (Maks 5MB). Jika dikosongkan, kartu pimpinan otomatis menampilkan inisial nama.
+                                                            Format: JPG, PNG, WebP (Maks 25MB) • Rasio 1:1 Persegi. Otomatis dipotong presisi pas dengan bingkai kartu pimpinan.
                                                         </p>
                                                     </div>
                                                 </div>
@@ -1367,11 +1433,7 @@ export default function OrganizationsSettings({ settings = {} }) {
                                                             className="w-full h-full object-cover opacity-60"
                                                         />
                                                         <div className="absolute inset-0 bg-gradient-to-t from-red-950 via-red-950/40 to-transparent" />
-                                                        <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
-                                                            <span className="px-2.5 py-1 rounded-lg bg-black/70 backdrop-blur-md border border-amber-400/40 text-amber-300 text-xs font-bold inline-flex items-center gap-1.5">
-                                                                <SelectedIcon className="h-3.5 w-3.5" />
-                                                                <span>{selectedOrg.category}</span>
-                                                            </span>
+                                                        <div className="absolute top-3 right-3 flex items-center gap-2">
                                                             <span className="px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-md border border-white/20 text-white text-xs font-medium">
                                                                 {selectedOrg.memberCount || '5 Anggota'}
                                                             </span>
@@ -1634,6 +1696,32 @@ export default function OrganizationsSettings({ settings = {} }) {
                     </div>
                 </div>
             )}
+
+            {/* Modal Crop Foto Sampul / Banner Rasio 2.4:1 Sesuai Card Frontend */}
+            <ImageCropModal
+                isOpen={bannerCropModalOpen}
+                onClose={() => setBannerCropModalOpen(false)}
+                imageSrc={bannerImageToCrop}
+                onCropComplete={handleBannerCropComplete}
+                aspectRatio={2.4}
+                outputWidth={1200}
+                outputHeight={500}
+                title={`Crop Foto Sampul: ${selectedOrg?.name || 'Lembaga Desa'}`}
+                subtitle="Geser dan atur perbesaran foto agar pas dengan bingkai sampul card frontend (rasio 2.4:1)"
+            />
+
+            {/* Modal Crop Foto Pimpinan Lembaga Rasio 1:1 Persegi Sesuai Card Profil */}
+            <ImageCropModal
+                isOpen={leaderCropModalOpen}
+                onClose={() => setLeaderCropModalOpen(false)}
+                imageSrc={leaderImageToCrop}
+                onCropComplete={handleLeaderCropComplete}
+                aspectRatio={1}
+                outputWidth={800}
+                outputHeight={800}
+                title={`Crop Foto Pimpinan: ${selectedOrg?.leader?.name || selectedOrg?.name || 'Ketua Lembaga'}`}
+                subtitle="Geser dan atur perbesaran foto agar pas dengan bingkai foto pimpinan 1:1 persegi"
+            />
         </AdminLayout>
     );
 }

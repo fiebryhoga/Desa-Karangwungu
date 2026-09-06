@@ -8,6 +8,7 @@ import ServicesSection from "../Components/Home/ServicesSection";
 import PotentialsAndNewsSection from "../Components/Home/PotentialsAndNewsSection";
 
 export default function Home({
+    featuredPosts = [],
     latestPosts = [],
     headOfficial,
     potentials = [],
@@ -26,6 +27,7 @@ export default function Home({
 
             {/* SEKSI 1: HERO SECTION FULL SATU LAYAR */}
             <HeroSection
+                heroImages={dashboard_settings?.hero_images}
                 heroImage={dashboard_settings?.hero_image || heroImage}
                 badge={dashboard_settings?.hero_badge}
                 title={dashboard_settings?.hero_title}
@@ -53,6 +55,9 @@ export default function Home({
                 stats={stats}
                 overviewLocation={dashboard_settings?.overview_location}
                 overviewContent={dashboard_settings?.overview_content}
+                demographicsMetrics={dashboard_settings?.demographics_metrics}
+                demographicsSectionTitle={dashboard_settings?.demographics_section_title}
+                demographicsSectionSubtitle={dashboard_settings?.demographics_section_subtitle}
                 overviewCards={[
                     {
                         badge: dashboard_settings?.overview_card_1_badge,
@@ -81,6 +86,11 @@ export default function Home({
             <PotentialsAndNewsSection
                 potentials={potentials}
                 latestPosts={latestPosts}
+                featuredPosts={featuredPosts}
+                potentialsTitle={dashboard_settings?.potentials_title}
+                potentialsSubtitle={dashboard_settings?.potentials_subtitle}
+                postsTitle={dashboard_settings?.posts_title}
+                postsSubtitle={dashboard_settings?.posts_subtitle}
             />
 
             {/* Seamless Divider */}

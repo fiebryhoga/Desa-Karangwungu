@@ -36,6 +36,8 @@ import {
 } from 'lucide-react';
 import { ICON_REGISTRY, getIconComponent } from '@/Utils/iconRegistry';
 
+const BATIK_PATTERN = `data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 60 Q 30 30, 60 60 T 120 60 M0 0 Q 30 -30, 60 0 T 120 0 M0 120 Q 30 90, 60 120 T 120 120 M-30 30 L 30 90 M30 -30 L 90 30 M90 -30 L 150 30 M-30 90 L 30 150 M30 90 L 90 150 M90 90 L 150 150' stroke='%23fde047' stroke-width='2' fill='none' stroke-linecap='round' stroke-dasharray='1 4'/%3E%3Cpath d='M12 48 Q 30 24, 48 48 Q 66 72, 84 48 Q 102 24, 120 48' stroke='%23fde047' stroke-width='1.8' fill='none'/%3E%3Ccircle cx='30' cy='30' r='4' fill='%23fde047'/%3E%3Ccircle cx='90' cy='90' r='4' fill='%23fde047'/%3E%3Ccircle cx='90' cy='30' r='2.5' fill='%23fde047'/%3E%3Ccircle cx='30' cy='90' r='2.5' fill='%23fde047'/%3E%3C/svg%3E`;
+
 export default function VisionMissionSettings({ settings = {} }) {
     const [activeTab, setActiveTab] = useState('leaders'); // default to leaders or vision
     const { props } = usePage();
@@ -409,33 +411,80 @@ export default function VisionMissionSettings({ settings = {} }) {
                                             </p>
                                         </div>
 
-                                        {/* Box Banner Visi Utama (Live Preview) */}
-                                        <div className="w-full rounded-xl overflow-hidden border border-red-500/40 bg-gradient-to-r from-red-800 via-red-900 to-zinc-950 text-white shadow-xl p-5 sm:p-7 space-y-3.5 text-center relative">
-                                            <div className="flex items-center justify-center gap-2 text-xs font-semibold text-amber-300">
-                                                <Target className="h-4 w-4 text-amber-400 shrink-0 aspect-square" />
-                                                <span>{data.vision_badge || 'Visi Resmi Pemerintah Desa Karangwungu'}</span>
+                                        {/* Box Banner Visi Utama (Majestic Regal Red-Gold Redesign Live Preview) */}
+                                        <div className="relative w-full rounded-2xl overflow-hidden border border-red-500/50 bg-gradient-to-br from-red-950 via-zinc-950 to-black text-white shadow-2xl p-5 sm:p-8 space-y-5 text-center group">
+                                            {/* Golden Hairline Top Accent */}
+                                            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-amber-400 to-transparent opacity-90" />
+
+                                            {/* Traditional Golden Nusantara Batik Texture Silhouette Overlay */}
+                                            <div
+                                                className="absolute inset-0 opacity-[0.16] bg-repeat pointer-events-none mix-blend-screen"
+                                                style={{
+                                                    backgroundImage: `url("${BATIK_PATTERN}")`,
+                                                    backgroundSize: '105px 105px',
+                                                }}
+                                            />
+
+                                            {/* Ambient Lighting Flares */}
+                                            <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-80 h-80 bg-red-600/25 rounded-full blur-3xl pointer-events-none" />
+                                            <div className="absolute -bottom-16 -left-16 w-64 h-64 bg-red-900/30 rounded-full blur-3xl pointer-events-none" />
+                                            <div className="absolute -bottom-16 -right-16 w-64 h-64 bg-amber-500/15 rounded-full blur-3xl pointer-events-none" />
+
+                                            {/* Badge */}
+                                            <div className="relative z-10 flex justify-center">
+                                                <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-gradient-to-r from-amber-500/20 via-red-950/80 to-amber-500/20 border border-amber-400/40 text-amber-300 text-[11px] font-black tracking-widest uppercase shadow-md backdrop-blur-md">
+                                                    <Sparkles className="h-3 w-3 text-amber-400 shrink-0 aspect-square animate-pulse" />
+                                                    <span>{data.vision_badge || 'Visi Resmi Pemerintah Desa Karangwungu'}</span>
+                                                </div>
                                             </div>
 
-                                            <blockquote className="text-sm sm:text-base font-bold leading-relaxed text-white max-w-3xl mx-auto drop-shadow-sm">
-                                                &ldquo;{data.vision_text || 'Terwujudnya Masyarakat Desa...'}&rdquo;
-                                            </blockquote>
+                                            {/* Main Vision Statement */}
+                                            <div className="relative z-10 max-w-3xl mx-auto">
+                                                <blockquote className="text-sm sm:text-base md:text-lg font-black leading-relaxed text-white tracking-wide drop-shadow-md">
+                                                    {data.vision_text || 'Terwujudnya Masyarakat Desa...'}
+                                                </blockquote>
+                                            </div>
 
-                                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 max-w-2xl mx-auto">
-                                                <div className="flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-black/40 border border-white/15 text-[11px] font-bold text-amber-300">
-                                                    <Pillar1IconComp className="h-3.5 w-3.5 text-amber-400" />
-                                                    <span className="truncate">{data.vision_pillar_1_text || 'Pilar 1'}</span>
+                                            {/* 4 Pillars Preview */}
+                                            <div className="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-2 max-w-3xl mx-auto">
+                                                <div className="p-3 rounded-xl bg-white/[0.05] border border-white/10 backdrop-blur-md shadow-md flex flex-col items-center justify-center gap-2 group/pilar">
+                                                    <div className="h-8 w-8 rounded-full bg-gradient-to-br from-amber-500/30 via-red-600/20 to-transparent border border-amber-400/30 text-amber-300 flex items-center justify-center shadow-inner">
+                                                        <Pillar1IconComp className="h-3.5 w-3.5 text-amber-400" />
+                                                    </div>
+                                                    <div className="text-center">
+                                                        <span className="text-[8px] font-extrabold uppercase tracking-widest text-zinc-400 block">Pilar I</span>
+                                                        <span className="text-[11px] font-bold text-white block truncate max-w-[120px]">{data.vision_pillar_1_text || 'Pilar 1'}</span>
+                                                    </div>
                                                 </div>
-                                                <div className="flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-black/40 border border-white/15 text-[11px] font-bold text-amber-300">
-                                                    <Pillar2IconComp className="h-3.5 w-3.5 text-amber-400" />
-                                                    <span className="truncate">{data.vision_pillar_2_text || 'Pilar 2'}</span>
+
+                                                <div className="p-3 rounded-xl bg-white/[0.05] border border-white/10 backdrop-blur-md shadow-md flex flex-col items-center justify-center gap-2 group/pilar">
+                                                    <div className="h-8 w-8 rounded-full bg-gradient-to-br from-amber-500/30 via-red-600/20 to-transparent border border-amber-400/30 text-amber-300 flex items-center justify-center shadow-inner">
+                                                        <Pillar2IconComp className="h-3.5 w-3.5 text-amber-400" />
+                                                    </div>
+                                                    <div className="text-center">
+                                                        <span className="text-[8px] font-extrabold uppercase tracking-widest text-zinc-400 block">Pilar II</span>
+                                                        <span className="text-[11px] font-bold text-white block truncate max-w-[120px]">{data.vision_pillar_2_text || 'Pilar 2'}</span>
+                                                    </div>
                                                 </div>
-                                                <div className="flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-black/40 border border-white/15 text-[11px] font-bold text-amber-300">
-                                                    <Pillar3IconComp className="h-3.5 w-3.5 text-amber-400" />
-                                                    <span className="truncate">{data.vision_pillar_3_text || 'Pilar 3'}</span>
+
+                                                <div className="p-3 rounded-xl bg-white/[0.05] border border-white/10 backdrop-blur-md shadow-md flex flex-col items-center justify-center gap-2 group/pilar">
+                                                    <div className="h-8 w-8 rounded-full bg-gradient-to-br from-amber-500/30 via-red-600/20 to-transparent border border-amber-400/30 text-amber-300 flex items-center justify-center shadow-inner">
+                                                        <Pillar3IconComp className="h-3.5 w-3.5 text-amber-400" />
+                                                    </div>
+                                                    <div className="text-center">
+                                                        <span className="text-[8px] font-extrabold uppercase tracking-widest text-zinc-400 block">Pilar III</span>
+                                                        <span className="text-[11px] font-bold text-white block truncate max-w-[120px]">{data.vision_pillar_3_text || 'Pilar 3'}</span>
+                                                    </div>
                                                 </div>
-                                                <div className="flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-black/40 border border-white/15 text-[11px] font-bold text-amber-300">
-                                                    <Pillar4IconComp className="h-3.5 w-3.5 text-amber-400" />
-                                                    <span className="truncate">{data.vision_pillar_4_text || 'Pilar 4'}</span>
+
+                                                <div className="p-3 rounded-xl bg-white/[0.05] border border-white/10 backdrop-blur-md shadow-md flex flex-col items-center justify-center gap-2 group/pilar">
+                                                    <div className="h-8 w-8 rounded-full bg-gradient-to-br from-amber-500/30 via-red-600/20 to-transparent border border-amber-400/30 text-amber-300 flex items-center justify-center shadow-inner">
+                                                        <Pillar4IconComp className="h-3.5 w-3.5 text-amber-400" />
+                                                    </div>
+                                                    <div className="text-center">
+                                                        <span className="text-[8px] font-extrabold uppercase tracking-widest text-zinc-400 block">Pilar IV</span>
+                                                        <span className="text-[11px] font-bold text-white block truncate max-w-[120px]">{data.vision_pillar_4_text || 'Pilar 4'}</span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

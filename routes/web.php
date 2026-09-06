@@ -23,6 +23,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::prefix('profil')->group(function () {
     Route::get('/', [ProfileController::class, 'index'])->name('profile.index');
     Route::get('/visi-misi', [ProfileController::class, 'visionMission'])->name('profile.vision-mission');
+    Route::get('/sejarah', [ProfileController::class, 'history'])->name('profile.history');
     Route::get('/kepemimpinan', [ProfileController::class, 'leadership'])->name('profile.leadership');
     Route::get('/perangkat-desa', [ProfileController::class, 'officials'])->name('profile.officials');
     Route::get('/lembaga', [ProfileController::class, 'organizations'])->name('profile.organizations');
@@ -46,7 +47,14 @@ Route::prefix('layanan')->group(function () {
     Route::get('/ajukan/{type}', [ServiceController::class, 'createForm'])->name('services.create.form');
     Route::post('/ajukan', [ServiceController::class, 'store'])->name('services.store');
     Route::get('/lacak', [ServiceController::class, 'track'])->name('services.track');
+    Route::get('/tracking', [ServiceController::class, 'track'])->name('services.tracking');
     Route::get('/surat/sktm/preview', [ServiceController::class, 'previewSktm'])->name('services.sktm.preview');
+    Route::get('/surat/kehilangan/preview', [ServiceController::class, 'previewKehilangan'])->name('services.kehilangan.preview');
+    Route::get('/surat/wali-nikah/preview', [ServiceController::class, 'previewWaliNikah'])->name('services.wali-nikah.preview');
+    Route::get('/surat/kematian/preview', [ServiceController::class, 'previewKematian'])->name('services.kematian.preview');
+    Route::get('/surat/kuasa/preview', [ServiceController::class, 'previewKuasa'])->name('services.kuasa.preview');
+    Route::get('/surat/domisili-usaha/preview', [ServiceController::class, 'previewDomisiliUsaha'])->name('services.domisili-usaha.preview');
+    Route::get('/surat/wali-hakim/preview', [ServiceController::class, 'previewWaliHakim'])->name('services.wali-hakim.preview');
     Route::get('/surat/pdf/{tracking_code}', [ServiceController::class, 'downloadLetterPdf'])->name('services.letter.pdf');
 });
 Route::get('/produk-hukum', [ServiceController::class, 'index'])->name('legal-products.index');

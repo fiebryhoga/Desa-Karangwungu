@@ -28,6 +28,7 @@ import {
     YoutubeIcon,
     TiktokIcon,
     TwitterIcon,
+    WhatsappIcon,
 } from '@/Components/UI/SocialIcons';
 
 export default function GeneralSettings({ settings = {} }) {
@@ -409,7 +410,7 @@ export default function GeneralSettings({ settings = {} }) {
                                         <div className="p-3.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50/70 dark:bg-zinc-950/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                             <div className="flex items-center gap-3">
                                                 <div className="h-9 w-9 rounded-lg bg-emerald-600/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/20">
-                                                    <MessageCircle className="h-5 w-5" />
+                                                    <WhatsappIcon className="h-5 w-5" />
                                                 </div>
                                                 <div>
                                                     <h4 className="text-xs font-bold text-zinc-900 dark:text-white">

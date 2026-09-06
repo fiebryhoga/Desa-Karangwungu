@@ -30,12 +30,22 @@ import {
     CheckCircle2,
     SlidersHorizontal,
     Upload,
+    Crop,
+    MapPin,
+    Calendar,
+    IdCard,
+    AlertCircle,
 } from 'lucide-react';
+import ImageCropModal from '@/Components/Admin/ImageCropModal';
 import { ICON_REGISTRY, getIconComponent } from '@/Utils/iconRegistry';
+
+const BATIK_MEGAMENDUNG_PATTERN = `data:image/svg+xml,%3Csvg width='120' height='70' viewBox='0 0 120 70' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 35 C15 15, 35 15, 50 35 C65 55, 85 55, 100 35 C108 25, 118 28, 120 35' fill='none' stroke='%23fbbf24' stroke-width='1.2' stroke-linecap='round' opacity='0.75'/%3E%3Cpath d='M10 35 C22 22, 34 22, 46 35 C58 48, 72 48, 86 35' fill='none' stroke='%23fbbf24' stroke-width='1.0' opacity='0.6'/%3E%3Cpath d='M60 0 C75 18, 95 18, 110 0' fill='none' stroke='%23fbbf24' stroke-width='1.1' opacity='0.65'/%3E%3Cpath d='M60 70 C75 52, 95 52, 110 70' fill='none' stroke='%23fbbf24' stroke-width='1.1' opacity='0.65'/%3E%3Cpath d='M0 0 C15 18, 35 18, 50 0' fill='none' stroke='%23fbbf24' stroke-width='1.1' opacity='0.65'/%3E%3Cpath d='M0 70 C15 52, 35 52, 50 70' fill='none' stroke='%23fbbf24' stroke-width='1.1' opacity='0.65'/%3E%3C/svg%3E`;
 
 export default function OfficialsSettings({ settings = {} }) {
     // 2 Tab Utama: 'struktur' (Card Grid) dan 'wewenang' (Tupoksi Cards)
     const [activeTab, setActiveTab] = useState('struktur');
+    const [saveSuccess, setSaveSuccess] = useState(false);
+    const [saveError, setSaveError] = useState(null);
     const { props } = usePage();
     const adminPath = props?.admin_path || 'portal-karangwungu';
 
@@ -82,10 +92,10 @@ export default function OfficialsSettings({ settings = {} }) {
             'Berdasarkan Permendagri No. 84 Tahun 2015 tentang Susunan Organisasi dan Tata Kerja Pemerintah Desa',
 
         // 1. Kepala Desa
-        kades_name: settings.kades_name || 'H. SUNARTO',
+        kades_name: settings.kades_name || 'Elli Susiantoro, SE',
         kades_position: settings.kades_position || 'Kepala Desa',
         kades_nip: settings.kades_nip || '19750812 200501 1 003',
-        kades_phone: settings.kades_phone || '0812-3344-5566',
+        kades_phone: settings.kades_phone || '082143069377',
         kades_photo: settings.kades_photo || '',
         kades_photo_file: null,
         kades_category: settings.kades_category || 'Pimpinan Eksekutif',
@@ -100,6 +110,13 @@ export default function OfficialsSettings({ settings = {} }) {
         kades_authorities:
             settings.kades_authorities ||
             'Menetapkan kebijakan desa, mengelola keuangan & aset desa, serta mengangkat dan memberhentikan perangkat desa.',
+        kades_address:
+            settings.kades_address ||
+            'RT. 003, RW. 001, Desa KARANGGENENG, Kecamatan KARANGGENENG, Kabupaten Lamongan',
+        kades_birth_info: settings.kades_birth_info || 'Lamongan, 19 September 1971',
+        kades_gender: settings.kades_gender || 'LAKI-LAKI',
+        kades_inauguration_date: settings.kades_inauguration_date || '7 November 2019',
+        kades_end_tenure_date: settings.kades_end_tenure_date || '7 November 2025',
 
         // 2. Ketua BPD
         bpd_name: settings.bpd_name || 'ALI NASIHIN, SH',
@@ -120,6 +137,13 @@ export default function OfficialsSettings({ settings = {} }) {
         bpd_authorities:
             settings.bpd_authorities ||
             'Mengawasi pelaksanaan peraturan desa & APBDes, serta meminta keterangan penyelenggaraan pemerintahan desa.',
+        bpd_address:
+            settings.bpd_address ||
+            'RT. 002, RW. 001, Desa Karangwungu, Kecamatan Karanggeneng, Kabupaten Lamongan',
+        bpd_birth_info: settings.bpd_birth_info || 'Lamongan, 14 Mei 1976',
+        bpd_gender: settings.bpd_gender || 'LAKI-LAKI',
+        bpd_inauguration_date: settings.bpd_inauguration_date || '15 Januari 2020',
+        bpd_end_tenure_date: settings.bpd_end_tenure_date || '15 Januari 2026',
 
         // 3. Jajaran Perangkat, Kasun & Lembaga Desa
         officials_list: initialOfficialsList,
@@ -147,14 +171,46 @@ export default function OfficialsSettings({ settings = {} }) {
     const [expandedWewenang, setExpandedWewenang] = useState(new Set(['kades', 'bpd', 0]));
     const [showBannerConfig, setShowBannerConfig] = useState(false);
 
-    // Photo change handlers with instant local preview
-    const handleKadesFileChange = (e) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            setData('kades_photo_file', file);
-            const objUrl = URL.createObjectURL(file);
-            setLocalPreviews((prev) => ({ ...prev, kades: objUrl }));
+    // Image Crop Modal State
+    const [cropModalOpen, setCropModalOpen] = useState(false);
+    const [imageToCrop, setImageToCrop] = useState('');
+    const [cropTarget, setCropTarget] = useState(null); // 'kades' | 'bpd' | number
+    const [cropTitle, setCropTitle] = useState('Sesuaikan & Crop Foto');
+
+    const triggerCropForFile = (file, target, title) => {
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            setImageToCrop(event.target.result);
+            setCropTarget(target);
+            setCropTitle(title || 'Sesuaikan & Crop Foto Potret');
+            setCropModalOpen(true);
+        };
+        reader.readAsDataURL(file);
+    };
+
+    const triggerCropForUrl = (src, target, title) => {
+        if (!src) return;
+        setImageToCrop(src);
+        setCropTarget(target);
+        setCropTitle(title || 'Sesuaikan & Crop Foto Potret');
+        setCropModalOpen(true);
+    };
+
+    const handleCropComplete = (croppedFile, previewUrl) => {
+        if (cropTarget === 'kades') {
+            setData('kades_photo_file', croppedFile);
+            setLocalPreviews((prev) => ({ ...prev, kades: previewUrl }));
+        } else if (cropTarget === 'bpd') {
+            setData('bpd_photo_file', croppedFile);
+            setLocalPreviews((prev) => ({ ...prev, bpd: previewUrl }));
+        } else if (typeof cropTarget === 'number') {
+            const updatedFiles = { ...(data.official_photo_files || {}) };
+            updatedFiles[cropTarget] = croppedFile;
+            setData('official_photo_files', updatedFiles);
+            setLocalPreviews((prev) => ({ ...prev, [cropTarget]: previewUrl }));
         }
+        setCropModalOpen(false);
     };
 
     const handleKadesUrlChange = (val) => {
@@ -166,15 +222,6 @@ export default function OfficialsSettings({ settings = {} }) {
         });
     };
 
-    const handleBpdFileChange = (e) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            setData('bpd_photo_file', file);
-            const objUrl = URL.createObjectURL(file);
-            setLocalPreviews((prev) => ({ ...prev, bpd: objUrl }));
-        }
-    };
-
     const handleBpdUrlChange = (val) => {
         setData('bpd_photo', val);
         setLocalPreviews((prev) => {
@@ -182,17 +229,6 @@ export default function OfficialsSettings({ settings = {} }) {
             delete next.bpd;
             return next;
         });
-    };
-
-    const handleOfficialFileChange = (idx, e) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            const updatedFiles = { ...(data.official_photo_files || {}) };
-            updatedFiles[idx] = file;
-            setData('official_photo_files', updatedFiles);
-            const objUrl = URL.createObjectURL(file);
-            setLocalPreviews((prev) => ({ ...prev, [idx]: objUrl }));
-        }
     };
 
     const handleOfficialUrlChange = (idx, val) => {
@@ -204,73 +240,169 @@ export default function OfficialsSettings({ settings = {} }) {
         });
     };
 
-    // Modular photo preview and input field
-    const renderPhotoField = ({ title, photoUrl, onUrlChange, onFileChange, targetKey, personName }) => {
-        const previewSrc = localPreviews[targetKey] || photoUrl || avatarUrl(personName);
+    // Modular photo preview and upload field with LIVE Card Preview matching frontend & 1:1 cropping capability
+    const renderPhotoField = ({
+        title,
+        photoUrl,
+        targetKey,
+        personName,
+        personPosition,
+        personCategory,
+        personRoleDesc,
+        personIcon,
+    }) => {
+        const previewSrc = localPreviews[targetKey] || photoUrl;
+        const displaySrc = previewSrc || avatarUrl(personName);
+        const IconComp = personIcon
+            ? getIconComponent(personIcon)
+            : targetKey === 'kades'
+            ? Award
+            : targetKey === 'bpd'
+            ? Landmark
+            : Briefcase;
+
+        const handleFileInput = (e) => {
+            const file = e.target.files?.[0];
+            if (file) {
+                triggerCropForFile(file, targetKey, `Crop Foto Card: ${personName || title}`);
+            }
+            e.target.value = '';
+        };
+
+        const handleReCrop = () => {
+            if (previewSrc) {
+                triggerCropForUrl(previewSrc, targetKey, `Atur Posisi & Crop Foto: ${personName || title}`);
+            }
+        };
 
         return (
-            <div className="space-y-1.5">
-                <label className="block text-[11px] font-bold text-zinc-700 dark:text-zinc-300 flex items-center gap-1.5">
-                    <Image className="h-3.5 w-3.5 text-zinc-400" />
-                    <span>{title}</span>
-                </label>
+            <div className="space-y-2.5">
+                <div className="flex items-center justify-between">
+                    <label className="text-[11px] font-bold text-zinc-700 dark:text-zinc-300 flex items-center gap-1.5">
+                        <Image className="h-3.5 w-3.5 text-zinc-400" />
+                        <span>{title}</span>
+                    </label>
+                    <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20 flex items-center gap-1">
+                        <Sparkles className="h-2.5 w-2.5" />
+                        <span>Pratinjau Card Sesuai Frontend</span>
+                    </span>
+                </div>
 
-                <div className="flex flex-col sm:flex-row items-center gap-4 p-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-950/70 border border-zinc-200 dark:border-zinc-800">
-                    {/* Visual Photo Preview Thumbnail */}
-                    <div className="relative h-28 w-24 sm:h-32 sm:w-28 rounded-xl overflow-hidden bg-zinc-950 shrink-0 border border-zinc-300 dark:border-zinc-700 shadow-inner group">
-                        <img
-                            src={previewSrc}
-                            alt="Pratinjau Foto"
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                            onError={(e) => {
-                                e.target.src = avatarUrl(personName);
-                            }}
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
-                        <span className="absolute bottom-1.5 left-1.5 right-1.5 text-center text-[9px] font-bold bg-black/70 backdrop-blur-xs text-white rounded px-1 py-0.5 border border-white/20 truncate">
-                            Pratinjau Foto
-                        </span>
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-5 p-4 rounded-xl bg-zinc-50 dark:bg-zinc-950/70 border border-zinc-200 dark:border-zinc-800 items-start">
+                    {/* SISI KIRI: Live Card Replica (Sama Persis seperti di Frontend Profil Desa) */}
+                    <div className="md:col-span-5 w-full max-w-[240px] mx-auto shrink-0">
+                        <div className="relative w-full rounded-lg overflow-hidden bg-gradient-to-b from-[#74151e] via-[#5c1018] to-[#420a11] text-white shadow-xl border border-amber-400/40 flex flex-col group">
+                            {/* Siluet Batik Megamendung */}
+                            <div
+                                className="absolute inset-0 pointer-events-none opacity-10 bg-repeat"
+                                style={{
+                                    backgroundImage: `url("${BATIK_MEGAMENDUNG_PATTERN}")`,
+                                    backgroundSize: '120px 60px',
+                                }}
+                            />
+
+                            {/* Foto Section (Persegi 1:1 Sesuai Card di Frontend) */}
+                            <div className="relative w-full aspect-square overflow-hidden bg-zinc-950 shrink-0 border-b border-amber-400/30">
+                                <img
+                                    src={displaySrc}
+                                    alt={personName || 'Aparatur'}
+                                    className="w-full h-full object-cover object-[center_15%] transition-transform duration-700 group-hover:scale-105"
+                                    onError={(e) => {
+                                        e.target.src = avatarUrl(personName);
+                                    }}
+                                />
+                                <div className="absolute bottom-0 inset-x-0 h-12 bg-gradient-to-t from-black/75 to-transparent pointer-events-none" />
+
+                                {/* Badge Jabatan di Kiri Bawah Foto */}
+                                <div className="absolute bottom-2 left-2 right-2">
+                                    <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-black/75 backdrop-blur-md border border-amber-400/60 text-amber-300 font-extrabold text-[9.5px] shadow-sm tracking-tight truncate max-w-full">
+                                        <IconComp className="h-3 w-3 shrink-0 text-amber-400" />
+                                        <span className="truncate">{personPosition || 'Perangkat Desa'}</span>
+                                    </span>
+                                </div>
+
+                                {/* Badge Biodata di Kanan Atas */}
+                                <div className="absolute top-2 right-2 px-2 py-0.5 rounded-md bg-black/75 backdrop-blur-md border border-amber-400/50 text-amber-300 text-[9px] font-bold flex items-center gap-1 shadow-sm">
+                                    <IdCard className="w-2.5 h-2.5 text-amber-400 shrink-0" />
+                                    <span>Biodata</span>
+                                </div>
+                            </div>
+
+                            {/* Info Section */}
+                            <div className="p-2.5 space-y-1 relative z-10 flex-1 flex flex-col justify-between">
+                                <div className="space-y-0.5">
+                                    <p className="font-extrabold tracking-wider uppercase truncate text-amber-300 text-[8.5px]">
+                                        {personCategory || 'PERANGKAT DESA'}
+                                    </p>
+                                    <h4 className="font-black text-white text-xs leading-snug tracking-tight line-clamp-1">
+                                        {personName || 'Nama Aparatur'}
+                                    </h4>
+                                    <div className="h-px w-full bg-gradient-to-r from-amber-400/40 via-amber-400/15 to-transparent my-1" />
+                                    <p className="text-red-100/90 text-[9.5px] leading-snug line-clamp-2">
+                                        {personRoleDesc || 'Koordinator administrasi umum dan pelayanan masyarakat desa.'}
+                                    </p>
+                                </div>
+
+                                <div className="mt-2 w-full inline-flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg font-bold text-[9px] tracking-wide bg-black/30 border border-amber-400/50 text-amber-300 shadow-xs">
+                                    <IdCard className="w-3 h-3 text-amber-300 shrink-0" />
+                                    <span>Lihat Biodata Lengkap</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    {/* Inputs */}
-                    <div className="flex-1 w-full space-y-2.5">
-                        <div>
-                            <span className="block text-[10px] font-semibold text-zinc-500 dark:text-zinc-400 mb-1">
-                                URL Berkas Foto (Web / Cloud / Storage)
-                            </span>
-                            <input
-                                type="text"
-                                value={photoUrl || ''}
-                                onChange={(e) => onUrlChange(e.target.value)}
-                                placeholder="https://... atau /uploads/officials/..."
-                                className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-xs text-zinc-900 dark:text-zinc-100 font-medium"
-                            />
-                        </div>
+                    {/* SISI KANAN: Upload & Crop Foto Potret (1:1 Persegi) */}
+                    <div className="md:col-span-7 w-full space-y-3">
+                        <div className="p-4 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-3 shadow-xs">
+                            <div className="flex items-center justify-between">
+                                <span className="text-xs font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5">
+                                    <Upload className="h-4 w-4 text-red-600 dark:text-red-400" />
+                                    <span>Upload Berkas Foto Langsung</span>
+                                </span>
+                                <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20">
+                                    Format File Komputer / HP
+                                </span>
+                            </div>
 
-                        <div>
-                            <span className="block text-[10px] font-semibold text-zinc-500 dark:text-zinc-400 mb-1.5">
-                                Atau Pilih Berkas Foto Baru dari Komputer / HP
-                            </span>
-                            <div className="flex flex-wrap items-center gap-2.5">
-                                <label className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg border border-zinc-300 hover:border-zinc-400 dark:border-zinc-700 dark:hover:border-zinc-600 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-xs font-bold text-zinc-800 dark:text-zinc-200 cursor-pointer transition-all shadow-2xs">
-                                    <Upload className="h-3.5 w-3.5 text-red-600 dark:text-amber-400" />
-                                    <span>Pilih Berkas Foto</span>
+                            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 leading-relaxed">
+                                Seluruh foto aparatur desa diunggah langsung dari file galeri/komputer Anda. Foto akan otomatis masuk ke pemotong presisi 1:1 persegi sesuai bingkai card tampilan frontend.
+                            </p>
+
+                            <div className="flex flex-wrap items-center gap-2 pt-1">
+                                <label className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-red-200 dark:border-red-900/50 hover:border-red-300 dark:hover:border-red-800 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white text-xs font-bold cursor-pointer transition-all shadow-md shadow-red-600/20">
+                                    <Upload className="h-4 w-4" />
+                                    <span>{previewSrc ? 'Ganti & Upload Foto Baru' : 'Pilih & Upload Foto'}</span>
                                     <input
                                         type="file"
                                         accept="image/*"
-                                        onChange={onFileChange}
+                                        onChange={handleFileInput}
                                         className="hidden"
                                     />
                                 </label>
 
+                                {previewSrc && (
+                                    <button
+                                        type="button"
+                                        onClick={handleReCrop}
+                                        className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs font-semibold text-zinc-700 dark:text-zinc-300 transition-colors cursor-pointer"
+                                        title="Buka alat pemotong untuk mengatur posisi foto"
+                                    >
+                                        <Crop className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                                        <span>Crop Ulang (1:1)</span>
+                                    </button>
+                                )}
+                            </div>
+
+                            <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800/80">
                                 {localPreviews[targetKey] ? (
-                                    <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-1 rounded-md border border-emerald-200 dark:border-emerald-800">
-                                        <CheckCircle2 className="h-3.5 w-3.5" />
-                                        <span>Berkas Baru Terpilih</span>
+                                    <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold inline-flex items-center gap-1.5 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-1 rounded-md border border-emerald-200 dark:border-emerald-800">
+                                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                                        <span>Foto baru siap disimpan ke server</span>
                                     </span>
                                 ) : (
-                                    <span className="text-[11px] text-zinc-400 dark:text-zinc-500">
-                                        Belum ada berkas baru
+                                    <span className="text-[11px] text-zinc-500 dark:text-zinc-400 inline-flex items-center gap-1.5">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
+                                        <span>Status: Menggunakan foto aktif tersimpan</span>
                                     </span>
                                 )}
                             </div>
@@ -344,6 +476,11 @@ export default function OfficialsSettings({ settings = {} }) {
             summary: 'Membantu tugas pemerintah desa sesuai urusan bidangnya.',
             tasks: ['Melaksanakan tugas operasional sesuai bidang tugas dan arahan pimpinan.'],
             authorities: 'Menyelenggarakan urusan kedinasan dan pelayanan masyarakat sesuai bidangnya.',
+            address: 'RT. 001, RW. 001, Desa Karangwungu, Kec. Karanggeneng, Kab. Lamongan',
+            birth_info: 'Lamongan, 1 Januari 1990',
+            gender: 'LAKI-LAKI',
+            inauguration_date: '1 Januari 2020',
+            end_tenure_date: '1 Januari 2026',
         };
         const nextList = [...data.officials_list, newOfficial];
         setData('officials_list', nextList);
@@ -415,11 +552,38 @@ export default function OfficialsSettings({ settings = {} }) {
         setData('officials_list', updated);
     };
 
-    const handleSubmit = (e) => {
-        if (e) e.preventDefault();
+    const handleSubmit = (e, callback) => {
+        if (e && e.preventDefault) e.preventDefault();
+        setSaveError(null);
         post(`/${adminPath}/settings/officials`, {
             preserveScroll: true,
             forceFormData: true,
+            onSuccess: () => {
+                setSaveSuccess(true);
+                setSaveError(null);
+                setData((prev) => ({
+                    ...prev,
+                    kades_photo_file: null,
+                    bpd_photo_file: null,
+                    official_photo_files: {},
+                }));
+                if (typeof callback === 'function') {
+                    callback();
+                }
+                setTimeout(() => {
+                    setSaveSuccess(false);
+                }, 5000);
+            },
+            onError: (errs) => {
+                console.error('Save failed errors:', errs);
+                const msg =
+                    Object.values(errs).flat().join(' • ') ||
+                    'Gagal menyimpan konfigurasi. Silakan periksa kembali formulir.';
+                setSaveError(msg);
+                setTimeout(() => {
+                    setSaveError(null);
+                }, 8000);
+            },
         });
     };
 
@@ -1438,10 +1602,11 @@ export default function OfficialsSettings({ settings = {} }) {
                                     {renderPhotoField({
                                         title: 'Foto Resmi Kepala Desa',
                                         photoUrl: data.kades_photo,
-                                        onUrlChange: handleKadesUrlChange,
-                                        onFileChange: handleKadesFileChange,
                                         targetKey: 'kades',
                                         personName: data.kades_name,
+                                        personPosition: data.kades_position || 'Kepala Desa',
+                                        personCategory: data.kades_category || 'Pimpinan Eksekutif',
+                                        personRoleDesc: data.kades_role_desc,
                                     })}
 
                                     <div>
@@ -1454,6 +1619,85 @@ export default function OfficialsSettings({ settings = {} }) {
                                             onChange={(e) => setData('kades_role_desc', e.target.value)}
                                             className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-900 dark:text-zinc-100 font-medium"
                                         />
+                                    </div>
+
+                                    {/* Biodata Lengkap Kades untuk Balik Kartu 3D */}
+                                    <div className="pt-3 border-t border-zinc-200 dark:border-zinc-800 space-y-3">
+                                        <h4 className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5">
+                                            <User className="h-3.5 w-3.5 text-red-600 dark:text-amber-400" />
+                                            <span>Biodata Lengkap (Tampil pada Balik Kartu 3D)</span>
+                                        </h4>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                                            <div className="sm:col-span-2">
+                                                <label className="block text-[10px] font-bold text-zinc-600 dark:text-zinc-400 mb-1 flex items-center gap-1">
+                                                    <MapPin className="h-3 w-3" />
+                                                    <span>Alamat Domisili</span>
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={data.kades_address || ''}
+                                                    onChange={(e) => setData('kades_address', e.target.value)}
+                                                    placeholder="RT. 003, RW. 001, Desa KARANGGENENG..."
+                                                    className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-900 dark:text-zinc-100 font-medium"
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-[10px] font-bold text-zinc-600 dark:text-zinc-400 mb-1 flex items-center gap-1">
+                                                    <Calendar className="h-3 w-3" />
+                                                    <span>Tempat, Tanggal Lahir</span>
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={data.kades_birth_info || ''}
+                                                    onChange={(e) => setData('kades_birth_info', e.target.value)}
+                                                    placeholder="Lamongan, 19 September 1971"
+                                                    className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-900 dark:text-zinc-100 font-medium"
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-[10px] font-bold text-zinc-600 dark:text-zinc-400 mb-1">
+                                                    Jenis Kelamin
+                                                </label>
+                                                <select
+                                                    value={data.kades_gender || 'LAKI-LAKI'}
+                                                    onChange={(e) => setData('kades_gender', e.target.value)}
+                                                    className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-900 dark:text-zinc-100 font-medium"
+                                                >
+                                                    <option value="LAKI-LAKI">LAKI-LAKI</option>
+                                                    <option value="PEREMPUAN">PEREMPUAN</option>
+                                                </select>
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-[10px] font-bold text-zinc-600 dark:text-zinc-400 mb-1 flex items-center gap-1">
+                                                    <Calendar className="h-3 w-3" />
+                                                    <span>Tanggal Pelantikan</span>
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={data.kades_inauguration_date || ''}
+                                                    onChange={(e) => setData('kades_inauguration_date', e.target.value)}
+                                                    placeholder="7 November 2019"
+                                                    className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-900 dark:text-zinc-100 font-medium"
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-[10px] font-bold text-zinc-600 dark:text-zinc-400 mb-1 flex items-center gap-1">
+                                                    <Calendar className="h-3 w-3" />
+                                                    <span>Akhir Masa Jabatan</span>
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={data.kades_end_tenure_date || ''}
+                                                    onChange={(e) => setData('kades_end_tenure_date', e.target.value)}
+                                                    placeholder="7 November 2025"
+                                                    className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-900 dark:text-zinc-100 font-medium"
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
                                 </>
                             )}
@@ -1517,10 +1761,11 @@ export default function OfficialsSettings({ settings = {} }) {
                                     {renderPhotoField({
                                         title: 'Foto Resmi Ketua BPD',
                                         photoUrl: data.bpd_photo,
-                                        onUrlChange: handleBpdUrlChange,
-                                        onFileChange: handleBpdFileChange,
                                         targetKey: 'bpd',
                                         personName: data.bpd_name,
+                                        personPosition: data.bpd_position || 'Ketua BPD',
+                                        personCategory: data.bpd_category || 'Badan Permusyawaratan Desa',
+                                        personRoleDesc: data.bpd_role_desc,
                                     })}
 
                                     <div>
@@ -1533,6 +1778,85 @@ export default function OfficialsSettings({ settings = {} }) {
                                             onChange={(e) => setData('bpd_role_desc', e.target.value)}
                                             className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-900 dark:text-zinc-100 font-medium"
                                         />
+                                    </div>
+
+                                    {/* Biodata Lengkap BPD untuk Balik Kartu 3D */}
+                                    <div className="pt-3 border-t border-zinc-200 dark:border-zinc-800 space-y-3">
+                                        <h4 className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5">
+                                            <Landmark className="h-3.5 w-3.5 text-red-600 dark:text-amber-400" />
+                                            <span>Biodata Lengkap (Tampil pada Balik Kartu 3D)</span>
+                                        </h4>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                                            <div className="sm:col-span-2">
+                                                <label className="block text-[10px] font-bold text-zinc-600 dark:text-zinc-400 mb-1 flex items-center gap-1">
+                                                    <MapPin className="h-3 w-3" />
+                                                    <span>Alamat Domisili</span>
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={data.bpd_address || ''}
+                                                    onChange={(e) => setData('bpd_address', e.target.value)}
+                                                    placeholder="RT. 002, RW. 001, Desa Karangwungu..."
+                                                    className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-900 dark:text-zinc-100 font-medium"
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-[10px] font-bold text-zinc-600 dark:text-zinc-400 mb-1 flex items-center gap-1">
+                                                    <Calendar className="h-3 w-3" />
+                                                    <span>Tempat, Tanggal Lahir</span>
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={data.bpd_birth_info || ''}
+                                                    onChange={(e) => setData('bpd_birth_info', e.target.value)}
+                                                    placeholder="Lamongan, 14 Mei 1976"
+                                                    className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-900 dark:text-zinc-100 font-medium"
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-[10px] font-bold text-zinc-600 dark:text-zinc-400 mb-1">
+                                                    Jenis Kelamin
+                                                </label>
+                                                <select
+                                                    value={data.bpd_gender || 'LAKI-LAKI'}
+                                                    onChange={(e) => setData('bpd_gender', e.target.value)}
+                                                    className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-900 dark:text-zinc-100 font-medium"
+                                                >
+                                                    <option value="LAKI-LAKI">LAKI-LAKI</option>
+                                                    <option value="PEREMPUAN">PEREMPUAN</option>
+                                                </select>
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-[10px] font-bold text-zinc-600 dark:text-zinc-400 mb-1 flex items-center gap-1">
+                                                    <Calendar className="h-3 w-3" />
+                                                    <span>Tanggal Pelantikan</span>
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={data.bpd_inauguration_date || ''}
+                                                    onChange={(e) => setData('bpd_inauguration_date', e.target.value)}
+                                                    placeholder="15 Januari 2020"
+                                                    className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-900 dark:text-zinc-100 font-medium"
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-[10px] font-bold text-zinc-600 dark:text-zinc-400 mb-1 flex items-center gap-1">
+                                                    <Calendar className="h-3 w-3" />
+                                                    <span>Akhir Masa Jabatan</span>
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={data.bpd_end_tenure_date || ''}
+                                                    onChange={(e) => setData('bpd_end_tenure_date', e.target.value)}
+                                                    placeholder="15 Januari 2026"
+                                                    className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-900 dark:text-zinc-100 font-medium"
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
                                 </>
                             )}
@@ -1634,10 +1958,12 @@ export default function OfficialsSettings({ settings = {} }) {
                                     {renderPhotoField({
                                         title: `Foto Resmi: ${data.officials_list[editingTarget].position || 'Perangkat Desa'}`,
                                         photoUrl: data.officials_list[editingTarget].photo,
-                                        onUrlChange: (val) => handleOfficialUrlChange(editingTarget, val),
-                                        onFileChange: (e) => handleOfficialFileChange(editingTarget, e),
                                         targetKey: editingTarget,
                                         personName: data.officials_list[editingTarget].name,
+                                        personPosition: data.officials_list[editingTarget].position || 'Perangkat Desa',
+                                        personCategory: data.officials_list[editingTarget].category || 'Perangkat Desa',
+                                        personRoleDesc: data.officials_list[editingTarget].role_desc,
+                                        personIcon: data.officials_list[editingTarget].icon,
                                     })}
 
                                     <div>
@@ -1652,22 +1978,113 @@ export default function OfficialsSettings({ settings = {} }) {
                                             className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-900 dark:text-zinc-100 font-medium"
                                         />
                                     </div>
+
+                                    {/* Biodata Lengkap Perangkat untuk Balik Kartu 3D */}
+                                    <div className="pt-3 border-t border-zinc-200 dark:border-zinc-800 space-y-3">
+                                        <h4 className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5">
+                                            <Briefcase className="h-3.5 w-3.5 text-red-600 dark:text-amber-400" />
+                                            <span>Biodata Lengkap (Tampil pada Balik Kartu 3D)</span>
+                                        </h4>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                                            <div className="sm:col-span-2">
+                                                <label className="block text-[10px] font-bold text-zinc-600 dark:text-zinc-400 mb-1 flex items-center gap-1">
+                                                    <MapPin className="h-3 w-3" />
+                                                    <span>Alamat Domisili</span>
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={data.officials_list[editingTarget].address || ''}
+                                                    onChange={(e) => handleUpdateOfficial(editingTarget, 'address', e.target.value)}
+                                                    placeholder="RT. 001, RW. 001, Desa Karangwungu..."
+                                                    className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-900 dark:text-zinc-100 font-medium"
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-[10px] font-bold text-zinc-600 dark:text-zinc-400 mb-1 flex items-center gap-1">
+                                                    <Calendar className="h-3 w-3" />
+                                                    <span>Tempat, Tanggal Lahir</span>
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={data.officials_list[editingTarget].birth_info || ''}
+                                                    onChange={(e) => handleUpdateOfficial(editingTarget, 'birth_info', e.target.value)}
+                                                    placeholder="Lamongan, 15 Maret 1982"
+                                                    className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-900 dark:text-zinc-100 font-medium"
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-[10px] font-bold text-zinc-600 dark:text-zinc-400 mb-1">
+                                                    Jenis Kelamin
+                                                </label>
+                                                <select
+                                                    value={data.officials_list[editingTarget].gender || 'LAKI-LAKI'}
+                                                    onChange={(e) => handleUpdateOfficial(editingTarget, 'gender', e.target.value)}
+                                                    className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-900 dark:text-zinc-100 font-medium"
+                                                >
+                                                    <option value="LAKI-LAKI">LAKI-LAKI</option>
+                                                    <option value="PEREMPUAN">PEREMPUAN</option>
+                                                </select>
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-[10px] font-bold text-zinc-600 dark:text-zinc-400 mb-1 flex items-center gap-1">
+                                                    <Calendar className="h-3 w-3" />
+                                                    <span>Tanggal Pelantikan</span>
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={data.officials_list[editingTarget].inauguration_date || ''}
+                                                    onChange={(e) => handleUpdateOfficial(editingTarget, 'inauguration_date', e.target.value)}
+                                                    placeholder="12 Januari 2018"
+                                                    className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-900 dark:text-zinc-100 font-medium"
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-[10px] font-bold text-zinc-600 dark:text-zinc-400 mb-1 flex items-center gap-1">
+                                                    <Calendar className="h-3 w-3" />
+                                                    <span>Akhir Masa Jabatan</span>
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={data.officials_list[editingTarget].end_tenure_date || ''}
+                                                    onChange={(e) => handleUpdateOfficial(editingTarget, 'end_tenure_date', e.target.value)}
+                                                    placeholder="12 Januari 2028"
+                                                    className="w-full px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-xs text-zinc-900 dark:text-zinc-100 font-medium"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
                                 </>
                             )}
                         </div>
 
                         {/* Modal Footer */}
-                        <div className="px-5 py-3 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50/80 dark:bg-zinc-900/80 flex items-center justify-between">
-                            <span className="text-[11px] text-zinc-400">
-                                Klik tombol selesai untuk menutup dialog.
-                            </span>
-                            <button
-                                type="button"
-                                onClick={() => setEditingTarget(null)}
-                                className="px-5 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-xs transition-colors cursor-pointer"
-                            >
-                                Selesai & Perbarui Kartu
-                            </button>
+                        <div className="px-5 py-3.5 border-t border-zinc-200 dark:border-zinc-800 bg-zinc-50/90 dark:bg-zinc-900/90 flex flex-wrap items-center justify-between gap-3">
+                            <div className="flex items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400">
+                                <span className="inline-block w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                                <span>Simpan perubahan untuk menerapkan foto & data resmi ke database.</span>
+                            </div>
+                            <div className="flex items-center gap-2.5">
+                                <button
+                                    type="button"
+                                    onClick={() => setEditingTarget(null)}
+                                    className="px-4 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-xs font-semibold transition-colors cursor-pointer"
+                                >
+                                    Tutup Tanpa Simpan
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={(e) => handleSubmit(e, () => setEditingTarget(null))}
+                                    disabled={processing}
+                                    className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-red-600 hover:bg-red-700 active:bg-red-800 text-white text-xs font-bold shadow-md shadow-red-600/25 transition-all cursor-pointer disabled:opacity-50"
+                                >
+                                    <Save className="h-3.5 w-3.5" />
+                                    <span>{processing ? 'Menyimpan...' : 'Simpan & Terapkan Perubahan'}</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1784,6 +2201,39 @@ export default function OfficialsSettings({ settings = {} }) {
                                 Batal
                             </button>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal Crop Foto Rasio 1:1 Sesuai Card Frontend */}
+            <ImageCropModal
+                isOpen={cropModalOpen}
+                onClose={() => setCropModalOpen(false)}
+                imageSrc={imageToCrop}
+                onCropComplete={handleCropComplete}
+                aspectRatio={1}
+                outputWidth={1000}
+                outputHeight={1000}
+                title={cropTitle}
+                subtitle="Geser dan atur perbesaran foto agar pas dengan card frontend (rasio 1:1 persegi)"
+            />
+
+            {/* Notification Toasts */}
+            {saveSuccess && (
+                <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-600 text-white shadow-xl shadow-emerald-950/30 animate-in slide-in-from-bottom-2 duration-300">
+                    <CheckCircle2 className="h-5 w-5 text-white shrink-0" />
+                    <div className="text-xs">
+                        <p className="font-bold">Perubahan Berhasil Disimpan!</p>
+                        <p className="text-emerald-100 text-[11px]">Data perangkat desa & foto resmi telah tersimpan permanen di database.</p>
+                    </div>
+                </div>
+            )}
+            {saveError && (
+                <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-xl bg-red-600 text-white shadow-xl shadow-red-950/30 animate-in slide-in-from-bottom-2 duration-300 max-w-md">
+                    <AlertCircle className="h-5 w-5 text-white shrink-0" />
+                    <div className="text-xs">
+                        <p className="font-bold">Gagal Menyimpan Perubahan</p>
+                        <p className="text-red-100 text-[11px]">{saveError}</p>
                     </div>
                 </div>
             )}

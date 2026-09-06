@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import AppLayout from '../../Layouts/AppLayout';
 import SeoHead from '../../Components/SEO/SeoHead';
 import PageHeader from '../../Components/UI/PageHeader';
@@ -23,6 +23,10 @@ import VillageMap from '../../Components/Profile/VillageMap';
 import { getIconComponent } from '@/Utils/iconRegistry';
 
 export default function ProfileIndex({ officials = [], demographics = {}, overview = {} }) {
+    const { props } = usePage();
+    const general = props?.general_settings || {};
+    const siteTagline = general.site_tagline || 'Portal resmi informasi publik dan pelayanan administrasi daring Pemerintah Desa Karangwungu dalam mewujudkan tata kelola desa yang transparan, maju, agamis, dan melayani.';
+
     // 3 Photos, Labels & Icons
     const photo1 = overview.overview_photo_1 || '/assets/images/hero.jpg';
     const photo1Label = overview.overview_photo_1_label || 'Kawasan Desa Karangwungu';
@@ -113,9 +117,9 @@ export default function ProfileIndex({ officials = [], demographics = {}, overvi
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-10">
                 {/* 1. REUSABLE DYNAMIC GEOMETRIC FACETED PAGE HEADER */}
                 <PageHeader
-                    badge="Pemerintah Desa Karangwungu"
+                    badge={general.site_name || "Pemerintah Desa Karangwungu"}
                     title="Tentang Desa Karangwungu"
-                    subtitle="Kenali lebih dalam sejarah, kearifan lokal, bentang alam, dan batas wilayah administratif desa kami."
+                    subtitle={siteTagline}
                 />
 
                 {/* 2. TOP 2-COLUMN SECTION: Overview Gallery (8 cols) & Sidebar Data (4 cols) */}
