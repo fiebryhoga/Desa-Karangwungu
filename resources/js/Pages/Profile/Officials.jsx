@@ -575,9 +575,9 @@ export default function Officials({ officials = [], officialsSettings = {} }) {
                     {/* SISI DEPAN (FRONT FACE: FOTO & JABATAN + SILUET BATIK)   */}
                     {/* ======================================================== */}
                     <div
-                        className={`group absolute inset-0 w-full h-full rounded-lg overflow-hidden bg-gradient-to-b from-[#74151e] via-[#5c1018] to-[#420a11] dark:from-[#2a0509] dark:via-[#1a0305] dark:to-[#0d0103] text-white shadow-lg dark:shadow-xl hover:shadow-xl dark:hover:shadow-2xl transition-all duration-300 flex flex-col backface-hidden ${
+                        className={`group absolute inset-0 w-full h-full rounded-xl overflow-hidden bg-gradient-to-b from-red-700 via-red-800 to-zinc-950 dark:from-red-800 dark:via-red-950 dark:to-[#080102] text-white shadow-lg dark:shadow-xl hover:shadow-xl dark:hover:shadow-2xl transition-all duration-300 flex flex-col backface-hidden ${
                             accent
-                                ? "ring-2 ring-amber-400 border-2 border-amber-400/90 shadow-black/40 dark:shadow-amber-950/60"
+                                ? "border border-amber-400/60 dark:border-amber-400/70 hover:border-amber-400/90 shadow-black/25 dark:shadow-amber-950/40"
                                 : compact
                                   ? "border border-amber-400/40 dark:border-amber-500/40 hover:border-amber-400/80 dark:hover:border-amber-400/80 shadow-black/20 dark:shadow-red-950/40"
                                   : "border border-amber-400/35 dark:border-amber-500/35 hover:border-amber-400/80 dark:hover:border-amber-400/80 shadow-black/20 dark:shadow-red-950/30"
@@ -585,7 +585,7 @@ export default function Officials({ officials = [], officialsSettings = {} }) {
                     >
                         {/* Siluet Batik Background Layer (Front - Opacity Lembut & Elegan) */}
                         <div
-                            className="absolute inset-0 pointer-events-none opacity-10 sm:opacity-12 dark:opacity-10 group-hover:opacity-20 dark:group-hover:opacity-15 transition-opacity duration-500 bg-repeat"
+                            className="absolute inset-0 pointer-events-none opacity-[0.05] sm:opacity-[0.06] dark:opacity-[0.05] group-hover:opacity-10 dark:group-hover:opacity-10 transition-opacity duration-500 bg-repeat"
                             style={{
                                 backgroundImage: `url("${BATIK_MEGAMENDUNG_PATTERN}")`,
                                 backgroundSize: "120px 60px",
@@ -593,12 +593,12 @@ export default function Officials({ officials = [], officialsSettings = {} }) {
                         />
 
                         {/* Ambient Glows & Corner Filigree Accent */}
-                        <div className="absolute -top-12 -right-12 w-28 h-28 bg-amber-400/15 dark:bg-amber-500/15 rounded-full blur-2xl pointer-events-none" />
-                        <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-amber-400/20 dark:from-amber-400/20 via-transparent to-transparent pointer-events-none" />
+                        <div className="absolute -top-12 -right-12 w-28 h-28 bg-red-600/25 rounded-full blur-2xl pointer-events-none" />
+                        <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-amber-400/15 dark:from-amber-400/15 via-transparent to-transparent pointer-events-none" />
 
                         {/* Photo Section (Proporsional & Menampilkan Wajah Utuh) */}
                         <div
-                            className={`relative w-full overflow-hidden bg-zinc-950 shrink-0 border-b border-amber-400/30 dark:border-amber-500/30 ${
+                            className={`relative w-full overflow-hidden bg-zinc-950 shrink-0 border-b border-amber-400/30 dark:border-amber-500/30 rounded-t-xl ${
                                 accent
                                     ? "h-[240px] sm:h-[330px] md:h-[350px]"
                                     : compact
@@ -733,17 +733,17 @@ export default function Officials({ officials = [], officialsSettings = {} }) {
                     {/* SISI BELAKANG (BACK FACE: BIODATA + SILUET BATIK PENUH)  */}
                     {/* ======================================================== */}
                     <div
-                        className={`group absolute inset-0 w-full h-full rounded-lg overflow-hidden bg-gradient-to-b from-[#74151e] via-[#5c1018] to-[#420a11] dark:from-[#240306] dark:via-[#140204] dark:to-[#070102] text-white shadow-xl dark:shadow-2xl border flex flex-col backface-hidden rotate-y-180 ${
+                        className={`group absolute inset-0 w-full h-full rounded-xl overflow-hidden bg-gradient-to-b from-red-700 via-red-800 to-zinc-950 dark:from-red-800 dark:via-red-950 dark:to-[#080102] text-white shadow-xl dark:shadow-2xl border flex flex-col backface-hidden rotate-y-180 ${
                             accent
-                                ? "border-2 border-amber-400 ring-2 ring-amber-400/80 shadow-black/40 dark:shadow-amber-950/60"
+                                ? "border-amber-400/60 dark:border-amber-400/70 shadow-black/25 dark:shadow-amber-950/40"
                                 : compact
-                                  ? "border border-amber-400/40 dark:border-amber-400/60"
-                                  : "border border-amber-400/35 dark:border-amber-400/50"
+                                  ? "border-amber-400/40 dark:border-amber-400/60"
+                                  : "border-amber-400/35 dark:border-amber-400/50"
                         } p-2 sm:p-4`}
                     >
                         {/* Siluet Batik Background Layer (Back - Opacity Lembut) */}
                         <div
-                            className="absolute inset-0 pointer-events-none opacity-10 sm:opacity-12 dark:opacity-10 group-hover:opacity-20 dark:group-hover:opacity-15 transition-opacity duration-500 bg-repeat"
+                            className="absolute inset-0 pointer-events-none opacity-[0.05] sm:opacity-[0.06] dark:opacity-[0.05] group-hover:opacity-10 dark:group-hover:opacity-10 transition-opacity duration-500 bg-repeat"
                             style={{
                                 backgroundImage: `url("${BATIK_MEGAMENDUNG_PATTERN}")`,
                                 backgroundSize: "120px 60px",
@@ -751,7 +751,7 @@ export default function Officials({ officials = [], officialsSettings = {} }) {
                         />
 
                         {/* Top Ambient Glow */}
-                        <div className="absolute -top-10 -left-10 w-28 h-28 bg-amber-400/15 dark:bg-amber-500/15 rounded-full blur-xl pointer-events-none" />
+                        <div className="absolute -top-10 -left-10 w-28 h-28 bg-red-600/25 rounded-full blur-xl pointer-events-none" />
 
                         {/* Header Bar Back Card */}
                         <div className="relative z-10 flex items-center justify-between pb-1.5 mb-1.5 sm:pb-2 sm:mb-2 border-b border-amber-400/30 shrink-0">
@@ -1062,9 +1062,9 @@ export default function Officials({ officials = [], officialsSettings = {} }) {
                 {viewMode === "tupoksi" && (
                     <div className="space-y-6">
                         {/* Information Banner */}
-                        <div className="relative overflow-hidden p-4 sm:p-5 rounded-lg bg-gradient-to-r from-[#74151e] via-[#5c1018] to-[#420a11] dark:from-red-950 dark:via-[#1f0306] dark:to-zinc-950 text-white shadow-md border border-amber-400/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div className="relative overflow-hidden p-4 sm:p-5 rounded-xl bg-gradient-to-r from-red-700 via-red-800 to-zinc-950 dark:from-red-800 dark:via-red-950 dark:to-[#080102] text-white shadow-md border border-amber-400/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                             <div
-                                className="absolute inset-0 pointer-events-none opacity-10 dark:opacity-10 bg-repeat"
+                                className="absolute inset-0 pointer-events-none opacity-[0.05] dark:opacity-[0.05] bg-repeat"
                                 style={{
                                     backgroundImage: `url("${BATIK_MEGAMENDUNG_PATTERN}")`,
                                     backgroundSize: "120px 60px",
@@ -1097,15 +1097,15 @@ export default function Officials({ officials = [], officialsSettings = {} }) {
                                 return (
                                     <div
                                         key={idx}
-                                        className={`group relative rounded-lg overflow-hidden bg-gradient-to-b from-[#74151e] via-[#5c1018] to-[#420a11] dark:from-[#2a0509] dark:via-[#1a0305] dark:to-[#0d0103] text-white shadow-md dark:shadow-md dark:hover:shadow-xl transition-all duration-300 p-4 sm:p-6 space-y-4 border ${
+                                        className={`group relative rounded-xl overflow-hidden bg-gradient-to-b from-red-700 via-red-800 to-zinc-950 dark:from-red-800 dark:via-red-950 dark:to-[#080102] text-white shadow-md dark:shadow-md dark:hover:shadow-xl transition-all duration-300 p-4 sm:p-6 space-y-4 border ${
                                             item.accent
-                                                ? "border-2 border-amber-400 ring-2 ring-amber-400/80 shadow-black/40 dark:shadow-amber-950/60"
-                                                : "border border-amber-400/40 dark:border-amber-500/35 hover:border-amber-400/80 dark:hover:border-amber-400/60"
+                                                ? "border-amber-400/60 dark:border-amber-400/70 shadow-black/25 dark:shadow-amber-950/40"
+                                                : "border-amber-400/40 dark:border-amber-500/35 hover:border-amber-400/80 dark:hover:border-amber-400/60"
                                         }`}
                                     >
                                         {/* Siluet Batik Mega Mendung Background */}
                                         <div
-                                            className="absolute inset-0 pointer-events-none opacity-10 sm:opacity-12 dark:opacity-10 group-hover:opacity-20 dark:group-hover:opacity-15 transition-opacity duration-500 bg-repeat"
+                                            className="absolute inset-0 pointer-events-none opacity-[0.05] sm:opacity-[0.06] dark:opacity-[0.05] group-hover:opacity-10 dark:group-hover:opacity-10 transition-opacity duration-500 bg-repeat"
                                             style={{
                                                 backgroundImage: `url("${BATIK_MEGAMENDUNG_PATTERN}")`,
                                                 backgroundSize: "120px 60px",
@@ -1163,7 +1163,7 @@ export default function Officials({ officials = [], officialsSettings = {} }) {
                                         {/* Dua Kolom: Tugas Pokok & Wewenang Kunci */}
                                         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 pt-1">
                                             {/* Tugas Pokok (7 cols) */}
-                                            <div className="md:col-span-8 p-3.5 sm:p-4 rounded-lg bg-black/25 dark:bg-black/25 border border-white/10 space-y-2">
+                                            <div className="md:col-span-8 p-3.5 sm:p-4 rounded-xl bg-black/25 dark:bg-black/25 border border-white/10 space-y-2">
                                                 <span className="text-[10px] font-bold text-amber-300 uppercase tracking-wider block">
                                                     Tugas Pokok & Tanggung Jawab
                                                 </span>
@@ -1185,7 +1185,7 @@ export default function Officials({ officials = [], officialsSettings = {} }) {
                                             </div>
 
                                             {/* Wewenang & Fungsi Kunci (4 cols) */}
-                                            <div className="md:col-span-4 p-3.5 sm:p-4 rounded-lg bg-black/35 dark:bg-black/40 border border-white/10 space-y-2 flex flex-col justify-between">
+                                            <div className="md:col-span-4 p-3.5 sm:p-4 rounded-xl bg-black/35 dark:bg-black/40 border border-white/10 space-y-2 flex flex-col justify-between">
                                                 <div>
                                                     <span className="text-[10px] font-bold text-amber-300 uppercase tracking-wider block mb-1">
                                                         Wewenang & Fungsi Kunci

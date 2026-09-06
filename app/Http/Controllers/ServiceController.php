@@ -10,64 +10,16 @@ use Inertia\Inertia;
 
 class ServiceController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
-        $search = $request->query('search');
-        $type = $request->query('type');
-        $year = $request->query('year');
-        $status = $request->query('status');
-
-        $query = LegalProduct::active();
-
-        if (!empty($search)) {
-            $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', "%{$search}%")
-                    ->orWhere('document_number', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%");
-            });
-        }
-
-        if (!empty($type) && $type !== 'all') {
-            $query->where('document_type', $type);
-        }
-
-        if (!empty($year) && $year !== 'all') {
-            $query->where('year', $year);
-        }
-
-        if (!empty($status) && $status !== 'all') {
-            $query->where('status', $status);
-        }
-
-        $legalProducts = $query->orderBy('year', 'desc')
+        $legalProducts = LegalProduct::active()
+            ->orderBy('year', 'desc')
             ->orderBy('effective_date', 'desc')
             ->orderBy('id', 'desc')
             ->get();
 
-        $availableTypes = [
-            'Keputusan Kepala Desa (SK)',
-            'Peraturan Desa (Perdes)',
-            'Peraturan Bersama Kepala Desa',
-            'Keputusan BPD',
-        ];
-
-        $availableYears = LegalProduct::active()
-            ->select('year')
-            ->distinct()
-            ->orderBy('year', 'desc')
-            ->pluck('year')
-            ->toArray();
-
         return Inertia::render('Services/Index', [
             'legalProducts' => $legalProducts,
-            'availableTypes' => $availableTypes,
-            'availableYears' => $availableYears ?: [(int) date('Y')],
-            'filters' => [
-                'search' => $search ?? '',
-                'type' => $type ?? 'all',
-                'year' => $year ?? 'all',
-                'status' => $status ?? 'all',
-            ],
         ]);
     }
 

@@ -192,10 +192,10 @@ export default function VisionMission({ visionMission = {} }) {
                     </div>
 
                     {/* Banner Visi Utama (Full Width dengan Split Layout: Visi di Kiri, 4 Pilar di Kanan) */}
-                    <div className="relative w-full rounded-2xl overflow-hidden border border-red-500/30 dark:border-red-900/50 bg-gradient-to-br from-[#74151e] via-[#561017] to-[#38080f] dark:from-[#2d070b] dark:via-[#160406] dark:to-[#0a0304] text-white shadow-2xl p-6 sm:p-8 lg:p-10 group">
+                    <div className="relative w-full rounded-2xl overflow-hidden border border-red-500/40 dark:border-red-500/40 bg-gradient-to-br from-red-700 via-red-800 to-zinc-950 dark:from-red-800 dark:via-red-950 dark:to-[#080102] text-white shadow-2xl p-6 sm:p-8 lg:p-10 group">
                         {/* Traditional Golden Nusantara Batik Kawung Silhouette Overlay */}
                         <div
-                            className="absolute inset-0 opacity-[0.11] dark:opacity-[0.14] bg-repeat pointer-events-none mix-blend-screen"
+                            className="absolute inset-0 opacity-[0.05] sm:opacity-[0.06] bg-repeat pointer-events-none"
                             style={{
                                 backgroundImage: `url("${BATIK_PATTERN}")`,
                                 backgroundSize: '60px 60px',
@@ -203,8 +203,8 @@ export default function VisionMission({ visionMission = {} }) {
                         />
 
                         {/* Ambient Background Lighting Flares */}
-                        <div className="absolute -top-24 -left-20 w-80 h-80 bg-red-600/20 rounded-full blur-3xl pointer-events-none" />
-                        <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+                        <div className="absolute -top-24 -left-20 w-80 h-80 bg-red-600/25 rounded-full blur-3xl pointer-events-none" />
+                        <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-red-700/20 rounded-full blur-3xl pointer-events-none" />
 
                         {/* Split 2-Kolom: Kiri Visi Utama, Kanan 4 Pilar */}
                         <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
@@ -287,11 +287,11 @@ export default function VisionMission({ visionMission = {} }) {
                             return (
                                 <div
                                     key={m.id || m.number || idx}
-                                    className="relative rounded-2xl overflow-hidden p-5 sm:p-6 bg-gradient-to-br from-[#74151e] via-[#561017] to-[#38080f] dark:from-[#2a080d] dark:via-[#160507] dark:to-[#0a0203] text-white border border-red-500/30 hover:border-amber-400/60 shadow-xl hover:shadow-2xl hover:shadow-red-950/60 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between space-y-4 group"
+                                    className="relative rounded-2xl overflow-hidden p-5 sm:p-6 bg-gradient-to-br from-red-700 via-red-800 to-zinc-950 dark:from-red-800 dark:via-red-950 dark:to-[#080102] text-white border border-red-500/40 hover:border-amber-400/60 shadow-xl hover:shadow-2xl hover:shadow-red-950/60 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between space-y-4 group"
                                 >
                                     {/* Full Traditional Nusantara Batik Silhouette Overlay */}
                                     <div
-                                        className="absolute inset-0 opacity-[0.08] dark:opacity-[0.12] pointer-events-none mix-blend-screen bg-repeat group-hover:opacity-[0.14] transition-opacity duration-300"
+                                        className="absolute inset-0 opacity-[0.05] sm:opacity-[0.06] pointer-events-none bg-repeat group-hover:opacity-[0.08] transition-opacity duration-300"
                                         style={{
                                             backgroundImage: `url("${BATIK_PATTERN}")`,
                                             backgroundSize: '55px 55px',
@@ -299,7 +299,7 @@ export default function VisionMission({ visionMission = {} }) {
                                     />
 
                                     {/* Ambient Glowing Flare */}
-                                    <div className="absolute -top-12 -right-12 w-32 h-32 bg-red-600/20 rounded-full blur-2xl pointer-events-none group-hover:bg-amber-500/20 transition-all duration-500" />
+                                    <div className="absolute -top-12 -right-12 w-32 h-32 bg-red-600/25 rounded-full blur-2xl pointer-events-none group-hover:bg-red-500/35 transition-all duration-500" />
 
                                     <div className="space-y-4 relative z-10">
                                         {/* Top Header: Icon Crest & Golden Pill Number */}

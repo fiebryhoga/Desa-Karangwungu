@@ -3,7 +3,6 @@ import { useForm, Link } from '@inertiajs/react';
 import AppLayout from '../../Layouts/AppLayout';
 import SeoHead from '../../Components/SEO/SeoHead';
 import PageHeader from '../../Components/UI/PageHeader';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../../Components/UI/Card';
 import Button from '../../Components/UI/Button';
 import {
     Send,
@@ -24,7 +23,29 @@ import {
     Mail,
     Calendar,
     Building2,
+    Scale,
+    HeartHandshake,
+    Users,
+    FileSignature,
+    Home,
+    Baby,
 } from 'lucide-react';
+
+const BATIK_PARANG_PATTERN = `data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23fbbf24' stroke='%23fbbf24'%3E%3Cpath d='M0 0 L80 80 M0 40 L40 80 M40 0 L80 40' stroke-width='1.2' fill='none' stroke-linecap='round' opacity='0.75'/%3E%3Cpath d='M-5 15 L65 85 M15 -5 L85 65' stroke-width='0.7' fill='none' stroke-dasharray='2 3' opacity='0.5'/%3E%3Cpath d='M14 26 C10 22 10 14 18 14 C26 14 28 22 22 26 C18 28 16 28 14 26 Z' fill='%23fbbf24' fill-opacity='0.25' stroke-width='0.9'/%3E%3Cpath d='M54 66 C50 62 50 54 58 54 C66 54 68 62 62 66 C58 68 56 68 54 66 Z' fill='%23fbbf24' fill-opacity='0.25' stroke-width='0.9'/%3E%3Cpath d='M54 26 C50 22 50 14 58 14 C66 14 68 22 62 26 C58 28 56 28 54 26 Z' fill='%23fbbf24' fill-opacity='0.25' stroke-width='0.9'/%3E%3Cpath d='M14 66 C10 62 10 54 18 54 C26 54 28 62 22 66 C18 68 16 68 14 66 Z' fill='%23fbbf24' fill-opacity='0.25' stroke-width='0.9'/%3E%3Cpolygon points='40,16 44,20 40,24 36,20' fill='%23fbbf24' stroke-width='0.5'/%3E%3Cpolygon points='20,36 24,40 20,44 16,40' fill='%23fbbf24' stroke-width='0.5'/%3E%3Cpolygon points='60,36 64,40 60,44 56,40' fill='%23fbbf24' stroke-width='0.5'/%3E%3Cpolygon points='40,56 44,60 40,64 36,60' fill='%23fbbf24' stroke-width='0.5'/%3E%3Ccircle cx='0' cy='0' r='2' /%3E%3Ccircle cx='80' cy='0' r='2' /%3E%3Ccircle cx='0' cy='80' r='2' /%3E%3Ccircle cx='80' cy='80' r='2' /%3E%3Ccircle cx='40' cy='40' r='2.2' /%3E%3Ccircle cx='20' cy='20' r='1.2' /%3E%3Ccircle cx='60' cy='60' r='1.2' /%3E%3Ccircle cx='60' cy='20' r='1.2' /%3E%3Ccircle cx='20' cy='60' r='1.2' /%3E%3C/g%3E%3C/svg%3E`;
+
+const getServiceIcon = (id = '') => {
+    const key = (id || '').toLowerCase();
+    if (key.includes('sktm') || key.includes('tidak-mampu') || key.includes('kurang-mampu')) return ShieldCheck;
+    if (key.includes('sku') || key.includes('usaha')) return Briefcase;
+    if (key.includes('domisili') || key.includes('skd') || key.includes('tinggal')) return Home;
+    if (key.includes('kelahiran') || key.includes('lahir') || key.includes('bayi')) return Baby;
+    if (key.includes('kematian') || key.includes('meninggal') || key.includes('wafat')) return HeartHandshake;
+    if (key.includes('nikah') || key.includes('kawin')) return Users;
+    if (key.includes('kehilangan') || key.includes('hilang')) return Search;
+    if (key.includes('wali') || key.includes('hakim')) return Scale;
+    if (key.includes('kuasa')) return FileSignature;
+    return FileText;
+};
 
 const currentYear = new Date().getFullYear();
 const yearsList = Array.from({ length: currentYear - 1920 + 1 }, (_, i) => String(currentYear - i));
@@ -106,6 +127,7 @@ export default function Form({ service = {}, services = [] }) {
     const isWaliNikah = !isWaliHakim && !isDomisiliUsaha && !isKuasa && (service?.id === 'wali-nikah' || service?.title?.toLowerCase().includes('wali'));
     const isSktm = !isWaliHakim && !isDomisiliUsaha && !isKuasa && !isWaliNikah && !isKematian && (service?.id === 'sktm' || service?.title?.includes('SKTM') || service?.title?.includes('Tidak Mampu'));
     const isKehilangan = !isWaliHakim && !isDomisiliUsaha && !isKuasa && !isWaliNikah && !isKematian && (service?.id === 'kehilangan' || service?.title?.toLowerCase().includes('kehilangan'));
+    const hasExtraSection = isKuasa || isWaliNikah || isKematian || isWaliHakim || isDomisiliUsaha;
 
     const handleApplyKehilanganSuggestion = (itemText) => {
         const current = (data.purpose || '').trim();
@@ -461,781 +483,162 @@ export default function Form({ service = {}, services = [] }) {
                 />
 
                 {/* Main Content Area: Back Navigation + Form Grid */}
-                <div className="space-y-3">
-                    {/* Back to Catalog Link */}
-                    <div>
+                <div className="space-y-4">
+                    {/* Back to Catalog Link & Status Indicator */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-1">
                         <Link
                             href="/layanan/ajukan"
-                            className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-500 dark:text-zinc-400 hover:text-red-600 dark:hover:text-amber-400 transition-colors"
+                            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold text-zinc-600 dark:text-zinc-300 hover:text-red-600 dark:hover:text-amber-400 bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 shadow-2xs transition-all hover:-translate-x-0.5 w-fit"
                         >
                             <ArrowLeft className="h-3.5 w-3.5" />
-                            <span>Kembali ke Daftar Pilihan Surat</span>
+                            <span>Kembali ke Katalog Surat</span>
                         </Link>
+
+                        <div className="flex items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400">
+                            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                            <span>Pelayanan Persuratan Mandiri &middot; Terhubung Balai Desa</span>
+                        </div>
                     </div>
 
                     {/* 2. TWO-COLUMN LAYOUT: FORM ON LEFT (8 cols), OFFICIAL A4 PREVIEW ON RIGHT (4 cols) */}
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
                     {/* LEFT COLUMN (8 cols): FORMULIR PENGAJUAN DATA PEMOHON */}
                     <div className="lg:col-span-8">
-                        <Card className="border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm rounded-xl">
-                            <CardHeader className="p-6 pb-2">
-                                <div className="flex items-center gap-3">
-                                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-amber-400 border border-red-100 dark:border-red-900/40">
-                                        <FileText className="h-5 w-5" />
-                                    </div>
-                                    <div>
-                                        <CardTitle className="text-lg font-bold text-zinc-900 dark:text-white">
-                                            Formulir Pengajuan Surat
-                                        </CardTitle>
-                                        <CardDescription className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mt-0.5">
-                                            Lengkapi data identitas pemohon dan keperluan pengajuan sesuai data e-KTP / KK warga Desa Karangwungu.
-                                        </CardDescription>
-                                    </div>
-                                </div>
-                            </CardHeader>
+                        <style>{`
+                            .dark input[type="date"]::-webkit-calendar-picker-indicator {
+                                filter: invert(1) brightness(1.25) !important;
+                                cursor: pointer;
+                                opacity: 0.95 !important;
+                                transform: scale(1.2);
+                            }
+                            .dark input[type="date"]::-webkit-calendar-picker-indicator:hover {
+                                filter: invert(1) brightness(1.5) drop-shadow(0 0 3px rgba(255, 255, 255, 0.6)) !important;
+                                opacity: 1 !important;
+                            }
+                            input[type="date"]::-webkit-calendar-picker-indicator {
+                                cursor: pointer;
+                                transform: scale(1.15);
+                            }
+                            input::placeholder, textarea::placeholder {
+                                opacity: 0.55 !important;
+                            }
+                            .dark input::placeholder, .dark textarea::placeholder {
+                                opacity: 0.4 !important;
+                            }
+                        `}</style>
 
-                            <CardContent className="p-6 pt-2 space-y-6">
-                                <style>{`
-                                    .dark input[type="date"]::-webkit-calendar-picker-indicator {
-                                        filter: invert(1) brightness(1.25) !important;
-                                        cursor: pointer;
-                                        opacity: 0.95 !important;
-                                        transform: scale(1.2);
-                                    }
-                                    .dark input[type="date"]::-webkit-calendar-picker-indicator:hover {
-                                        filter: invert(1) brightness(1.5) drop-shadow(0 0 3px rgba(255, 255, 255, 0.6)) !important;
-                                        opacity: 1 !important;
-                                    }
-                                    input[type="date"]::-webkit-calendar-picker-indicator {
-                                        cursor: pointer;
-                                        transform: scale(1.15);
-                                    }
-                                    input::placeholder, textarea::placeholder {
-                                        opacity: 0.55 !important;
-                                    }
-                                    .dark input::placeholder, .dark textarea::placeholder {
-                                        opacity: 0.4 !important;
-                                    }
-                                `}</style>
-                                <form onSubmit={handleSubmit} className="space-y-6">
-                                    {/* IDENTITAS PEMOHON */}
-                                    <div className="space-y-4">
-                                        <div className="flex items-center gap-2">
-                                            <User className="h-4 w-4 text-red-600 dark:text-amber-400" />
-                                            <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-300">
+                        <form onSubmit={handleSubmit} className="space-y-6">
+                            {/* BAGIAN 1: IDENTITAS PEMOHON */}
+                            <section className="rounded-lg bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 p-5 sm:p-6 shadow-xs space-y-5">
+                                <div className="flex items-center justify-between pb-3.5 border-b border-zinc-100 dark:border-zinc-800/80">
+                                    <div className="flex items-center gap-3">
+                                        <div className="h-9 w-9 rounded-lg bg-red-600/10 dark:bg-amber-400/10 border border-red-600/20 dark:border-amber-400/30 text-red-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                                            <User className="h-4.5 w-4.5" />
+                                        </div>
+                                        <div>
+                                            <span className="text-[10px] font-bold text-red-600 dark:text-amber-400 tracking-wider uppercase block">
+                                                Bagian 1 &middot; Data Warga
+                                            </span>
+                                            <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-white leading-tight">
                                                 {isWaliHakim
                                                     ? 'Identitas Calon Pengantin Wanita (Perempuan)'
                                                     : (isKuasa
                                                         ? 'Data Pihak Pertama (Pemberi Kuasa)'
                                                         : (isKematian
-                                                            ? 'Identitas Almarhum / Almarhumah (Sesuai KTP / KK)'
-                                                            : (isWaliNikah ? 'Identitas Wali Nikah (Sesuai KTP / KK)' : 'Identitas Pemohon (Sesuai KTP / KK)')))}
-                                            </h3>
+                                                            ? 'Identitas Almarhum / Almarhumah'
+                                                            : (isWaliNikah ? 'Identitas Wali Nikah' : 'Identitas Pemohon (Sesuai KTP / KK)')))}
+                                            </h2>
                                         </div>
+                                    </div>
+                                    <span className="hidden sm:inline-flex text-[11px] font-medium text-zinc-400 dark:text-zinc-500 bg-zinc-100 dark:bg-zinc-800/60 px-2.5 py-1 rounded-md">
+                                        Wajib Sesuai e-KTP
+                                    </span>
+                                </div>
 
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                            {/* Nama Lengkap */}
-                                            <div>
-                                                <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
-                                                    {isWaliHakim ? 'Nama Calon Pengantin Wanita (Perempuan)' : (isKuasa ? 'Nama Lengkap Pemberi Kuasa' : (isKematian ? 'Nama Lengkap Almarhum / Almarhumah' : 'Nama Lengkap'))} <span className="text-red-500">*</span>
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    placeholder={isWaliHakim ? 'Contoh: Susi Wantoro Sari' : (isKuasa ? 'Contoh: RAMITEN' : (isKematian ? 'Contoh: KAMINEM' : (isWaliNikah ? 'Contoh: ERIK SETIAWAN' : 'Contoh: Nur Azizah')))}
-                                                    value={data.citizen_name}
-                                                    onChange={(e) => setData('citizen_name', e.target.value)}
-                                                    className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400/60 dark:placeholder-zinc-500/50 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10 font-bold uppercase"
-                                                    required
-                                                />
-                                                {errors.citizen_name && (
-                                                    <p className="text-xs text-red-500 mt-1">{errors.citizen_name}</p>
-                                                )}
-                                            </div>
-
-                                            {/* NIK */}
-                                            <div>
-                                                <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
-                                                    {isWaliHakim ? 'NIK Calon Pengantin Wanita (16 Digit)' : (isKuasa ? 'NIK Pemberi Kuasa (16 Digit)' : (isKematian ? 'NIK Almarhum / Almarhumah (16 Digit)' : 'NIK (16 Digit Angka)'))} <span className="text-red-500">*</span>
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    maxLength={16}
-                                                    placeholder="3524xxxxxxxxxxxx"
-                                                    value={data.citizen_nik}
-                                                    onChange={(e) => setData('citizen_nik', e.target.value.replace(/[^0-9]/g, ''))}
-                                                    className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3.5 py-2.5 text-sm font-mono tracking-wider text-zinc-900 dark:text-zinc-100 placeholder-zinc-400/60 dark:placeholder-zinc-500/50 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10"
-                                                    required
-                                                />
-                                                {errors.citizen_nik && (
-                                                    <p className="text-xs text-red-500 mt-1">{errors.citizen_nik}</p>
-                                                )}
-                                            </div>
-                                        </div>
-
-                                        {/* Khusus Wali Hakim: Nama Ayah Calon Wanita (Binti) */}
-                                        {isWaliHakim && (
-                                            <div className="mt-3">
-                                                <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
-                                                    Nama Ayah Kandung Calon Pengantin Wanita (Binti)
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    placeholder="Contoh: Moch Tohir (atau biarkan kosong titik-titik jika tidak diketahui)"
-                                                    value={data.extra_data?.bride_father_name || ''}
-                                                    onChange={(e) => handleExtraDataChange('bride_father_name', e.target.value)}
-                                                    className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400/60 dark:placeholder-zinc-500/50 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10"
-                                                />
-                                            </div>
-                                        )}
-
-                                        {/* Tempat & Tanggal Lahir (Hanya jika bukan Surat Kuasa) */}
-                                        {!isKuasa && (
-                                            <>
-                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                                    <div>
-                                                        <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
-                                                            Tempat Lahir
-                                                        </label>
-                                                        <input
-                                                            type="text"
-                                                            placeholder="Contoh: Lamongan"
-                                                            value={data.birth_place}
-                                                            onChange={(e) => setData('birth_place', e.target.value)}
-                                                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400/60 dark:placeholder-zinc-500/50 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10"
-                                                        />
-                                                    </div>
-
-                                                    <div>
-                                                        <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
-                                                            Tanggal Lahir <span className="text-xs font-normal text-zinc-400 dark:text-zinc-500">(Tahun, Bulan, Tgl)</span>
-                                                        </label>
-                                                <div className="grid grid-cols-3 gap-2">
-                                                    {/* 1. Pilih Tahun Dulu */}
-                                                    <div className="relative">
-                                                        <select
-                                                            value={birthYear}
-                                                            onChange={(e) => handleBirthDateChange('year', e.target.value)}
-                                                            className="w-full appearance-none rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-2 sm:px-2.5 py-2.5 pr-6 sm:pr-7 text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10 cursor-pointer"
-                                                        >
-                                                            <option value="" className="text-zinc-400 dark:text-zinc-500">Tahun</option>
-                                                            {yearsList.map((y) => (
-                                                                <option key={y} value={y} className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">
-                                                                    {y}
-                                                                </option>
-                                                            ))}
-                                                        </select>
-                                                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-1.5 sm:pr-2 text-zinc-400 dark:text-zinc-500">
-                                                            <ChevronDown className="h-3.5 w-3.5" />
-                                                        </div>
-                                                    </div>
-
-                                                    {/* 2. Pilih Bulan */}
-                                                    <div className="relative">
-                                                        <select
-                                                            value={birthMonth}
-                                                            onChange={(e) => handleBirthDateChange('month', e.target.value)}
-                                                            className="w-full appearance-none rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-2 sm:px-2.5 py-2.5 pr-6 sm:pr-7 text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10 cursor-pointer"
-                                                        >
-                                                            <option value="" className="text-zinc-400 dark:text-zinc-500">Bulan</option>
-                                                            {monthsList.map((m) => (
-                                                                <option key={m.value} value={m.value} className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">
-                                                                    {m.label}
-                                                                </option>
-                                                            ))}
-                                                        </select>
-                                                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-1.5 sm:pr-2 text-zinc-400 dark:text-zinc-500">
-                                                            <ChevronDown className="h-3.5 w-3.5" />
-                                                        </div>
-                                                    </div>
-
-                                                    {/* 3. Baru Pilih Tanggal */}
-                                                    <div className="relative">
-                                                        <select
-                                                            value={birthDay}
-                                                            onChange={(e) => handleBirthDateChange('day', e.target.value)}
-                                                            className="w-full appearance-none rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-2 sm:px-2.5 py-2.5 pr-6 sm:pr-7 text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10 cursor-pointer"
-                                                        >
-                                                            <option value="" className="text-zinc-400 dark:text-zinc-500">Tgl</option>
-                                                            {daysList.map((d) => (
-                                                                <option key={d} value={d} className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">
-                                                                    {d}
-                                                                </option>
-                                                            ))}
-                                                        </select>
-                                                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-1.5 sm:pr-2 text-zinc-400 dark:text-zinc-500">
-                                                            <ChevronDown className="h-3.5 w-3.5" />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                {errors.birth_date && (
-                                                    <p className="text-xs text-red-500 mt-1">{errors.birth_date}</p>
-                                                )}
-                                            </div>
-                                        </div>
-
-                                        {/* Jenis Kelamin & Agama (Dengan Custom Chevron Down Arrow) */}
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                            <div>
-                                                <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
-                                                    Jenis Kelamin
-                                                </label>
-                                                <div className="relative">
-                                                    <select
-                                                        value={data.gender}
-                                                        onChange={(e) => setData('gender', e.target.value)}
-                                                        className="w-full appearance-none rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3.5 py-2.5 pr-10 text-sm text-zinc-900 dark:text-zinc-100 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10 cursor-pointer"
-                                                        required
-                                                    >
-                                                        <option value="" className="text-zinc-400 dark:text-zinc-500">-- Pilih Jenis Kelamin --</option>
-                                                        <option value="Laki-laki" className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">Laki-laki</option>
-                                                        <option value="Perempuan" className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">Perempuan</option>
-                                                    </select>
-                                                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-zinc-400 dark:text-zinc-500">
-                                                        <ChevronDown className="h-4 w-4" />
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div>
-                                                <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
-                                                    Agama
-                                                </label>
-                                                <div className="relative">
-                                                    <select
-                                                        value={data.religion}
-                                                        onChange={(e) => setData('religion', e.target.value)}
-                                                        className="w-full appearance-none rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3.5 py-2.5 pr-10 text-sm text-zinc-900 dark:text-zinc-100 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10 cursor-pointer"
-                                                        required
-                                                    >
-                                                        <option value="" className="text-zinc-400 dark:text-zinc-500">-- Pilih Agama --</option>
-                                                        <option value="Islam" className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">Islam</option>
-                                                        <option value="Kristen" className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">Kristen</option>
-                                                        <option value="Katolik" className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">Katolik</option>
-                                                        <option value="Hindu" className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">Hindu</option>
-                                                        <option value="Buddha" className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">Buddha</option>
-                                                        <option value="Konghucu" className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">Konghucu</option>
-                                                    </select>
-                                                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-zinc-400 dark:text-zinc-500">
-                                                        <ChevronDown className="h-4 w-4" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {/* Pekerjaan */}
-                                        {!isKematian && (
-                                            <div ref={occupationRef} className="relative">
-                                                <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
-                                                    Pekerjaan <span className="text-red-500">*</span>
-                                                </label>
-                                                
-                                                {/* Custom Trigger Button */}
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setIsOccupationOpen((prev) => !prev)}
-                                                    className={`w-full flex items-center justify-between rounded-lg border bg-zinc-50/50 dark:bg-zinc-950/60 px-3.5 py-2.5 text-sm text-left transition focus:outline-none focus:ring-4 cursor-pointer ${
-                                                        isOccupationOpen
-                                                            ? 'border-red-500 ring-4 ring-red-500/10 dark:border-amber-400 dark:ring-amber-400/10 bg-white dark:bg-zinc-900'
-                                                            : 'border-zinc-300 dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-600'
-                                                    }`}
-                                                >
-                                                    <span className={data.occupation ? "text-zinc-900 dark:text-zinc-100 font-medium truncate" : "text-zinc-400 dark:text-zinc-500 truncate"}>
-                                                        {selectedOccupation === 'Lainnya'
-                                                            ? (customOccupation.trim() ? `${customOccupation} (Lainnya)` : 'Lainnya (Ketik Manual)')
-                                                            : (selectedOccupation || '-- Pilih Pekerjaan Sesuai KTP --')}
-                                                    </span>
-                                                    <ChevronDown className={`h-4 w-4 text-zinc-400 dark:text-zinc-500 transition-transform duration-200 shrink-0 ml-2 ${isOccupationOpen ? 'rotate-180 text-red-500 dark:text-amber-400' : ''}`} />
-                                                </button>
-
-                                                {/* Floating Custom Dropdown Popover */}
-                                                {isOccupationOpen && (
-                                                    <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-50 rounded-xl border border-zinc-200 dark:border-zinc-700/80 bg-white dark:bg-zinc-900 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-                                                        {/* Quick Filter Search inside dropdown */}
-                                                        <div className="p-2.5 border-b border-zinc-100 dark:border-zinc-800 bg-zinc-50/70 dark:bg-zinc-950/50">
-                                                            <div className="relative">
-                                                                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400 dark:text-zinc-500" />
-                                                                <input
-                                                                    type="text"
-                                                                    placeholder="Ketik untuk mencari pekerjaan..."
-                                                                    value={occupationSearch}
-                                                                    onChange={(e) => setOccupationSearch(e.target.value)}
-                                                                    className="w-full rounded-md bg-white dark:bg-zinc-900 pl-8 pr-3 py-1.5 text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400/60 dark:placeholder-zinc-500/50 border border-zinc-200 dark:border-zinc-700 focus:outline-none focus:border-red-500 dark:focus:border-amber-400 focus:ring-2 focus:ring-red-500/10 dark:focus:ring-amber-400/10"
-                                                                    onClick={(e) => e.stopPropagation()}
-                                                                    autoFocus
-                                                                />
-                                                            </div>
-                                                        </div>
-
-                                                        {/* Scrollable list */}
-                                                        <div className="max-h-56 overflow-y-auto p-1.5 space-y-0.5 divide-y divide-transparent">
-                                                            {filteredOccupations.map((job) => {
-                                                                const isSelected = selectedOccupation === job;
-                                                                return (
-                                                                    <button
-                                                                        key={job}
-                                                                        type="button"
-                                                                        onClick={() => handleSelectJob(job)}
-                                                                        className={`w-full flex items-center justify-between px-3 py-2 text-xs rounded-lg transition text-left cursor-pointer ${
-                                                                            isSelected
-                                                                                ? 'bg-red-50 text-red-700 font-semibold dark:bg-amber-400/15 dark:text-amber-300'
-                                                                                : 'text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800/80'
-                                                                        }`}
-                                                                    >
-                                                                        <span className="truncate">{job}</span>
-                                                                        {isSelected && (
-                                                                            <Check className="h-3.5 w-3.5 text-red-600 dark:text-amber-400 shrink-0 ml-2" />
-                                                                        )}
-                                                                    </button>
-                                                                );
-                                                            })}
-
-                                                            {filteredOccupations.length === 0 && (
-                                                                <div className="px-3 py-4 text-center text-xs text-zinc-400 dark:text-zinc-500">
-                                                                    Tidak ditemukan "{occupationSearch}" di daftar e-KTP.
-                                                                </div>
-                                                            )}
-
-                                                            {/* Option Lainnya (Ketik Manual) */}
-                                                            <div className="pt-1 mt-1 border-t border-zinc-100 dark:border-zinc-800">
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => handleSelectJob('Lainnya')}
-                                                                    className={`w-full flex items-center justify-between px-3 py-2 text-xs rounded-lg transition text-left cursor-pointer font-medium ${
-                                                                        selectedOccupation === 'Lainnya'
-                                                                            ? 'bg-red-100/80 text-red-800 font-semibold dark:bg-amber-400/20 dark:text-amber-200'
-                                                                            : 'text-red-600 dark:text-amber-400 hover:bg-red-50 dark:hover:bg-amber-400/10'
-                                                                    }`}
-                                                                >
-                                                                    <span className="flex items-center gap-1.5">
-                                                                        <Sparkles className="h-3.5 w-3.5" />
-                                                                        <span>Lainnya (Ketik Manual Sendiri)</span>
-                                                                    </span>
-                                                                    {selectedOccupation === 'Lainnya' && (
-                                                                        <Check className="h-3.5 w-3.5 text-red-600 dark:text-amber-400 shrink-0 ml-2" />
-                                                                    )}
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                )}
-
-                                                {/* Input manual jika memilih Lainnya */}
-                                                {selectedOccupation === 'Lainnya' && (
-                                                    <div className="animate-in fade-in slide-in-from-top-1 duration-200 mt-2">
-                                                        <input
-                                                            type="text"
-                                                            placeholder="Ketik pekerjaan sesuai yang tertera di KTP..."
-                                                            value={customOccupation}
-                                                            onChange={handleCustomOccupationChange}
-                                                            className="w-full rounded-lg border border-red-300 dark:border-amber-500/50 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400/60 dark:placeholder-zinc-500/50 transition focus:border-red-500 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10"
-                                                            required
-                                                            autoFocus
-                                                        />
-                                                        <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1">
-                                                            Silakan tuliskan jenis pekerjaan Anda yang tertera di KTP.
-                                                        </p>
-                                                    </div>
-                                                )}
-
-                                                {errors.occupation && (
-                                                    <p className="text-xs text-red-500 mt-1">{errors.occupation}</p>
-                                                )}
-                                            </div>
-                                        )}
-                                    </>
-                                )}
-
-                                        {/* Alamat Pemohon (RT & RW Terpisah, Tanpa Dusun, Sisa Alamat Bisa Diedit) */}
-                                        <div className="space-y-2">
-                                            <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200">
-                                                {isKuasa ? 'Alamat Lengkap Pemberi Kuasa' : (isKematian ? 'Alamat Terakhir Almarhum / Almarhumah' : 'Alamat Tempat Tinggal')} <span className="text-red-500">*</span>
+                                <div className="space-y-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        {/* Nama Lengkap */}
+                                        <div>
+                                            <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                                                {isWaliHakim ? 'Nama Calon Pengantin Wanita (Perempuan)' : (isKuasa ? 'Nama Lengkap Pemberi Kuasa' : (isKematian ? 'Nama Lengkap Almarhum / Almarhumah' : 'Nama Lengkap'))} <span className="text-red-500 dark:text-amber-400">*</span>
                                             </label>
-                                            <div className="grid grid-cols-2 sm:grid-cols-12 gap-3">
-                                                {/* RT */}
-                                                <div className="col-span-1 sm:col-span-2">
-                                                    <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
-                                                        RT <span className="text-red-500">*</span>
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        maxLength={3}
-                                                        placeholder="003"
-                                                        value={addressRt}
-                                                        onChange={(e) => handleRtChange(e.target.value)}
-                                                        className="w-full text-center rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3 py-2.5 text-sm font-mono font-medium text-zinc-900 dark:text-zinc-100 placeholder-zinc-400/60 dark:placeholder-zinc-500/50 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10"
-                                                        required
-                                                    />
-                                                </div>
-
-                                                {/* RW */}
-                                                <div className="col-span-1 sm:col-span-2">
-                                                    <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
-                                                        RW <span className="text-red-500">*</span>
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        maxLength={3}
-                                                        placeholder="001"
-                                                        value={addressRw}
-                                                        onChange={(e) => handleRwChange(e.target.value)}
-                                                        className="w-full text-center rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3 py-2.5 text-sm font-mono font-medium text-zinc-900 dark:text-zinc-100 placeholder-zinc-400/60 dark:placeholder-zinc-500/50 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10"
-                                                        required
-                                                    />
-                                                </div>
-
-                                                {/* Desa / Kecamatan / Kabupaten */}
-                                                <div className="col-span-2 sm:col-span-8">
-                                                    <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
-                                                        Desa, Kecamatan & Kabupaten <span className="text-[11px] text-zinc-400 dark:text-zinc-500 font-normal">(Bisa diedit jika perlu)</span>
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        placeholder="Desa Karangwungu Kecamatan Karanggeneng Kabupaten Lamongan"
-                                                        value={addressRest}
-                                                        onChange={(e) => handleAddressRestChange(e.target.value)}
-                                                        className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400/60 dark:placeholder-zinc-500/50 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10"
-                                                        required
-                                                    />
-                                                </div>
-                                            </div>
-                                            {errors.citizen_address && (
-                                                <p className="text-xs text-red-500 mt-1">{errors.citizen_address}</p>
+                                            <input
+                                                type="text"
+                                                placeholder={isWaliHakim ? 'Contoh: Susi Wantoro Sari' : (isKuasa ? 'Contoh: RAMITEN' : (isKematian ? 'Contoh: KAMINEM' : (isWaliNikah ? 'Contoh: ERIK SETIAWAN' : 'Contoh: Nur Azizah')))}
+                                                value={data.citizen_name}
+                                                onChange={(e) => setData('citizen_name', e.target.value)}
+                                                className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20 font-bold uppercase"
+                                                required
+                                            />
+                                            {errors.citizen_name && (
+                                                <p className="text-xs text-red-500 mt-1">{errors.citizen_name}</p>
                                             )}
                                         </div>
 
-                                        {/* Khusus Surat Wali Nikah: Status Perkawinan & Hubungan dengan Catin */}
-                                        {isWaliNikah && (
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                                                <div>
-                                                    <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
-                                                        Status Perkawinan Wali <span className="text-red-500">*</span>
-                                                    </label>
-                                                    <select
-                                                        value={data.extra_data?.marital_status || 'Kawin'}
-                                                        onChange={(e) => handleExtraDataChange('marital_status', e.target.value)}
-                                                        className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10"
-                                                    >
-                                                        <option value="Kawin">Kawin</option>
-                                                        <option value="Belum Kawin">Belum Kawin</option>
-                                                        <option value="Cerai Hidup">Cerai Hidup</option>
-                                                        <option value="Cerai Mati">Cerai Mati</option>
-                                                    </select>
-                                                </div>
-                                                <div>
-                                                    <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
-                                                        Hubungan Dengan Calon Pengantin <span className="text-red-500">*</span>
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        placeholder="Contoh: Saudara Kandung / Ayah Kandung / Paman"
-                                                        value={data.extra_data?.catin_relation || ''}
-                                                        onChange={(e) => handleExtraDataChange('catin_relation', e.target.value)}
-                                                        className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400/60 dark:placeholder-zinc-500/50 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10"
-                                                        required
-                                                    />
-                                                </div>
-                                            </div>
-                                        )}
+                                        {/* NIK */}
+                                        <div>
+                                            <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                                                {isWaliHakim ? 'NIK Calon Pengantin Wanita (16 Digit)' : (isKuasa ? 'NIK Pemberi Kuasa (16 Digit)' : (isKematian ? 'NIK Almarhum / Almarhumah (16 Digit)' : 'NIK (16 Digit Angka)'))} <span className="text-red-500 dark:text-amber-400">*</span>
+                                            </label>
+                                            <input
+                                                type="text"
+                                                maxLength={16}
+                                                placeholder="3524xxxxxxxxxxxx"
+                                                value={data.citizen_nik}
+                                                onChange={(e) => setData('citizen_nik', e.target.value.replace(/[^0-9]/g, ''))}
+                                                className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 text-sm font-mono tracking-wider text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20"
+                                                required
+                                            />
+                                            {errors.citizen_nik && (
+                                                <p className="text-xs text-red-500 mt-1">{errors.citizen_nik}</p>
+                                            )}
+                                        </div>
                                     </div>
 
-                                    {/* KHUSUS SURAT KUASA: FORM DATA PIHAK KEDUA (PENERIMA KUASA) */}
-                                    {isKuasa && (
-                                        <div className="space-y-4 pt-4 border-t border-zinc-200 dark:border-zinc-800">
-                                            <div className="flex items-center gap-2">
-                                                <User className="h-4 w-4 text-red-600 dark:text-amber-400" />
-                                                <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-300">
-                                                    Data Pihak Kedua (Penerima Kuasa)
-                                                </h3>
-                                            </div>
-
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                                <div>
-                                                    <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
-                                                        Nama Lengkap Penerima Kuasa <span className="text-red-500">*</span>
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        placeholder="Contoh: AINUN NAJIB"
-                                                        value={data.extra_data?.grantee_name || ''}
-                                                        onChange={(e) => handleExtraDataChange('grantee_name', e.target.value)}
-                                                        className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400/60 dark:placeholder-zinc-500/50 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10"
-                                                        required
-                                                    />
-                                                </div>
-
-                                                <div>
-                                                    <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
-                                                        NIK Penerima Kuasa (16 Digit) <span className="text-red-500">*</span>
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        maxLength={16}
-                                                        placeholder="Contoh: 6402132707970007"
-                                                        value={data.extra_data?.grantee_nik || ''}
-                                                        onChange={(e) => handleExtraDataChange('grantee_nik', e.target.value.replace(/[^0-9]/g, ''))}
-                                                        className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3.5 py-2.5 text-sm font-mono text-zinc-900 dark:text-zinc-100 placeholder-zinc-400/60 dark:placeholder-zinc-500/50 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10"
-                                                        required
-                                                    />
-                                                </div>
-                                            </div>
-
-                                            {/* Alamat Penerima Kuasa */}
-                                            <div className="space-y-2">
-                                                <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200">
-                                                    Alamat Lengkap Penerima Kuasa <span className="text-red-500">*</span>
-                                                </label>
-                                                <div className="grid grid-cols-2 sm:grid-cols-12 gap-3">
-                                                    {/* RT */}
-                                                    <div className="col-span-1 sm:col-span-2">
-                                                        <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
-                                                            RT <span className="text-red-500">*</span>
-                                                        </label>
-                                                        <input
-                                                            type="text"
-                                                            maxLength={3}
-                                                            placeholder="007"
-                                                            value={granteeRt}
-                                                            onChange={(e) => handleGranteeRtChange(e.target.value)}
-                                                            className="w-full text-center rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3 py-2.5 text-sm font-mono font-medium text-zinc-900 dark:text-zinc-100 placeholder-zinc-400/60 dark:placeholder-zinc-500/50 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10"
-                                                        />
-                                                    </div>
-
-                                                    {/* RW */}
-                                                    <div className="col-span-1 sm:col-span-2">
-                                                        <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
-                                                            RW <span className="text-red-500">*</span>
-                                                        </label>
-                                                        <input
-                                                            type="text"
-                                                            maxLength={3}
-                                                            placeholder="001"
-                                                            value={granteeRw}
-                                                            onChange={(e) => handleGranteeRwChange(e.target.value)}
-                                                            className="w-full text-center rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3 py-2.5 text-sm font-mono font-medium text-zinc-900 dark:text-zinc-100 placeholder-zinc-400/60 dark:placeholder-zinc-500/50 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10"
-                                                        />
-                                                    </div>
-
-                                                    {/* Desa / Kecamatan / Kabupaten */}
-                                                    <div className="col-span-2 sm:col-span-8">
-                                                        <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
-                                                            Desa, Kecamatan & Kabupaten <span className="text-[11px] text-zinc-400 dark:text-zinc-500 font-normal">(Bisa diedit jika di luar Karangwungu)</span>
-                                                        </label>
-                                                        <input
-                                                            type="text"
-                                                            placeholder="Desa Karangwungu Kecamatan Karanggeneng, Kabupaten Lamongan"
-                                                            value={granteeRest}
-                                                            onChange={(e) => handleGranteeRestChange(e.target.value)}
-                                                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400/60 dark:placeholder-zinc-500/50 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10"
-                                                            required
-                                                        />
-                                                    </div>
-                                                </div>
-                                            </div>
+                                    {/* Khusus Wali Hakim: Nama Ayah Calon Wanita (Binti) */}
+                                    {isWaliHakim && (
+                                        <div>
+                                            <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                                                Nama Ayah Kandung Calon Pengantin Wanita (Binti)
+                                            </label>
+                                            <input
+                                                type="text"
+                                                placeholder="Contoh: Moch Tohir (atau biarkan kosong titik-titik jika tidak diketahui)"
+                                                value={data.extra_data?.bride_father_name || ''}
+                                                onChange={(e) => handleExtraDataChange('bride_father_name', e.target.value)}
+                                                className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20"
+                                            />
                                         </div>
                                     )}
 
-                                    {/* KHUSUS WALI NIKAH: FORM DATA CALON PENGANTIN */}
-                                    {isWaliNikah && (
+                                    {/* Tempat & Tanggal Lahir (Hanya jika bukan Surat Kuasa) */}
+                                    {!isKuasa && (
                                         <>
-                                            {/* SUBSECTION: DATA CALON PENGANTIN WANITA */}
-                                            <div className="space-y-4 pt-4 border-t border-zinc-200 dark:border-zinc-800">
-                                                <div className="flex items-center gap-2">
-                                                    <User className="h-4 w-4 text-red-600 dark:text-amber-400" />
-                                                    <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-300">
-                                                        Data Calon Pengantin Wanita (Yang Dinikahkan)
-                                                    </h3>
-                                                </div>
-
-                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                                    <div>
-                                                        <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
-                                                            Nama Lengkap Catin Wanita <span className="text-red-500">*</span>
-                                                        </label>
-                                                        <input
-                                                            type="text"
-                                                            placeholder="Contoh: DITA YULI WULANDARI"
-                                                            value={data.extra_data?.bride_name || ''}
-                                                            onChange={(e) => handleExtraDataChange('bride_name', e.target.value)}
-                                                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400/60 dark:placeholder-zinc-500/50 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10 font-bold uppercase"
-                                                            required
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
-                                                            NIK Catin Wanita <span className="text-red-500">*</span>
-                                                        </label>
-                                                        <input
-                                                            type="text"
-                                                            maxLength={16}
-                                                            placeholder="3504145507990002"
-                                                            value={data.extra_data?.bride_nik || ''}
-                                                            onChange={(e) => handleExtraDataChange('bride_nik', e.target.value)}
-                                                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400/60 dark:placeholder-zinc-500/50 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10 font-mono"
-                                                            required
-                                                        />
-                                                    </div>
-                                                </div>
-
-                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                                    <div>
-                                                        <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
-                                                            Tempat & Tanggal Lahir Catin Wanita <span className="text-red-500">*</span>
-                                                        </label>
-                                                        <input
-                                                            type="text"
-                                                            placeholder="Contoh: Lamongan, 15-07-1999"
-                                                            value={data.extra_data?.bride_birth_place_date || ''}
-                                                            onChange={(e) => handleExtraDataChange('bride_birth_place_date', e.target.value)}
-                                                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400/60 dark:placeholder-zinc-500/50 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10"
-                                                            required
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
-                                                            Agama Catin Wanita
-                                                        </label>
-                                                        <select
-                                                            value={data.extra_data?.bride_religion || 'Islam'}
-                                                            onChange={(e) => handleExtraDataChange('bride_religion', e.target.value)}
-                                                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10"
-                                                        >
-                                                            <option value="Islam">Islam</option>
-                                                            <option value="Kristen">Kristen</option>
-                                                            <option value="Katolik">Katolik</option>
-                                                            <option value="Hindu">Hindu</option>
-                                                            <option value="Buddha">Buddha</option>
-                                                            <option value="Konghucu">Konghucu</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-
-                                                <div>
-                                                    <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
-                                                        Alamat Lengkap Catin Wanita <span className="text-red-500">*</span>
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        placeholder="Contoh: Dsn. Sumberjo RT 003 RW 002 Desa Sumberjo Kec. Sanankulon Kab. Blitar"
-                                                        value={data.extra_data?.bride_address || ''}
-                                                        onChange={(e) => handleExtraDataChange('bride_address', e.target.value)}
-                                                        className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400/60 dark:placeholder-zinc-500/50 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10"
-                                                        required
-                                                    />
-                                                </div>
-                                            </div>
-
-                                            {/* SUBSECTION: DATA CALON MEMPELAI PRIA */}
-                                            <div className="space-y-4 pt-4 border-t border-zinc-200 dark:border-zinc-800">
-                                                <div className="flex items-center gap-2">
-                                                    <User className="h-4 w-4 text-red-600 dark:text-amber-400" />
-                                                    <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-300">
-                                                        Data Calon Mempelai Pria (Calon Suami)
-                                                    </h3>
-                                                </div>
-
-                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                                    <div>
-                                                        <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
-                                                            Nama Lengkap Catin Pria <span className="text-red-500">*</span>
-                                                        </label>
-                                                        <input
-                                                            type="text"
-                                                            placeholder="Contoh: FAUZI INDRA WIYANTO"
-                                                            value={data.extra_data?.groom_name || ''}
-                                                            onChange={(e) => handleExtraDataChange('groom_name', e.target.value)}
-                                                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400/60 dark:placeholder-zinc-500/50 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10 font-bold uppercase"
-                                                            required
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
-                                                            NIK Catin Pria <span className="text-red-500">*</span>
-                                                        </label>
-                                                        <input
-                                                            type="text"
-                                                            maxLength={16}
-                                                            placeholder="3505071402930003"
-                                                            value={data.extra_data?.groom_nik || ''}
-                                                            onChange={(e) => handleExtraDataChange('groom_nik', e.target.value)}
-                                                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400/60 dark:placeholder-zinc-500/50 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10 font-mono"
-                                                            required
-                                                        />
-                                                    </div>
-                                                </div>
-
-                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                                    <div>
-                                                        <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
-                                                            Tempat & Tanggal Lahir Catin Pria <span className="text-red-500">*</span>
-                                                        </label>
-                                                        <input
-                                                            type="text"
-                                                            placeholder="Contoh: Blitar, 14-02-1993"
-                                                            value={data.extra_data?.groom_birth_place_date || ''}
-                                                            onChange={(e) => handleExtraDataChange('groom_birth_place_date', e.target.value)}
-                                                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400/60 dark:placeholder-zinc-500/50 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10"
-                                                            required
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
-                                                            Agama Catin Pria
-                                                        </label>
-                                                        <select
-                                                            value={data.extra_data?.groom_religion || 'Islam'}
-                                                            onChange={(e) => handleExtraDataChange('groom_religion', e.target.value)}
-                                                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10"
-                                                        >
-                                                            <option value="Islam">Islam</option>
-                                                            <option value="Kristen">Kristen</option>
-                                                            <option value="Katolik">Katolik</option>
-                                                            <option value="Hindu">Hindu</option>
-                                                            <option value="Buddha">Buddha</option>
-                                                            <option value="Konghucu">Konghucu</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-
-                                                <div>
-                                                    <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
-                                                        Alamat Lengkap Catin Pria <span className="text-red-500">*</span>
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        placeholder="Contoh: Dsn. Sumberjo RT 003 RW 002 Desa Sumberjo Kec. Sanankulon Kab. Blitar"
-                                                        value={data.extra_data?.groom_address || ''}
-                                                        onChange={(e) => handleExtraDataChange('groom_address', e.target.value)}
-                                                        className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400/60 dark:placeholder-zinc-500/50 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10"
-                                                        required
-                                                    />
-                                                </div>
-                                            </div>
-                                        </>
-                                    )}
-
-                                    {/* KHUSUS SURAT KETERANGAN KEMATIAN: RINCIAN KEMATIAN */}
-                                    {isKematian && (
-                                        <div className="space-y-4 pt-4 border-t border-zinc-200/80 dark:border-zinc-800">
-                                            <div className="flex items-center gap-2">
-                                                <Calendar className="h-4 w-4 text-red-600 dark:text-amber-400" />
-                                                <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-300">
-                                                    Rincian Waktu & Tempat Meninggal Dunia
-                                                </h3>
-                                            </div>
-
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                 <div>
-                                                    <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
-                                                        Tanggal Meninggal Dunia <span className="text-red-500">*</span> <span className="text-xs font-normal text-zinc-400 dark:text-zinc-500">(Tahun, Bulan, Tgl)</span>
+                                                    <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                                                        Tempat Lahir
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Contoh: Lamongan"
+                                                        value={data.birth_place}
+                                                        onChange={(e) => setData('birth_place', e.target.value)}
+                                                        className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20"
+                                                    />
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                                                        Tanggal Lahir <span className="text-xs font-normal text-zinc-400 dark:text-zinc-500">(Tahun, Bulan, Tgl)</span>
                                                     </label>
                                                     <div className="grid grid-cols-3 gap-2">
                                                         {/* 1. Pilih Tahun Dulu */}
                                                         <div className="relative">
                                                             <select
-                                                                value={deathYear}
-                                                                onChange={(e) => handleDeathDateChange('year', e.target.value)}
-                                                                className="w-full appearance-none rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-2 sm:px-2.5 py-2.5 pr-6 sm:pr-7 text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10 cursor-pointer"
-                                                                required
+                                                                value={birthYear}
+                                                                onChange={(e) => handleBirthDateChange('year', e.target.value)}
+                                                                className="w-full appearance-none rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-2 sm:px-2.5 py-2.5 pr-6 sm:pr-7 text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20 cursor-pointer"
                                                             >
                                                                 <option value="" className="text-zinc-400 dark:text-zinc-500">Tahun</option>
                                                                 {yearsList.map((y) => (
@@ -1252,10 +655,9 @@ export default function Form({ service = {}, services = [] }) {
                                                         {/* 2. Pilih Bulan */}
                                                         <div className="relative">
                                                             <select
-                                                                value={deathMonth}
-                                                                onChange={(e) => handleDeathDateChange('month', e.target.value)}
-                                                                className="w-full appearance-none rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-2 sm:px-2.5 py-2.5 pr-6 sm:pr-7 text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10 cursor-pointer"
-                                                                required
+                                                                value={birthMonth}
+                                                                onChange={(e) => handleBirthDateChange('month', e.target.value)}
+                                                                className="w-full appearance-none rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-2 sm:px-2.5 py-2.5 pr-6 sm:pr-7 text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20 cursor-pointer"
                                                             >
                                                                 <option value="" className="text-zinc-400 dark:text-zinc-500">Bulan</option>
                                                                 {monthsList.map((m) => (
@@ -1272,13 +674,12 @@ export default function Form({ service = {}, services = [] }) {
                                                         {/* 3. Baru Pilih Tanggal */}
                                                         <div className="relative">
                                                             <select
-                                                                value={deathDay}
-                                                                onChange={(e) => handleDeathDateChange('day', e.target.value)}
-                                                                className="w-full appearance-none rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-2 sm:px-2.5 py-2.5 pr-6 sm:pr-7 text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10 cursor-pointer"
-                                                                required
+                                                                value={birthDay}
+                                                                onChange={(e) => handleBirthDateChange('day', e.target.value)}
+                                                                className="w-full appearance-none rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-2 sm:px-2.5 py-2.5 pr-6 sm:pr-7 text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20 cursor-pointer"
                                                             >
                                                                 <option value="" className="text-zinc-400 dark:text-zinc-500">Tgl</option>
-                                                                {deathDaysList.map((d) => (
+                                                                {daysList.map((d) => (
                                                                     <option key={d} value={d} className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">
                                                                         {d}
                                                                     </option>
@@ -1289,326 +690,1038 @@ export default function Form({ service = {}, services = [] }) {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    {data.extra_data?.death_date && (
-                                                        <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-                                                            Terpilih: <strong className="text-zinc-800 dark:text-zinc-200">{data.extra_data.death_date}</strong>
-                                                        </p>
+                                                    {errors.birth_date && (
+                                                        <p className="text-xs text-red-500 mt-1">{errors.birth_date}</p>
                                                     )}
+                                                </div>
+                                            </div>
+
+                                            {/* Jenis Kelamin & Agama */}
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                <div>
+                                                    <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                                                        Jenis Kelamin
+                                                    </label>
+                                                    <div className="relative">
+                                                        <select
+                                                            value={data.gender}
+                                                            onChange={(e) => setData('gender', e.target.value)}
+                                                            className="w-full appearance-none rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 pr-10 text-sm text-zinc-900 dark:text-zinc-100 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20 cursor-pointer"
+                                                            required
+                                                        >
+                                                            <option value="" className="text-zinc-400 dark:text-zinc-500">-- Pilih Jenis Kelamin --</option>
+                                                            <option value="Laki-laki" className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">Laki-laki</option>
+                                                            <option value="Perempuan" className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">Perempuan</option>
+                                                        </select>
+                                                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-zinc-400 dark:text-zinc-500">
+                                                            <ChevronDown className="h-4 w-4" />
+                                                        </div>
+                                                    </div>
                                                 </div>
 
                                                 <div>
-                                                    <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
-                                                        Sebab Kematian <span className="text-red-500">*</span>
+                                                    <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                                                        Agama
                                                     </label>
-                                                    <input
-                                                        type="text"
-                                                        placeholder="Contoh: Karena Sakit / Usia Lanjut"
-                                                        value={data.extra_data?.death_cause || 'Karena Sakit'}
-                                                        onChange={(e) => handleExtraDataChange('death_cause', e.target.value)}
-                                                        className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400/60 dark:placeholder-zinc-500/50 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10"
-                                                        required
-                                                    />
-                                                    <div className="flex flex-wrap gap-1.5 mt-2">
-                                                        {['Karena Sakit', 'Usia Lanjut', 'Sakit Menahun', 'Kecelakaan Lalu Lintas', 'Mendadak'].map((cause, idx) => (
-                                                            <button
-                                                                key={idx}
-                                                                type="button"
-                                                                onClick={() => handleExtraDataChange('death_cause', cause)}
-                                                                className="text-[11px] py-0.5 px-2 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:bg-red-50 hover:border-red-300 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-300 transition cursor-pointer font-medium"
-                                                            >
-                                                                + {cause}
-                                                            </button>
-                                                        ))}
+                                                    <div className="relative">
+                                                        <select
+                                                            value={data.religion}
+                                                            onChange={(e) => setData('religion', e.target.value)}
+                                                            className="w-full appearance-none rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 pr-10 text-sm text-zinc-900 dark:text-zinc-100 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20 cursor-pointer"
+                                                            required
+                                                        >
+                                                            <option value="" className="text-zinc-400 dark:text-zinc-500">-- Pilih Agama --</option>
+                                                            <option value="Islam" className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">Islam</option>
+                                                            <option value="Kristen" className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">Kristen</option>
+                                                            <option value="Katolik" className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">Katolik</option>
+                                                            <option value="Hindu" className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">Hindu</option>
+                                                            <option value="Buddha" className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">Buddha</option>
+                                                            <option value="Konghucu" className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">Konghucu</option>
+                                                        </select>
+                                                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-zinc-400 dark:text-zinc-500">
+                                                            <ChevronDown className="h-4 w-4" />
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            <div>
-                                                <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
-                                                    Tempat Kematian & Pemakaman <span className="text-red-500">*</span>
+                                            {/* Pekerjaan */}
+                                            {!isKematian && (
+                                                <div ref={occupationRef} className="relative">
+                                                    <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                                                        Pekerjaan <span className="text-red-500 dark:text-amber-400">*</span>
+                                                    </label>
+                                                    
+                                                    {/* Custom Trigger Button */}
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setIsOccupationOpen((prev) => !prev)}
+                                                        className={`w-full flex items-center justify-between rounded-lg border bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 text-sm text-left transition focus:outline-none focus:ring-2 cursor-pointer ${
+                                                            isOccupationOpen
+                                                                ? 'border-red-500 ring-2 ring-red-500/20 dark:border-amber-400 dark:ring-amber-400/20 bg-white dark:bg-zinc-900'
+                                                                : 'border-zinc-300 dark:border-zinc-700/90 hover:border-zinc-400 dark:hover:border-zinc-600'
+                                                        }`}
+                                                    >
+                                                        <span className={data.occupation ? "text-zinc-900 dark:text-zinc-100 font-medium truncate" : "text-zinc-400 dark:text-zinc-500 truncate"}>
+                                                            {selectedOccupation === 'Lainnya'
+                                                                ? (customOccupation.trim() ? `${customOccupation} (Lainnya)` : 'Lainnya (Ketik Manual)')
+                                                                : (selectedOccupation || '-- Pilih Pekerjaan Sesuai KTP --')}
+                                                        </span>
+                                                        <ChevronDown className={`h-4 w-4 text-zinc-400 dark:text-zinc-500 transition-transform duration-200 shrink-0 ml-2 ${isOccupationOpen ? 'rotate-180 text-red-500 dark:text-amber-400' : ''}`} />
+                                                    </button>
+
+                                                    {/* Floating Custom Dropdown Popover */}
+                                                    {isOccupationOpen && (
+                                                        <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-50 rounded-lg border border-zinc-200 dark:border-zinc-700/80 bg-white dark:bg-zinc-900 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+                                                            {/* Quick Filter Search inside dropdown */}
+                                                            <div className="p-2.5 border-b border-zinc-100 dark:border-zinc-800 bg-zinc-50/70 dark:bg-zinc-950/50">
+                                                                <div className="relative">
+                                                                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400 dark:text-zinc-500" />
+                                                                    <input
+                                                                        type="text"
+                                                                        placeholder="Ketik untuk mencari pekerjaan..."
+                                                                        value={occupationSearch}
+                                                                        onChange={(e) => setOccupationSearch(e.target.value)}
+                                                                        className="w-full rounded-md bg-white dark:bg-zinc-900 pl-8 pr-3 py-1.5 text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 border border-zinc-200 dark:border-zinc-700 focus:outline-none focus:border-red-500 dark:focus:border-amber-400 focus:ring-2 focus:ring-red-500/15 dark:focus:ring-amber-400/15"
+                                                                        onClick={(e) => e.stopPropagation()}
+                                                                        autoFocus
+                                                                    />
+                                                                </div>
+                                                            </div>
+
+                                                            {/* Scrollable list */}
+                                                            <div className="max-h-56 overflow-y-auto p-1.5 space-y-0.5 divide-y divide-transparent">
+                                                                {filteredOccupations.map((job) => {
+                                                                    const isSelected = selectedOccupation === job;
+                                                                    return (
+                                                                        <button
+                                                                            key={job}
+                                                                            type="button"
+                                                                            onClick={() => handleSelectJob(job)}
+                                                                            className={`w-full flex items-center justify-between px-3 py-2 text-xs rounded-lg transition text-left cursor-pointer ${
+                                                                                isSelected
+                                                                                    ? 'bg-red-50 text-red-700 font-semibold dark:bg-amber-400/15 dark:text-amber-300'
+                                                                                    : 'text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800/80'
+                                                                            }`}
+                                                                        >
+                                                                            <span className="truncate">{job}</span>
+                                                                            {isSelected && (
+                                                                                <Check className="h-3.5 w-3.5 text-red-600 dark:text-amber-400 shrink-0 ml-2" />
+                                                                            )}
+                                                                        </button>
+                                                                    );
+                                                                })}
+
+                                                                {filteredOccupations.length === 0 && (
+                                                                    <div className="px-3 py-4 text-center text-xs text-zinc-400 dark:text-zinc-500">
+                                                                        Tidak ditemukan "{occupationSearch}" di daftar e-KTP.
+                                                                    </div>
+                                                                )}
+
+                                                                {/* Option Lainnya (Ketik Manual) */}
+                                                                <div className="pt-1 mt-1 border-t border-zinc-100 dark:border-zinc-800">
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => handleSelectJob('Lainnya')}
+                                                                        className={`w-full flex items-center justify-between px-3 py-2 text-xs rounded-lg transition text-left cursor-pointer font-medium ${
+                                                                            selectedOccupation === 'Lainnya'
+                                                                                ? 'bg-red-100/80 text-red-800 font-semibold dark:bg-amber-400/20 dark:text-amber-200'
+                                                                                : 'text-red-600 dark:text-amber-400 hover:bg-red-50 dark:hover:bg-amber-400/10'
+                                                                        }`}
+                                                                    >
+                                                                        <span className="flex items-center gap-1.5">
+                                                                            <Sparkles className="h-3.5 w-3.5" />
+                                                                            <span>Lainnya (Ketik Manual Sendiri)</span>
+                                                                        </span>
+                                                                        {selectedOccupation === 'Lainnya' && (
+                                                                            <Check className="h-3.5 w-3.5 text-red-600 dark:text-amber-400 shrink-0 ml-2" />
+                                                                        )}
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    {/* Input manual jika memilih Lainnya */}
+                                                    {selectedOccupation === 'Lainnya' && (
+                                                        <div className="animate-in fade-in slide-in-from-top-1 duration-200 mt-2">
+                                                            <input
+                                                                type="text"
+                                                                placeholder="Ketik pekerjaan sesuai yang tertera di KTP..."
+                                                                value={customOccupation}
+                                                                onChange={handleCustomOccupationChange}
+                                                                className="w-full rounded-lg border border-red-300 dark:border-amber-500/50 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:border-amber-400 dark:focus:ring-amber-400/20"
+                                                                required
+                                                                autoFocus
+                                                            />
+                                                            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1">
+                                                                Silakan tuliskan jenis pekerjaan Anda yang tertera di KTP.
+                                                            </p>
+                                                        </div>
+                                                    )}
+
+                                                    {errors.occupation && (
+                                                        <p className="text-xs text-red-500 mt-1">{errors.occupation}</p>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </>
+                                    )}
+
+                                    {/* Alamat Pemohon (RT & RW Terpisah, Tanpa Dusun, Sisa Alamat Bisa Diedit) */}
+                                    <div className="space-y-2">
+                                        <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300">
+                                            {isKuasa ? 'Alamat Lengkap Pemberi Kuasa' : (isKematian ? 'Alamat Terakhir Almarhum / Almarhumah' : 'Alamat Tempat Tinggal')} <span className="text-red-500 dark:text-amber-400">*</span>
+                                        </label>
+                                        <div className="grid grid-cols-2 sm:grid-cols-12 gap-3">
+                                            {/* RT */}
+                                            <div className="col-span-1 sm:col-span-2">
+                                                <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
+                                                    RT <span className="text-red-500 dark:text-amber-400">*</span>
                                                 </label>
                                                 <input
                                                     type="text"
-                                                    placeholder="Contoh: Di rumah dan di semayamkan di Desa Karangwungu"
-                                                    value={data.extra_data?.death_place || 'Di rumah dan di semayamkan di Desa Karangwungu'}
-                                                    onChange={(e) => handleExtraDataChange('death_place', e.target.value)}
-                                                    className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400/60 dark:placeholder-zinc-500/50 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10"
+                                                    maxLength={3}
+                                                    placeholder="003"
+                                                    value={addressRt}
+                                                    onChange={(e) => handleRtChange(e.target.value)}
+                                                    className="w-full text-center rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3 py-2.5 text-sm font-mono font-medium text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20"
+                                                    required
+                                                />
+                                            </div>
+
+                                            {/* RW */}
+                                            <div className="col-span-1 sm:col-span-2">
+                                                <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
+                                                    RW <span className="text-red-500 dark:text-amber-400">*</span>
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    maxLength={3}
+                                                    placeholder="001"
+                                                    value={addressRw}
+                                                    onChange={(e) => handleRwChange(e.target.value)}
+                                                    className="w-full text-center rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3 py-2.5 text-sm font-mono font-medium text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20"
+                                                    required
+                                                />
+                                            </div>
+
+                                            {/* Desa / Kecamatan / Kabupaten */}
+                                            <div className="col-span-2 sm:col-span-8">
+                                                <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
+                                                    Desa, Kecamatan & Kabupaten <span className="text-[11px] text-zinc-400 dark:text-zinc-500 font-normal">(Bisa diedit jika perlu)</span>
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    placeholder="Desa Karangwungu Kecamatan Karanggeneng Kabupaten Lamongan"
+                                                    value={addressRest}
+                                                    onChange={(e) => handleAddressRestChange(e.target.value)}
+                                                    className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20"
                                                     required
                                                 />
                                             </div>
                                         </div>
+                                        {errors.citizen_address && (
+                                            <p className="text-xs text-red-500 mt-1">{errors.citizen_address}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Khusus Surat Wali Nikah: Status Perkawinan & Hubungan dengan Catin */}
+                                    {isWaliNikah && (
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                                            <div>
+                                                <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                                                    Status Perkawinan Wali <span className="text-red-500 dark:text-amber-400">*</span>
+                                                </label>
+                                                <select
+                                                    value={data.extra_data?.marital_status || 'Kawin'}
+                                                    onChange={(e) => handleExtraDataChange('marital_status', e.target.value)}
+                                                    className="w-full appearance-none rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20"
+                                                >
+                                                    <option value="Kawin">Kawin</option>
+                                                    <option value="Belum Kawin">Belum Kawin</option>
+                                                    <option value="Cerai Hidup">Cerai Hidup</option>
+                                                    <option value="Cerai Mati">Cerai Mati</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                                                    Hubungan Dengan Calon Pengantin <span className="text-red-500 dark:text-amber-400">*</span>
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    placeholder="Contoh: Saudara Kandung / Ayah Kandung / Paman"
+                                                    value={data.extra_data?.catin_relation || ''}
+                                                    onChange={(e) => handleExtraDataChange('catin_relation', e.target.value)}
+                                                    className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20"
+                                                    required
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </section>
+
+                                    {/* KHUSUS SURAT KUASA: FORM DATA PIHAK KEDUA (PENERIMA KUASA) */}
+                                    {isKuasa && (
+                                        <section className="rounded-lg bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 p-5 sm:p-6 shadow-xs space-y-5">
+                                            <div className="flex items-center justify-between pb-3.5 border-b border-zinc-100 dark:border-zinc-800/80">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="h-9 w-9 rounded-lg bg-red-600/10 dark:bg-amber-400/10 border border-red-600/20 dark:border-amber-400/30 text-red-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                                                        <Users className="h-4.5 w-4.5" />
+                                                    </div>
+                                                    <div>
+                                                        <span className="text-[10px] font-bold text-red-600 dark:text-amber-400 tracking-wider uppercase block">
+                                                            Bagian 2 &middot; Pihak Penerima Kuasa
+                                                        </span>
+                                                        <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-white leading-tight">
+                                                            Data Pihak Kedua (Penerima Kuasa)
+                                                        </h2>
+                                                    </div>
+                                                </div>
+                                                <span className="hidden sm:inline-flex text-[11px] font-medium text-zinc-400 dark:text-zinc-500 bg-zinc-100 dark:bg-zinc-800/60 px-2.5 py-1 rounded-md">
+                                                    Wajib Sesuai KTP
+                                                </span>
+                                            </div>
+
+                                            <div className="space-y-4">
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                                                            Nama Lengkap Penerima Kuasa <span className="text-red-500 dark:text-amber-400">*</span>
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Contoh: AINUN NAJIB"
+                                                            value={data.extra_data?.grantee_name || ''}
+                                                            onChange={(e) => handleExtraDataChange('grantee_name', e.target.value)}
+                                                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20 font-bold uppercase"
+                                                            required
+                                                        />
+                                                    </div>
+
+                                                    <div>
+                                                        <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                                                            NIK Penerima Kuasa (16 Digit) <span className="text-red-500 dark:text-amber-400">*</span>
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            maxLength={16}
+                                                            placeholder="Contoh: 6402132707970007"
+                                                            value={data.extra_data?.grantee_nik || ''}
+                                                            onChange={(e) => handleExtraDataChange('grantee_nik', e.target.value.replace(/[^0-9]/g, ''))}
+                                                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 text-sm font-mono text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20"
+                                                            required
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                {/* Alamat Penerima Kuasa */}
+                                                <div className="space-y-2">
+                                                    <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300">
+                                                        Alamat Lengkap Penerima Kuasa <span className="text-red-500 dark:text-amber-400">*</span>
+                                                    </label>
+                                                    <div className="grid grid-cols-2 sm:grid-cols-12 gap-3">
+                                                        {/* RT */}
+                                                        <div className="col-span-1 sm:col-span-2">
+                                                            <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
+                                                                RT <span className="text-red-500 dark:text-amber-400">*</span>
+                                                            </label>
+                                                            <input
+                                                                type="text"
+                                                                maxLength={3}
+                                                                placeholder="007"
+                                                                value={granteeRt}
+                                                                onChange={(e) => handleGranteeRtChange(e.target.value)}
+                                                                className="w-full text-center rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3 py-2.5 text-sm font-mono font-medium text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20"
+                                                            />
+                                                        </div>
+
+                                                        {/* RW */}
+                                                        <div className="col-span-1 sm:col-span-2">
+                                                            <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
+                                                                RW <span className="text-red-500 dark:text-amber-400">*</span>
+                                                            </label>
+                                                            <input
+                                                                type="text"
+                                                                maxLength={3}
+                                                                placeholder="001"
+                                                                value={granteeRw}
+                                                                onChange={(e) => handleGranteeRwChange(e.target.value)}
+                                                                className="w-full text-center rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3 py-2.5 text-sm font-mono font-medium text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20"
+                                                            />
+                                                        </div>
+
+                                                        {/* Desa / Kecamatan / Kabupaten */}
+                                                        <div className="col-span-2 sm:col-span-8">
+                                                            <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">
+                                                                Desa, Kecamatan & Kabupaten <span className="text-[11px] text-zinc-400 dark:text-zinc-500 font-normal">(Bisa diedit jika di luar Karangwungu)</span>
+                                                            </label>
+                                                            <input
+                                                                type="text"
+                                                                placeholder="Desa Karangwungu Kecamatan Karanggeneng, Kabupaten Lamongan"
+                                                                value={granteeRest}
+                                                                onChange={(e) => handleGranteeRestChange(e.target.value)}
+                                                                className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20"
+                                                                required
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </section>
+                                    )}
+
+                                    {/* KHUSUS WALI NIKAH: FORM DATA CALON PENGANTIN */}
+                                    {isWaliNikah && (
+                                        <section className="rounded-lg bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 p-5 sm:p-6 shadow-xs space-y-6">
+                                            <div className="flex items-center justify-between pb-3.5 border-b border-zinc-100 dark:border-zinc-800/80">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="h-9 w-9 rounded-lg bg-red-600/10 dark:bg-amber-400/10 border border-red-600/20 dark:border-amber-400/30 text-red-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                                                        <HeartHandshake className="h-4.5 w-4.5" />
+                                                    </div>
+                                                    <div>
+                                                        <span className="text-[10px] font-bold text-red-600 dark:text-amber-400 tracking-wider uppercase block">
+                                                            Bagian 2 &middot; Calon Pengantin
+                                                        </span>
+                                                        <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-white leading-tight">
+                                                            Data Calon Pengantin (Wanita & Pria)
+                                                        </h2>
+                                                    </div>
+                                                </div>
+                                                <span className="hidden sm:inline-flex text-[11px] font-medium text-zinc-400 dark:text-zinc-500 bg-zinc-100 dark:bg-zinc-800/60 px-2.5 py-1 rounded-md">
+                                                    Data Perkawinan
+                                                </span>
+                                            </div>
+
+                                            {/* SUBSECTION: DATA CALON PENGANTIN WANITA */}
+                                            <div className="space-y-4">
+                                                <div className="flex items-center gap-2 pb-1 border-b border-zinc-100 dark:border-zinc-800">
+                                                    <User className="h-4 w-4 text-red-600 dark:text-amber-400" />
+                                                    <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
+                                                        Data Calon Pengantin Wanita (Yang Dinikahkan)
+                                                    </h3>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                                                            Nama Lengkap Catin Wanita <span className="text-red-500 dark:text-amber-400">*</span>
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Contoh: DITA YULI WULANDARI"
+                                                            value={data.extra_data?.bride_name || ''}
+                                                            onChange={(e) => handleExtraDataChange('bride_name', e.target.value)}
+                                                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20 font-bold uppercase"
+                                                            required
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                                                            NIK Catin Wanita <span className="text-red-500 dark:text-amber-400">*</span>
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            maxLength={16}
+                                                            placeholder="3504145507990002"
+                                                            value={data.extra_data?.bride_nik || ''}
+                                                            onChange={(e) => handleExtraDataChange('bride_nik', e.target.value)}
+                                                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20 font-mono"
+                                                            required
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                                                            Tempat & Tanggal Lahir Catin Wanita <span className="text-red-500 dark:text-amber-400">*</span>
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Contoh: Lamongan, 15-07-1999"
+                                                            value={data.extra_data?.bride_birth_place_date || ''}
+                                                            onChange={(e) => handleExtraDataChange('bride_birth_place_date', e.target.value)}
+                                                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20"
+                                                            required
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                                                            Agama Catin Wanita
+                                                        </label>
+                                                        <select
+                                                            value={data.extra_data?.bride_religion || 'Islam'}
+                                                            onChange={(e) => handleExtraDataChange('bride_religion', e.target.value)}
+                                                            className="w-full appearance-none rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20"
+                                                        >
+                                                            <option value="Islam">Islam</option>
+                                                            <option value="Kristen">Kristen</option>
+                                                            <option value="Katolik">Katolik</option>
+                                                            <option value="Hindu">Hindu</option>
+                                                            <option value="Buddha">Buddha</option>
+                                                            <option value="Konghucu">Konghucu</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                                                        Alamat Lengkap Catin Wanita <span className="text-red-500 dark:text-amber-400">*</span>
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Contoh: Dsn. Sumberjo RT 003 RW 002 Desa Sumberjo Kec. Sanankulon Kab. Blitar"
+                                                        value={data.extra_data?.bride_address || ''}
+                                                        onChange={(e) => handleExtraDataChange('bride_address', e.target.value)}
+                                                        className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20"
+                                                        required
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            {/* SUBSECTION: DATA CALON MEMPELAI PRIA */}
+                                            <div className="space-y-4 pt-4 border-t border-zinc-200 dark:border-zinc-800">
+                                                <div className="flex items-center gap-2 pb-1 border-b border-zinc-100 dark:border-zinc-800">
+                                                    <User className="h-4 w-4 text-red-600 dark:text-amber-400" />
+                                                    <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
+                                                        Data Calon Mempelai Pria (Calon Suami)
+                                                    </h3>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                                                            Nama Lengkap Catin Pria <span className="text-red-500 dark:text-amber-400">*</span>
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Contoh: FAUZI INDRA WIYANTO"
+                                                            value={data.extra_data?.groom_name || ''}
+                                                            onChange={(e) => handleExtraDataChange('groom_name', e.target.value)}
+                                                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20 font-bold uppercase"
+                                                            required
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                                                            NIK Catin Pria <span className="text-red-500 dark:text-amber-400">*</span>
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            maxLength={16}
+                                                            placeholder="3505071402930003"
+                                                            value={data.extra_data?.groom_nik || ''}
+                                                            onChange={(e) => handleExtraDataChange('groom_nik', e.target.value)}
+                                                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20 font-mono"
+                                                            required
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                                                            Tempat & Tanggal Lahir Catin Pria <span className="text-red-500 dark:text-amber-400">*</span>
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Contoh: Blitar, 14-02-1993"
+                                                            value={data.extra_data?.groom_birth_place_date || ''}
+                                                            onChange={(e) => handleExtraDataChange('groom_birth_place_date', e.target.value)}
+                                                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20"
+                                                            required
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                                                            Agama Catin Pria
+                                                        </label>
+                                                        <select
+                                                            value={data.extra_data?.groom_religion || 'Islam'}
+                                                            onChange={(e) => handleExtraDataChange('groom_religion', e.target.value)}
+                                                            className="w-full appearance-none rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20"
+                                                        >
+                                                            <option value="Islam">Islam</option>
+                                                            <option value="Kristen">Kristen</option>
+                                                            <option value="Katolik">Katolik</option>
+                                                            <option value="Hindu">Hindu</option>
+                                                            <option value="Buddha">Buddha</option>
+                                                            <option value="Konghucu">Konghucu</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                                                        Alamat Lengkap Catin Pria <span className="text-red-500 dark:text-amber-400">*</span>
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Contoh: Dsn. Sumberjo RT 003 RW 002 Desa Sumberjo Kec. Sanankulon Kab. Blitar"
+                                                        value={data.extra_data?.groom_address || ''}
+                                                        onChange={(e) => handleExtraDataChange('groom_address', e.target.value)}
+                                                        className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20"
+                                                        required
+                                                    />
+                                                </div>
+                                            </div>
+                                        </section>
+                                    )}
+
+                                    {/* KHUSUS SURAT KETERANGAN KEMATIAN: RINCIAN KEMATIAN */}
+                                    {isKematian && (
+                                        <section className="rounded-lg bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 p-5 sm:p-6 shadow-xs space-y-5">
+                                            <div className="flex items-center justify-between pb-3.5 border-b border-zinc-100 dark:border-zinc-800/80">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="h-9 w-9 rounded-lg bg-red-600/10 dark:bg-amber-400/10 border border-red-600/20 dark:border-amber-400/30 text-red-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                                                        <Calendar className="h-4.5 w-4.5" />
+                                                    </div>
+                                                    <div>
+                                                        <span className="text-[10px] font-bold text-red-600 dark:text-amber-400 tracking-wider uppercase block">
+                                                            Bagian 2 &middot; Data Kematian
+                                                        </span>
+                                                        <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-white leading-tight">
+                                                            Rincian Waktu & Sebab Meninggal Dunia
+                                                        </h2>
+                                                    </div>
+                                                </div>
+                                                <span className="hidden sm:inline-flex text-[11px] font-medium text-zinc-400 dark:text-zinc-500 bg-zinc-100 dark:bg-zinc-800/60 px-2.5 py-1 rounded-md">
+                                                    Wajib Dilengkapi
+                                                </span>
+                                            </div>
+
+                                            <div className="space-y-4">
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                                                            Tanggal Meninggal Dunia <span className="text-red-500 dark:text-amber-400">*</span> <span className="text-xs font-normal text-zinc-400 dark:text-zinc-500">(Tahun, Bulan, Tgl)</span>
+                                                        </label>
+                                                        <div className="grid grid-cols-3 gap-2">
+                                                            {/* 1. Pilih Tahun Dulu */}
+                                                            <div className="relative">
+                                                                <select
+                                                                    value={deathYear}
+                                                                    onChange={(e) => handleDeathDateChange('year', e.target.value)}
+                                                                    className="w-full appearance-none rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-2 sm:px-2.5 py-2.5 pr-6 sm:pr-7 text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20 cursor-pointer"
+                                                                    required
+                                                                >
+                                                                    <option value="" className="text-zinc-400 dark:text-zinc-500">Tahun</option>
+                                                                    {yearsList.map((y) => (
+                                                                        <option key={y} value={y} className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">
+                                                                            {y}
+                                                                        </option>
+                                                                    ))}
+                                                                </select>
+                                                                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-1.5 sm:pr-2 text-zinc-400 dark:text-zinc-500">
+                                                                    <ChevronDown className="h-3.5 w-3.5" />
+                                                                </div>
+                                                            </div>
+
+                                                            {/* 2. Pilih Bulan */}
+                                                            <div className="relative">
+                                                                <select
+                                                                    value={deathMonth}
+                                                                    onChange={(e) => handleDeathDateChange('month', e.target.value)}
+                                                                    className="w-full appearance-none rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-2 sm:px-2.5 py-2.5 pr-6 sm:pr-7 text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20 cursor-pointer"
+                                                                    required
+                                                                >
+                                                                    <option value="" className="text-zinc-400 dark:text-zinc-500">Bulan</option>
+                                                                    {monthsList.map((m) => (
+                                                                        <option key={m.value} value={m.value} className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">
+                                                                            {m.label}
+                                                                        </option>
+                                                                    ))}
+                                                                </select>
+                                                                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-1.5 sm:pr-2 text-zinc-400 dark:text-zinc-500">
+                                                                    <ChevronDown className="h-3.5 w-3.5" />
+                                                                </div>
+                                                            </div>
+
+                                                            {/* 3. Baru Pilih Tanggal */}
+                                                            <div className="relative">
+                                                                <select
+                                                                    value={deathDay}
+                                                                    onChange={(e) => handleDeathDateChange('day', e.target.value)}
+                                                                    className="w-full appearance-none rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-2 sm:px-2.5 py-2.5 pr-6 sm:pr-7 text-xs sm:text-sm text-zinc-900 dark:text-zinc-100 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20 cursor-pointer"
+                                                                    required
+                                                                >
+                                                                    <option value="" className="text-zinc-400 dark:text-zinc-500">Tgl</option>
+                                                                    {deathDaysList.map((d) => (
+                                                                        <option key={d} value={d} className="bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100">
+                                                                            {d}
+                                                                        </option>
+                                                                    ))}
+                                                                </select>
+                                                                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-1.5 sm:pr-2 text-zinc-400 dark:text-zinc-500">
+                                                                    <ChevronDown className="h-3.5 w-3.5" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        {data.extra_data?.death_date && (
+                                                            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+                                                                Terpilih: <strong className="text-zinc-800 dark:text-zinc-200">{data.extra_data.death_date}</strong>
+                                                            </p>
+                                                        )}
+                                                    </div>
+
+                                                    <div>
+                                                        <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                                                            Sebab Kematian <span className="text-red-500 dark:text-amber-400">*</span>
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Contoh: Karena Sakit / Usia Lanjut"
+                                                            value={data.extra_data?.death_cause || 'Karena Sakit'}
+                                                            onChange={(e) => handleExtraDataChange('death_cause', e.target.value)}
+                                                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20"
+                                                            required
+                                                        />
+                                                        <div className="flex flex-wrap gap-1.5 mt-2">
+                                                            {['Karena Sakit', 'Usia Lanjut', 'Sakit Menahun', 'Kecelakaan Lalu Lintas', 'Mendadak'].map((cause, idx) => (
+                                                                <button
+                                                                    key={idx}
+                                                                    type="button"
+                                                                    onClick={() => handleExtraDataChange('death_cause', cause)}
+                                                                    className="text-xs py-1 px-2.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 hover:bg-red-50 hover:border-red-300 dark:bg-zinc-800/80 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 transition-all cursor-pointer font-medium flex items-center gap-1"
+                                                                >
+                                                                    <span className="text-red-500 dark:text-amber-400 font-bold">+</span>
+                                                                    <span>{cause}</span>
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                                                        Tempat Kematian & Pemakaman <span className="text-red-500 dark:text-amber-400">*</span>
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Contoh: Di rumah dan di semayamkan di Desa Karangwungu"
+                                                        value={data.extra_data?.death_place || 'Di rumah dan di semayamkan di Desa Karangwungu'}
+                                                        onChange={(e) => handleExtraDataChange('death_place', e.target.value)}
+                                                        className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20"
+                                                        required
+                                                    />
+                                                </div>
+                                            </div>
+                                        </section>
                                     )}
 
                                     {/* KHUSUS SURAT KETERANGAN WALI HAKIM: FORM DATA CALON PRIA & PILIHAN ALASAN WALI HAKIM */}
                                     {isWaliHakim && (
-                                        <div className="space-y-4 pt-4 border-t border-zinc-200/80 dark:border-zinc-800">
-                                            <div className="flex items-center gap-2">
-                                                <User className="h-4 w-4 text-red-600 dark:text-amber-400" />
-                                                <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-300">
-                                                    Data Calon Pengantin Pria (Laki-laki yang Akan Menikahi)
-                                                </h3>
+                                        <section className="rounded-lg bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 p-5 sm:p-6 shadow-xs space-y-5">
+                                            <div className="flex items-center justify-between pb-3.5 border-b border-zinc-100 dark:border-zinc-800/80">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="h-9 w-9 rounded-lg bg-red-600/10 dark:bg-amber-400/10 border border-red-600/20 dark:border-amber-400/30 text-red-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                                                        <Scale className="h-4.5 w-4.5" />
+                                                    </div>
+                                                    <div>
+                                                        <span className="text-[10px] font-bold text-red-600 dark:text-amber-400 tracking-wider uppercase block">
+                                                            Bagian 2 &middot; Calon Suami & Alasan
+                                                        </span>
+                                                        <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-white leading-tight">
+                                                            Data Calon Pengantin Pria & Alasan Wali Hakim
+                                                        </h2>
+                                                    </div>
+                                                </div>
+                                                <span className="hidden sm:inline-flex text-[11px] font-medium text-zinc-400 dark:text-zinc-500 bg-zinc-100 dark:bg-zinc-800/60 px-2.5 py-1 rounded-md">
+                                                    Format KUA Karanggeneng
+                                                </span>
                                             </div>
 
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            <div className="space-y-4">
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                                                            Nama Calon Pengantin Pria <span className="text-red-500 dark:text-amber-400">*</span>
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Contoh: Muchammad Dhaniel Ibrahim Al Thohiri"
+                                                            value={data.extra_data?.groom_name || ''}
+                                                            onChange={(e) => handleExtraDataChange('groom_name', e.target.value)}
+                                                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20 font-bold uppercase"
+                                                            required
+                                                        />
+                                                    </div>
+
+                                                    <div>
+                                                        <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                                                            Nama Ayah Kandung Pria (Bin) <span className="text-red-500 dark:text-amber-400">*</span>
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Contoh: Moch Tohir"
+                                                            value={data.extra_data?.groom_father_name || ''}
+                                                            onChange={(e) => handleExtraDataChange('groom_father_name', e.target.value)}
+                                                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20"
+                                                            required
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                                                            Tempat, Tanggal Lahir / Umur Calon Pria <span className="text-red-500 dark:text-amber-400">*</span>
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Contoh: Gresik, 28 Maret 1998"
+                                                            value={data.extra_data?.groom_birth_place_date || ''}
+                                                            onChange={(e) => handleExtraDataChange('groom_birth_place_date', e.target.value)}
+                                                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20"
+                                                            required
+                                                        />
+                                                    </div>
+
+                                                    <div>
+                                                        <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                                                            Pekerjaan Calon Pria <span className="text-red-500 dark:text-amber-400">*</span>
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Contoh: Karyawan Swasta"
+                                                            value={data.extra_data?.groom_occupation || ''}
+                                                            onChange={(e) => handleExtraDataChange('groom_occupation', e.target.value)}
+                                                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20"
+                                                            required
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                                                            Warga Negara Calon Pria
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            value={data.extra_data?.groom_nationality || 'Indonesia'}
+                                                            onChange={(e) => handleExtraDataChange('groom_nationality', e.target.value)}
+                                                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20"
+                                                        />
+                                                    </div>
+
+                                                    <div>
+                                                        <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                                                            Agama Calon Pria
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            value={data.extra_data?.groom_religion || 'Islam'}
+                                                            onChange={(e) => handleExtraDataChange('groom_religion', e.target.value)}
+                                                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20"
+                                                        />
+                                                    </div>
+                                                </div>
+
                                                 <div>
-                                                    <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
-                                                        Nama Calon Pengantin Pria <span className="text-red-500">*</span>
+                                                    <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                                                        Alamat / Tempat Tinggal Calon Pria <span className="text-red-500 dark:text-amber-400">*</span>
                                                     </label>
                                                     <input
                                                         type="text"
-                                                        placeholder="Contoh: Muchammad Dhaniel Ibrahim Al Thohiri"
-                                                        value={data.extra_data?.groom_name || ''}
-                                                        onChange={(e) => handleExtraDataChange('groom_name', e.target.value)}
-                                                        className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400/60 dark:placeholder-zinc-500/50 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10 font-bold uppercase"
+                                                        placeholder="Contoh: RT 005 RW 003 Indro Kebomas Gresik"
+                                                        value={data.extra_data?.groom_address || ''}
+                                                        onChange={(e) => handleExtraDataChange('groom_address', e.target.value)}
+                                                        className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20"
                                                         required
                                                     />
                                                 </div>
 
-                                                <div>
-                                                    <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
-                                                        Nama Ayah Kandung Pria (Bin) <span className="text-red-500">*</span>
+                                                {/* ALASAN WALI HAKIM (A - F) */}
+                                                <div className="pt-2">
+                                                    <label className="block text-xs sm:text-sm font-bold text-zinc-800 dark:text-zinc-200 mb-2">
+                                                        Pilih Alasan Menggunakan WALI HAKIM <span className="text-red-500 dark:text-amber-400">*</span>
                                                     </label>
-                                                    <input
-                                                        type="text"
-                                                        placeholder="Contoh: Moch Tohir"
-                                                        value={data.extra_data?.groom_father_name || ''}
-                                                        onChange={(e) => handleExtraDataChange('groom_father_name', e.target.value)}
-                                                        className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400/60 dark:placeholder-zinc-500/50 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10"
-                                                        required
-                                                    />
+                                                    <div className="space-y-2">
+                                                        {WALI_HAKIM_REASONS.map((reason) => {
+                                                            const isSelected = (data.extra_data?.reason_code || 'a') === reason.code;
+                                                            return (
+                                                                <div
+                                                                    key={reason.code}
+                                                                    onClick={() => handleExtraDataChange('reason_code', reason.code)}
+                                                                    className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
+                                                                        isSelected
+                                                                            ? 'bg-red-50/80 dark:bg-red-950/40 border-red-400 dark:border-red-700 text-zinc-900 dark:text-zinc-100 font-semibold shadow-xs'
+                                                                            : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800/60 text-zinc-700 dark:text-zinc-300'
+                                                                    }`}
+                                                                >
+                                                                    <input
+                                                                        type="radio"
+                                                                        name="reason_code"
+                                                                        value={reason.code}
+                                                                        checked={isSelected}
+                                                                        onChange={() => handleExtraDataChange('reason_code', reason.code)}
+                                                                        className="mt-0.5 h-4 w-4 text-red-600 focus:ring-red-500 dark:focus:ring-amber-400 border-zinc-300 dark:border-zinc-700"
+                                                                    />
+                                                                    <span className="text-xs sm:text-sm leading-relaxed">{reason.label}</span>
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                    <p className="text-[11px] text-zinc-400 dark:text-zinc-500 mt-2">
+                                                        * Pilihan alasan yang Anda tentukan akan otomatis dilingkari (O) pada format blangko surat resmi KUA Karanggeneng & Kepala Desa.
+                                                    </p>
                                                 </div>
                                             </div>
-
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                                <div>
-                                                    <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
-                                                        Tempat, Tanggal Lahir / Umur Calon Pria <span className="text-red-500">*</span>
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        placeholder="Contoh: Gresik, 28 Maret 1998"
-                                                        value={data.extra_data?.groom_birth_place_date || ''}
-                                                        onChange={(e) => handleExtraDataChange('groom_birth_place_date', e.target.value)}
-                                                        className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400/60 dark:placeholder-zinc-500/50 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10"
-                                                        required
-                                                    />
-                                                </div>
-
-                                                <div>
-                                                    <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
-                                                        Pekerjaan Calon Pria <span className="text-red-500">*</span>
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        placeholder="Contoh: Karyawan Swasta"
-                                                        value={data.extra_data?.groom_occupation || ''}
-                                                        onChange={(e) => handleExtraDataChange('groom_occupation', e.target.value)}
-                                                        className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400/60 dark:placeholder-zinc-500/50 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10"
-                                                        required
-                                                    />
-                                                </div>
-                                            </div>
-
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                                <div>
-                                                    <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
-                                                        Warga Negara Calon Pria
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        value={data.extra_data?.groom_nationality || 'Indonesia'}
-                                                        onChange={(e) => handleExtraDataChange('groom_nationality', e.target.value)}
-                                                        className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10"
-                                                    />
-                                                </div>
-
-                                                <div>
-                                                    <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
-                                                        Agama Calon Pria
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        value={data.extra_data?.groom_religion || 'Islam'}
-                                                        onChange={(e) => handleExtraDataChange('groom_religion', e.target.value)}
-                                                        className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10"
-                                                    />
-                                                </div>
-                                            </div>
-
-                                            <div>
-                                                <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
-                                                    Alamat / Tempat Tinggal Calon Pria <span className="text-red-500">*</span>
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    placeholder="Contoh: RT 005 RW 003 Indro Kebomas Gresik"
-                                                    value={data.extra_data?.groom_address || ''}
-                                                    onChange={(e) => handleExtraDataChange('groom_address', e.target.value)}
-                                                    className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400/60 dark:placeholder-zinc-500/50 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10"
-                                                    required
-                                                />
-                                            </div>
-
-                                            {/* ALASAN WALI HAKIM (A - F) */}
-                                            <div className="pt-2">
-                                                <label className="block text-sm font-bold text-zinc-800 dark:text-zinc-200 mb-2">
-                                                    Pilih Alasan Menggunakan WALI HAKIM <span className="text-red-500">*</span>
-                                                </label>
-                                                <div className="space-y-2">
-                                                    {WALI_HAKIM_REASONS.map((reason) => {
-                                                        const isSelected = (data.extra_data?.reason_code || 'a') === reason.code;
-                                                        return (
-                                                            <div
-                                                                key={reason.code}
-                                                                onClick={() => handleExtraDataChange('reason_code', reason.code)}
-                                                                className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
-                                                                    isSelected
-                                                                        ? 'bg-red-50/80 dark:bg-red-950/40 border-red-400 dark:border-red-700 text-zinc-900 dark:text-zinc-100 font-semibold shadow-xs'
-                                                                        : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-800/60 text-zinc-700 dark:text-zinc-300'
-                                                                }`}
-                                                            >
-                                                                <input
-                                                                    type="radio"
-                                                                    name="reason_code"
-                                                                    value={reason.code}
-                                                                    checked={isSelected}
-                                                                    onChange={() => handleExtraDataChange('reason_code', reason.code)}
-                                                                    className="mt-0.5 h-4 w-4 text-red-600 focus:ring-red-500 dark:focus:ring-amber-400 border-zinc-300 dark:border-zinc-700"
-                                                                />
-                                                                <span className="text-xs sm:text-sm leading-relaxed">{reason.label}</span>
-                                                            </div>
-                                                        );
-                                                    })}
-                                                </div>
-                                                <p className="text-[11px] text-zinc-400 dark:text-zinc-500 mt-2">
-                                                    * Pilihan alasan yang Anda tentukan akan otomatis dilingkari (O) pada format blangko surat resmi KUA Karanggeneng & Kepala Desa.
-                                                </p>
-                                            </div>
-                                        </div>
+                                        </section>
                                     )}
 
                                     {/* KHUSUS SURAT KETERANGAN DOMISILI USAHA: FORM DATA USAHA & DOMISILI */}
                                     {isDomisiliUsaha && (
-                                        <div className="space-y-4 pt-4 border-t border-zinc-200/80 dark:border-zinc-800">
-                                            <div className="flex items-center gap-2">
-                                                <Building2 className="h-4 w-4 text-red-600 dark:text-amber-400" />
-                                                <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-300">
-                                                    Data Usaha & Domisili di Desa Karangwungu
-                                                </h3>
+                                        <section className="rounded-lg bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 p-5 sm:p-6 shadow-xs space-y-5">
+                                            <div className="flex items-center justify-between pb-3.5 border-b border-zinc-100 dark:border-zinc-800/80">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="h-9 w-9 rounded-lg bg-red-600/10 dark:bg-amber-400/10 border border-red-600/20 dark:border-amber-400/30 text-red-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                                                        <Building2 className="h-4.5 w-4.5" />
+                                                    </div>
+                                                    <div>
+                                                        <span className="text-[10px] font-bold text-red-600 dark:text-amber-400 tracking-wider uppercase block">
+                                                            Bagian 2 &middot; Data Tempat Usaha
+                                                        </span>
+                                                        <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-white leading-tight">
+                                                            Data Usaha & Domisili di Desa Karangwungu
+                                                        </h2>
+                                                    </div>
+                                                </div>
+                                                <span className="hidden sm:inline-flex text-[11px] font-medium text-zinc-400 dark:text-zinc-500 bg-zinc-100 dark:bg-zinc-800/60 px-2.5 py-1 rounded-md">
+                                                    Wajib Dilengkapi
+                                                </span>
                                             </div>
 
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            <div className="space-y-4">
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                                                            Nama Usaha / Perusahaan / Badan Usaha <span className="text-red-500 dark:text-amber-400">*</span>
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Contoh: PT LIMAN JAYA GRESIK"
+                                                            value={data.extra_data?.business_name || ''}
+                                                            onChange={(e) => handleExtraDataChange('business_name', e.target.value)}
+                                                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20 font-bold uppercase"
+                                                            required
+                                                        />
+                                                    </div>
+
+                                                    <div>
+                                                        <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                                                            Status Keberadaan Tempat / Kantor Usaha
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Contoh: berpindah Tempat atau Kantor"
+                                                            value={data.extra_data?.business_status_desc || 'berpindah Tempat atau Kantor'}
+                                                            onChange={(e) => handleExtraDataChange('business_status_desc', e.target.value)}
+                                                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20"
+                                                        />
+                                                        <div className="flex flex-wrap gap-1.5 mt-2">
+                                                            {['berpindah Tempat atau Kantor', 'berdomisili dan beroperasi', 'membuka cabang / unit usaha baru'].map((st, idx) => (
+                                                                <button
+                                                                    key={idx}
+                                                                    type="button"
+                                                                    onClick={() => handleExtraDataChange('business_status_desc', st)}
+                                                                    className="text-xs py-1 px-2.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 hover:bg-red-50 hover:border-red-300 dark:bg-zinc-800/80 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 transition-all cursor-pointer font-medium flex items-center gap-1"
+                                                                >
+                                                                    <span className="text-red-500 dark:text-amber-400 font-bold">+</span>
+                                                                    <span>{st}</span>
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
                                                 <div>
-                                                    <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
-                                                        Nama Usaha / Perusahaan / Badan Usaha <span className="text-red-500">*</span>
+                                                    <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                                                        Alamat Tempat / Kantor Usaha di Desa Karangwungu <span className="text-red-500 dark:text-amber-400">*</span>
                                                     </label>
                                                     <input
                                                         type="text"
-                                                        placeholder="Contoh: PT LIMAN JAYA GRESIK"
-                                                        value={data.extra_data?.business_name || ''}
-                                                        onChange={(e) => handleExtraDataChange('business_name', e.target.value)}
-                                                        className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400/60 dark:placeholder-zinc-500/50 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10 font-bold uppercase"
+                                                        placeholder="Contoh: Jalan raya Sumberwudi-Maduran Rt 007 Rw 001 Desa Karangwungu Kec Karanggeneng Kab Lamongan"
+                                                        value={data.extra_data?.business_address || ''}
+                                                        onChange={(e) => handleExtraDataChange('business_address', e.target.value)}
+                                                        className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20"
                                                         required
                                                     />
                                                 </div>
 
-                                                <div>
-                                                    <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
-                                                        Status Keberadaan Tempat / Kantor Usaha
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        placeholder="Contoh: berpindah Tempat atau Kantor"
-                                                        value={data.extra_data?.business_status_desc || 'berpindah Tempat atau Kantor'}
-                                                        onChange={(e) => handleExtraDataChange('business_status_desc', e.target.value)}
-                                                        className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400/60 dark:placeholder-zinc-500/50 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10"
-                                                    />
-                                                    <div className="flex flex-wrap gap-1.5 mt-2">
-                                                        {['berpindah Tempat atau Kantor', 'berdomisili dan beroperasi', 'membuka cabang / unit usaha baru'].map((st, idx) => (
-                                                            <button
-                                                                key={idx}
-                                                                type="button"
-                                                                onClick={() => handleExtraDataChange('business_status_desc', st)}
-                                                                className="text-[11px] py-0.5 px-2 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:bg-red-50 hover:border-red-300 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-300 transition cursor-pointer font-medium"
-                                                            >
-                                                                + {st}
-                                                            </button>
-                                                        ))}
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                                                            Status Tempat Tinggal Pemohon
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Contoh: Tinggal Di Desa Karangwungu Kec Karanggeneng Kab Lamongan"
+                                                            value={data.extra_data?.stay_status || 'Tinggal Di Desa Karangwungu Kec Karanggeneng Kab Lamongan'}
+                                                            onChange={(e) => handleExtraDataChange('stay_status', e.target.value)}
+                                                            className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20"
+                                                        />
+                                                    </div>
+
+                                                    <div>
+                                                        <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                                                            Status Perkawinan Pemohon
+                                                        </label>
+                                                        <select
+                                                            value={data.extra_data?.marital_status || 'Kawin'}
+                                                            onChange={(e) => handleExtraDataChange('marital_status', e.target.value)}
+                                                            className="w-full appearance-none rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20"
+                                                        >
+                                                            <option value="Kawin">Kawin</option>
+                                                            <option value="Belum Kawin">Belum Kawin</option>
+                                                            <option value="Cerai Hidup">Cerai Hidup</option>
+                                                            <option value="Cerai Mati">Cerai Mati</option>
+                                                        </select>
                                                     </div>
                                                 </div>
-                                            </div>
 
-                                            <div>
-                                                <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
-                                                    Alamat Tempat / Kantor Usaha di Desa Karangwungu <span className="text-red-500">*</span>
-                                                </label>
-                                                <input
-                                                    type="text"
-                                                    placeholder="Contoh: Jalan raya Sumberwudi-Maduran Rt 007 Rw 001 Desa Karangwungu Kec Karanggeneng Kab Lamongan"
-                                                    value={data.extra_data?.business_address || ''}
-                                                    onChange={(e) => handleExtraDataChange('business_address', e.target.value)}
-                                                    className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400/60 dark:placeholder-zinc-500/50 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10"
-                                                    required
-                                                />
-                                            </div>
-
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                 <div>
-                                                    <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
-                                                        Status Tempat Tinggal Pemohon
+                                                    <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                                                        Kustomisasi Paragraf Keterangan Domisili Usaha <span className="text-[11px] text-zinc-400 dark:text-zinc-500 font-normal">(Opsional)</span>
                                                     </label>
-                                                    <input
-                                                        type="text"
-                                                        placeholder="Contoh: Tinggal Di Desa Karangwungu Kec Karanggeneng Kab Lamongan"
-                                                        value={data.extra_data?.stay_status || 'Tinggal Di Desa Karangwungu Kec Karanggeneng Kab Lamongan'}
-                                                        onChange={(e) => handleExtraDataChange('stay_status', e.target.value)}
-                                                        className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400/60 dark:placeholder-zinc-500/50 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10"
+                                                    <textarea
+                                                        rows={3}
+                                                        placeholder="Kosongkan jika ingin memakai susunan narasi otomatis standar desa seperti di surat fisik"
+                                                        value={data.extra_data?.description_text || ''}
+                                                        onChange={(e) => handleExtraDataChange('description_text', e.target.value)}
+                                                        className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20"
                                                     />
-                                                </div>
-
-                                                <div>
-                                                    <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
-                                                        Status Perkawinan Pemohon
-                                                    </label>
-                                                    <select
-                                                        value={data.extra_data?.marital_status || 'Kawin'}
-                                                        onChange={(e) => handleExtraDataChange('marital_status', e.target.value)}
-                                                        className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10"
-                                                    >
-                                                        <option value="Kawin">Kawin</option>
-                                                        <option value="Belum Kawin">Belum Kawin</option>
-                                                        <option value="Cerai Hidup">Cerai Hidup</option>
-                                                        <option value="Cerai Mati">Cerai Mati</option>
-                                                    </select>
+                                                    <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-2 leading-relaxed bg-zinc-50 dark:bg-zinc-950/50 p-2.5 rounded-lg border border-zinc-200/60 dark:border-zinc-800/60">
+                                                        Jika dikosongkan, narasi di surat akan otomatis tercetak: &quot;Orang tersebut diatas benar-benar {data.extra_data?.stay_status || '...'}, dan Pada saat ini Usaha yang di milikinya atau di sebut {data.extra_data?.business_name || '...'} {data.extra_data?.business_status_desc || '...'} Di {data.extra_data?.business_address || '...'} .&quot;
+                                                    </p>
                                                 </div>
                                             </div>
-
-                                            <div>
-                                                <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
-                                                    Kustomisasi Paragraf Keterangan Domisili Usaha <span className="text-[11px] text-zinc-400 font-normal">(Opsional)</span>
-                                                </label>
-                                                <textarea
-                                                    rows={3}
-                                                    placeholder="Kosongkan jika ingin memakai susunan narasi otomatis standar desa seperti di surat fisik"
-                                                    value={data.extra_data?.description_text || ''}
-                                                    onChange={(e) => handleExtraDataChange('description_text', e.target.value)}
-                                                    className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400/60 dark:placeholder-zinc-500/50 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10"
-                                                />
-                                                <p className="text-[11px] text-zinc-400 dark:text-zinc-500 mt-1">
-                                                    Jika dikosongkan, narasi di surat akan otomatis tercetak: &quot;Orang tersebut diatas benar-benar {data.extra_data?.stay_status || '...'}, dan Pada saat ini Usaha yang di milikinya atau di sebut {data.extra_data?.business_name || '...'} {data.extra_data?.business_status_desc || '...'} Di {data.extra_data?.business_address || '...'} .&quot;
-                                                </p>
-                                            </div>
-                                        </div>
+                                        </section>
                                     )}
 
                                     {/* SECTION: TUJUAN & KEPERLUAN SURAT (TIDAK ADA PADA SURAT KEMATIAN) */}
                                     {!isKematian && (
-                                        <div className="space-y-3 pt-2">
-                                            <div className="flex items-center gap-2">
-                                                <FileCheck className="h-4 w-4 text-red-600 dark:text-amber-400" />
-                                                <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-300">
-                                                    {isWaliHakim ? 'Keperluan / Keterangan Tambahan Wali Hakim' : (isDomisiliUsaha ? 'Tujuan / Keperluan Surat Domisili Usaha' : (isWaliNikah ? 'Catatan Perwalian Nikah' : (isKehilangan ? 'Rincian Barang / Dokumen Hilang' : (isKuasa ? 'Keperluan / Wewenang Surat Kuasa' : 'Keperluan Pengajuan Surat'))))}
-                                                </h3>
+                                        <section className="rounded-lg bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 p-5 sm:p-6 shadow-xs space-y-4">
+                                            <div className="flex items-center justify-between pb-3.5 border-b border-zinc-100 dark:border-zinc-800/80">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="h-9 w-9 rounded-lg bg-red-600/10 dark:bg-amber-400/10 border border-red-600/20 dark:border-amber-400/30 text-red-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                                                        <FileCheck className="h-4.5 w-4.5" />
+                                                    </div>
+                                                    <div>
+                                                        <span className="text-[10px] font-bold text-red-600 dark:text-amber-400 tracking-wider uppercase block">
+                                                            {hasExtraSection ? 'Bagian 3' : 'Bagian 2'} &middot; Keperluan
+                                                        </span>
+                                                        <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-white leading-tight">
+                                                            {isWaliHakim ? 'Keperluan / Keterangan Tambahan Wali Hakim' : (isDomisiliUsaha ? 'Tujuan / Keperluan Surat Domisili Usaha' : (isWaliNikah ? 'Catatan Perwalian Nikah' : (isKehilangan ? 'Rincian Barang / Dokumen Hilang' : (isKuasa ? 'Keperluan / Wewenang Surat Kuasa' : 'Keperluan Pengajuan Surat'))))}
+                                                        </h2>
+                                                    </div>
+                                                </div>
+                                                <span className="hidden sm:inline-flex text-[11px] font-medium text-zinc-400 dark:text-zinc-500 bg-zinc-100 dark:bg-zinc-800/60 px-2.5 py-1 rounded-md">
+                                                    Wajib Diisi
+                                                </span>
                                             </div>
 
                                             {isKuasa && (
@@ -1656,8 +1769,8 @@ export default function Form({ service = {}, services = [] }) {
                                             )}
 
                                             <div>
-                                                <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
-                                                    {isWaliHakim ? 'Keperluan / Keterangan Surat' : (isDomisiliUsaha ? 'Tujuan / Keperluan Surat Keterangan' : (isKuasa ? 'Surat Kuasa ini kami buat untuk ...' : (isWaliNikah ? 'Catatan Tambahan Pengajuan' : (isKehilangan ? 'Barang / Dokumen yang Hilang' : 'Tujuan / Alasan Pengajuan'))))} <span className="text-red-500">*</span>
+                                                <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                                                    {isWaliHakim ? 'Keperluan / Keterangan Surat' : (isDomisiliUsaha ? 'Tujuan / Keperluan Surat Keterangan' : (isKuasa ? 'Surat Kuasa ini kami buat untuk ...' : (isWaliNikah ? 'Catatan Tambahan Pengajuan' : (isKehilangan ? 'Barang / Dokumen yang Hilang' : 'Tujuan / Alasan Pengajuan'))))} <span className="text-red-500 dark:text-amber-400">*</span>
                                                 </label>
                                                 <textarea
                                                     rows={3}
@@ -1678,7 +1791,7 @@ export default function Form({ service = {}, services = [] }) {
                                                     }
                                                     value={data.purpose}
                                                     onChange={(e) => setData('purpose', e.target.value)}
-                                                    className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400/60 dark:placeholder-zinc-500/50 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10"
+                                                    className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20"
                                                     required
                                                 />
                                                 {errors.purpose && (
@@ -1715,23 +1828,35 @@ export default function Form({ service = {}, services = [] }) {
                                                     </p>
                                                 )}
                                             </div>
-                                        </div>
+                                        </section>
                                     )}
 
-                                    {/* SECTION 3: KONTAK YANG BISA DIHUBUNGI */}
-                                    <div className="space-y-4 pt-2">
-                                        <div className="flex items-center gap-2">
-                                            <Phone className="h-4 w-4 text-red-600 dark:text-amber-400" />
-                                            <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-600 dark:text-zinc-300">
-                                                {isKematian ? 'Kontak Pelapor / Ahli Waris (WhatsApp)' : 'Kontak Yang Bisa Dihubungi'}
-                                            </h3>
+                                    {/* SECTION KONTAK */}
+                                    <section className="rounded-lg bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 p-5 sm:p-6 shadow-xs space-y-4">
+                                        <div className="flex items-center justify-between pb-3.5 border-b border-zinc-100 dark:border-zinc-800/80">
+                                            <div className="flex items-center gap-3">
+                                                <div className="h-9 w-9 rounded-lg bg-red-600/10 dark:bg-amber-400/10 border border-red-600/20 dark:border-amber-400/30 text-red-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                                                    <Phone className="h-4.5 w-4.5" />
+                                                </div>
+                                                <div>
+                                                    <span className="text-[10px] font-bold text-red-600 dark:text-amber-400 tracking-wider uppercase block">
+                                                        {isKematian ? 'Bagian 3' : (hasExtraSection ? 'Bagian 4' : 'Bagian 3')} &middot; Kontak Pelapor / Pemohon
+                                                    </span>
+                                                    <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-white leading-tight">
+                                                        {isKematian ? 'Kontak Pelapor / Ahli Waris (WhatsApp)' : 'Kontak Yang Bisa Dihubungi'}
+                                                    </h2>
+                                                </div>
+                                            </div>
+                                            <span className="hidden sm:inline-flex text-[11px] font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-1 rounded-md border border-emerald-200/50 dark:border-emerald-800/50">
+                                                Konfirmasi Real-Time
+                                            </span>
                                         </div>
 
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                             {/* Nomor WhatsApp (Wajib) */}
                                             <div>
-                                                <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
-                                                    No. WhatsApp <span className="text-red-500">*</span>
+                                                <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                                                    No. WhatsApp <span className="text-red-500 dark:text-amber-400">*</span>
                                                 </label>
                                                 <input
                                                     type="tel"
@@ -1739,7 +1864,7 @@ export default function Form({ service = {}, services = [] }) {
                                                     placeholder="08xxxxxxxxxx"
                                                     value={data.citizen_phone}
                                                     onChange={(e) => setData('citizen_phone', e.target.value.replace(/[^0-9]/g, ''))}
-                                                    className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3.5 py-2.5 text-sm font-mono text-zinc-900 dark:text-zinc-100 placeholder-zinc-400/60 dark:placeholder-zinc-500/50 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10"
+                                                    className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 text-sm font-mono text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20"
                                                     required
                                                 />
                                                 <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1">
@@ -1752,7 +1877,7 @@ export default function Form({ service = {}, services = [] }) {
 
                                             {/* Alamat Email (Opsional) */}
                                             <div>
-                                                <label className="block text-sm font-semibold text-zinc-800 dark:text-zinc-200 mb-1.5">
+                                                <label className="block text-xs sm:text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
                                                     Alamat Email <span className="text-xs font-normal text-zinc-400 dark:text-zinc-500">(Opsional)</span>
                                                 </label>
                                                 <input
@@ -1760,7 +1885,7 @@ export default function Form({ service = {}, services = [] }) {
                                                     placeholder="contoh@gmail.com (opsional)"
                                                     value={data.citizen_email}
                                                     onChange={(e) => setData('citizen_email', e.target.value)}
-                                                    className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-50/50 dark:bg-zinc-950/60 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400/60 dark:placeholder-zinc-500/50 transition focus:border-red-500 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-4 focus:ring-red-500/10 dark:focus:border-amber-400 dark:focus:ring-amber-400/10"
+                                                    className="w-full rounded-lg border border-zinc-300 dark:border-zinc-700/90 bg-white dark:bg-zinc-950/80 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 transition focus:border-red-500 dark:focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:focus:ring-amber-400/20"
                                                 />
                                                 <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1">
                                                     Bisa dikosongkan jika tidak memiliki alamat email.
@@ -1770,71 +1895,81 @@ export default function Form({ service = {}, services = [] }) {
                                                 )}
                                             </div>
                                         </div>
-                                    </div>
+                                    </section>
 
-                                    {/* Keamanan & Validasi Notice */}
-                                    <div className="rounded-lg bg-zinc-50/70 dark:bg-zinc-950/40 p-3.5 flex items-start gap-3 text-xs text-zinc-600 dark:text-zinc-400">
-                                        <ShieldCheck className="h-5 w-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
-                                        <div>
-                                            <p className="font-semibold text-zinc-900 dark:text-zinc-200">
-                                                Verifikasi Cepat & Resmi Kantor Desa
-                                            </p>
-                                            <p className="mt-0.5 text-zinc-500 dark:text-zinc-400">
-                                                Data diproses oleh petugas pelayanan. Setelah dikirim, Anda akan langsung memperoleh <strong>Kode Tracking</strong> untuk memantau status secara langsung.
-                                            </p>
+                                    {/* NOTICE & SUBMIT BUTTON */}
+                                    <div className="space-y-4 pt-1">
+                                        <div className="rounded-lg bg-zinc-50 dark:bg-zinc-900/70 border border-zinc-200 dark:border-zinc-800 p-4 flex items-start gap-3.5 text-xs text-zinc-600 dark:text-zinc-400 shadow-xs">
+                                            <div className="h-8 w-8 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                                                <ShieldCheck className="h-4.5 w-4.5" />
+                                            </div>
+                                            <div>
+                                                <p className="font-bold text-sm text-zinc-900 dark:text-zinc-100">
+                                                    Verifikasi Cepat & Resmi Kantor Desa Karangwungu
+                                                </p>
+                                                <p className="mt-0.5 leading-relaxed text-zinc-500 dark:text-zinc-400">
+                                                    Data diproses langsung oleh petugas pelayanan Balai Desa. Setelah dikirim, Anda akan langsung memperoleh <strong>Kode Tracking</strong> untuk memantau status persuratan secara real-time.
+                                                </p>
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    {/* Action Submit Button */}
-                                    <div className="pt-1">
-                                        <Button
+                                        <button
                                             type="submit"
-                                            variant="red"
-                                            size="lg"
                                             disabled={processing}
-                                            className="w-full shadow-md font-semibold text-base py-3"
+                                            className="w-full relative group overflow-hidden rounded-lg bg-linear-to-r from-[#74151e] via-[#8e1b26] to-[#74151e] hover:from-[#821822] hover:via-[#9e1f2c] hover:to-[#821822] text-white py-3.5 px-6 font-bold text-base shadow-lg shadow-red-950/20 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed active:scale-[0.99]"
                                         >
-                                            <Send className="h-4 w-4 mr-2" />
+                                            <Send className="h-4.5 w-4.5" />
                                             <span>
                                                 {processing ? 'Sedang Mengirim Permohonan...' : 'Kirim Permohonan Surat Sekarang'}
                                             </span>
-                                        </Button>
+                                        </button>
                                     </div>
                                 </form>
-                            </CardContent>
-                        </Card>
-                    </div>
+                            </div>
 
                     {/* RIGHT COLUMN (4 cols): Selected Letter Info, Official A4 Preview, and Help Box */}
                     <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-24">
                         {/* 1. Kartu Surat Terpilih */}
-                        <div className="p-5 sm:p-6 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-4 shadow-xs">
-                            <div>
-                                <span className="text-[10px] font-black tracking-widest text-red-600 dark:text-amber-400 uppercase">
-                                    Surat Terpilih
-                                </span>
-                                <h2 className="text-base sm:text-lg font-black text-zinc-900 dark:text-white mt-1">
+                        <div className="relative group overflow-hidden rounded-lg bg-gradient-to-b from-[#74151e] via-[#5c1018] to-[#420a11] dark:from-[#2a0509] dark:via-[#1a0305] dark:to-[#0d0103] text-white p-5 sm:p-6 border border-amber-400/40 dark:border-amber-500/40 shadow-lg dark:shadow-xl space-y-4">
+                            {/* Siluet Batik Parang Background Layer */}
+                            <div
+                                className="absolute inset-0 pointer-events-none opacity-[0.07] transition-opacity duration-500 bg-repeat"
+                                style={{
+                                    backgroundImage: `url("${BATIK_PARANG_PATTERN}")`,
+                                    backgroundSize: "80px 80px",
+                                }}
+                            />
+                            {/* Ambient Glows */}
+                            <div className="absolute -top-10 -right-10 w-24 h-24 bg-amber-400/15 rounded-full blur-2xl pointer-events-none" />
+                            <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-amber-400/15 via-transparent to-transparent pointer-events-none" />
+
+                            <div className="relative z-10 space-y-2">
+                                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-extrabold uppercase tracking-widest bg-amber-400/20 text-amber-300 border border-amber-400/40 font-mono">
+                                    <Sparkles className="h-3 w-3 text-amber-300" />
+                                    <span>Surat Terpilih</span>
+                                </div>
+                                <h2 className="text-base sm:text-lg font-bold text-white leading-snug tracking-wide">
                                     {service?.title}
                                 </h2>
                                 {service?.description && (
-                                    <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1.5 leading-relaxed">
+                                    <p className="text-xs text-amber-100/80 leading-relaxed font-normal">
                                         {service?.description}
                                     </p>
                                 )}
                             </div>
 
-                            {/* Persyaratan (Hanya jika ada) */}
+                            {/* Persyaratan Administrasi */}
                             {Array.isArray(service?.requirements) && service.requirements.length > 0 && (
-                                <div className="pt-4 border-t border-zinc-100 dark:border-zinc-800 space-y-2.5">
-                                    <span className="text-xs font-bold text-zinc-800 dark:text-zinc-200 flex items-center gap-1.5">
-                                        <FileCheck className="h-3.5 w-3.5 text-red-600 dark:text-amber-400" />
-                                        <span>Persyaratan:</span>
+                                <div className="relative z-10 pt-3.5 border-t border-amber-400/20 space-y-2.5">
+                                    <span className="text-xs font-bold text-amber-200 flex items-center gap-1.5">
+                                        <FileCheck className="h-3.5 w-3.5 text-amber-400" />
+                                        <span>Persyaratan Administrasi:</span>
                                     </span>
-                                    <ul className="space-y-2 text-xs text-zinc-600 dark:text-zinc-400">
+                                    <ul className="space-y-2 text-xs text-zinc-100/90">
                                         {service.requirements.map((req, idx) => (
-                                             <li key={idx} className="flex items-start gap-2">
-                                                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
-                                                <span className="leading-tight">{req}</span>
+                                            <li key={idx} className="flex items-start gap-2">
+                                                <CheckCircle2 className="h-3.5 w-3.5 text-amber-400 shrink-0 mt-0.5" />
+                                                <span className="leading-tight text-white/90">{req}</span>
                                             </li>
                                         ))}
                                     </ul>
@@ -1843,19 +1978,19 @@ export default function Form({ service = {}, services = [] }) {
                         </div>
 
                         {/* 2. Pratinjau / Preview Surat Resmi (Format Dokumen A4 Resmi) */}
-                        <div className="p-4 sm:p-5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-4 shadow-xs">
-                            <div className="flex items-center justify-between">
+                        <div className="rounded-lg bg-white dark:bg-zinc-900/90 border border-zinc-200/90 dark:border-zinc-800 p-4 sm:p-5 space-y-3.5 shadow-xs">
+                            <div className="flex items-center justify-between pb-2 border-b border-zinc-100 dark:border-zinc-800">
                                 <span className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-2">
-                                    <FileText className="h-4 w-4 text-red-600 dark:text-amber-400" />
+                                    <FileSignature className="h-4 w-4 text-red-600 dark:text-amber-400" />
                                     <span>Pratinjau Format Surat Resmi</span>
                                 </span>
-                                <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20 font-sans">
+                                <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-md border border-emerald-500/20 font-mono">
                                     Format A4
                                 </span>
                             </div>
 
                             {/* Lembar Dokumen A4 Resmi (Proporsi Margin Otentik, Font Presisi & 3 Watermark Preview) */}
-                            <div className="p-2 sm:p-3 rounded-xl bg-zinc-100/90 dark:bg-zinc-950/70 border border-zinc-200 dark:border-zinc-800/80 overflow-x-auto flex justify-center">
+                            <div className="p-2 sm:p-3 rounded-lg bg-zinc-100/90 dark:bg-zinc-950/70 border border-zinc-200 dark:border-zinc-800/80 overflow-x-auto flex justify-center">
                                 <div
                                     className="relative w-full bg-white text-black px-6 py-6 sm:px-8 sm:py-8 lg:px-6 lg:py-7 xl:px-7 xl:py-8 rounded-xs border border-zinc-300 shadow-xl select-none overflow-hidden"
                                     style={{ fontFamily: '"Times New Roman", Times, Georgia, serif' }}
@@ -2850,7 +2985,7 @@ export default function Form({ service = {}, services = [] }) {
                         </div>
 
                         {/* 3. Info Bantuan Balai Desa */}
-                        <div className="p-5 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800 space-y-2 text-xs text-zinc-600 dark:text-zinc-400">
+                        <div className="p-4 sm:p-5 rounded-lg bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800 space-y-2 text-xs text-zinc-600 dark:text-zinc-400 shadow-xs">
                             <div className="flex items-center gap-2 font-bold text-zinc-900 dark:text-zinc-100">
                                 <Info className="h-4 w-4 text-red-600 dark:text-amber-400 shrink-0" />
                                 <span>Butuh Bantuan Pelayanan?</span>

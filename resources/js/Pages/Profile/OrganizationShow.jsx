@@ -19,6 +19,7 @@ import {
     MapPin,
     Calendar,
     Mail,
+    Phone,
     Share2,
     Check,
     CheckCircle2,
@@ -97,6 +98,72 @@ export default function OrganizationShow({
         return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
     };
 
+    // Helper: render Rekomendasi Lembaga Lainnya (Desktop in sidebar, Mobile at bottom of page)
+    const renderOtherOrganizations = (isMobile = false) => {
+        if (!otherOrganizations || otherOrganizations.length === 0) return null;
+        return (
+            <div className={`space-y-3 ${isMobile ? 'block lg:hidden pt-4 border-t border-zinc-200/90 dark:border-zinc-800' : 'hidden lg:block pt-1'}`}>
+                <div className="flex items-center justify-between pb-2.5 border-b border-zinc-200/90 dark:border-zinc-800">
+                    <div className="flex items-center gap-2">
+                        <Users className="h-4 w-4 text-red-600 dark:text-amber-400 shrink-0" />
+                        <h3 className="text-sm font-black text-zinc-900 dark:text-zinc-100">
+                            Lembaga Desa Lainnya
+                        </h3>
+                    </div>
+                    <Link
+                        href="/profil/lembaga"
+                        className="text-[11px] font-bold text-red-600 dark:text-amber-400 hover:underline inline-flex items-center gap-1"
+                    >
+                        <span>Lihat Semua</span>
+                        <ArrowRight className="h-3 w-3" />
+                    </Link>
+                </div>
+
+                <div className="space-y-2.5">
+                    {otherOrganizations.slice(0, 5).map((other) => {
+                        const OtherIcon = getIconComponent(other.icon, Users);
+                        return (
+                            <Link
+                                key={other.id}
+                                href={`/profil/lembaga/${other.id}`}
+                                className="group relative overflow-hidden p-3 sm:p-3.5 rounded-lg bg-gradient-to-br from-white via-red-50/40 to-amber-50/30 dark:from-zinc-900 dark:via-[#1c080b] dark:to-zinc-950 backdrop-blur-xl border border-red-500/20 dark:border-red-900/40 hover:border-amber-500/70 dark:hover:border-amber-400/60 shadow-xs hover:shadow-md hover:shadow-red-950/10 transition-all duration-200 hover:-translate-y-0.5 flex items-center justify-between gap-3 cursor-pointer pl-4"
+                            >
+                                {/* Aksen Gradasi Garis Tipis Vertikal: Merah - Hitam - Kuning */}
+                                <div className="absolute left-0 inset-y-0 w-1 sm:w-1.5 bg-gradient-to-b from-red-600 via-zinc-900 to-amber-400 opacity-85 group-hover:opacity-100 transition-opacity" />
+
+                                {/* Bias Gradasi Halus di Sudut Belakang */}
+                                <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full bg-gradient-to-br from-red-600/10 via-zinc-900/5 to-amber-500/15 blur-xl pointer-events-none group-hover:scale-125 transition-transform duration-500" />
+
+                                <div className="relative z-10 flex items-center gap-3 min-w-0">
+                                    <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-amber-500/15 via-red-500/10 to-amber-500/5 border border-amber-500/30 text-amber-500 dark:text-amber-400 flex items-center justify-center shrink-0 p-1.5 group-hover:scale-105 group-hover:bg-gradient-to-br group-hover:from-red-600 group-hover:to-amber-500 group-hover:text-white group-hover:border-amber-300 transition-all shadow-xs">
+                                        {other.logo ? (
+                                            <img
+                                                src={other.logo}
+                                                alt={other.shortName || other.name}
+                                                className="w-full h-full object-contain"
+                                            />
+                                        ) : (
+                                            <OtherIcon className="h-4 w-4" />
+                                        )}
+                                    </div>
+                                    <div className="min-w-0">
+                                        <h4 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-300 transition-colors truncate">
+                                            {other.shortName || other.name}
+                                        </h4>
+                                        <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate mt-0.5">
+                                            {other.tagline || 'Lembaga Desa Karangwungu'}
+                                        </p>
+                                    </div>
+                                </div>
+                                <ArrowRight className="relative z-10 h-4 w-4 text-zinc-400 dark:text-zinc-500 group-hover:text-amber-500 dark:group-hover:text-amber-400 group-hover:translate-x-1 transition-all shrink-0 ml-1" />
+                            </Link>
+                        );
+                    })}
+                </div>
+            </div>
+        );
+    };
+
     return (
         <AppLayout>
             <SeoHead
@@ -113,7 +180,7 @@ export default function OrganizationShow({
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
                 {/* 1. HERO BANNER with Integrated Glassmorphism Navigation */}
-                <div className="relative rounded-lg overflow-hidden shadow-xl border border-red-500/40 bg-gradient-to-r from-red-800 via-red-700 to-red-900 text-white">
+                <div className="relative rounded-xl overflow-hidden shadow-xl border border-red-500/40 bg-gradient-to-r from-red-700 via-red-800 to-zinc-950 dark:from-red-800 dark:via-red-950 dark:to-black text-white">
                     {/* Background Landscape Photo Overlay */}
                     {organization.image && (
                         <div
@@ -167,8 +234,8 @@ export default function OrganizationShow({
 
                         {/* Top: Logo + Title */}
                         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
-                            {/* Official Logo (Clean, prominent rounded-lg container) */}
-                            <div className="h-24 w-24 sm:h-28 sm:w-28 md:h-32 md:w-32 rounded-lg bg-white dark:bg-zinc-900/95 p-2.5 sm:p-3 shadow-2xl border-2 border-amber-400 ring-4 ring-red-950/40 flex items-center justify-center shrink-0">
+                            {/* Official Logo (Clean, prominent rounded-xl container) */}
+                            <div className="h-24 w-24 sm:h-28 sm:w-28 md:h-32 md:w-32 rounded-xl bg-white dark:bg-zinc-900/95 p-2.5 sm:p-3 shadow-2xl border-2 border-amber-400/80 ring-4 ring-red-950/40 flex items-center justify-center shrink-0">
                                 {organization.logo ? (
                                     <img
                                         src={organization.logo}
@@ -196,10 +263,10 @@ export default function OrganizationShow({
                             </div>
                         </div>
 
-                        {/* Quick metadata cards (all rounded-lg, clean and readable) */}
+                        {/* Quick metadata cards (all rounded-xl, clean and readable) */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-3 border-t border-white/20">
                             {/* Masa Khidmat */}
-                            <div className="flex items-start gap-3 p-3 rounded-lg bg-black/35 backdrop-blur-md border border-white/15">
+                            <div className="flex items-start gap-3 p-3 rounded-xl bg-black/35 backdrop-blur-md border border-white/15">
                                 <div className="p-1.5 rounded-lg bg-amber-400/20 text-amber-300 shrink-0">
                                     <Clock className="h-4 w-4" />
                                 </div>
@@ -214,7 +281,7 @@ export default function OrganizationShow({
                             </div>
 
                             {/* Jadwal Koordinasi */}
-                            <div className="flex items-start gap-3 p-3 rounded-lg bg-black/35 backdrop-blur-md border border-white/15">
+                            <div className="flex items-start gap-3 p-3 rounded-xl bg-black/35 backdrop-blur-md border border-white/15">
                                 <div className="p-1.5 rounded-lg bg-amber-400/20 text-amber-300 shrink-0">
                                     <Calendar className="h-4 w-4" />
                                 </div>
@@ -229,7 +296,7 @@ export default function OrganizationShow({
                             </div>
 
                             {/* Sekretariat */}
-                            <div className="flex items-start gap-3 p-3 rounded-lg bg-black/35 backdrop-blur-md border border-white/15">
+                            <div className="flex items-start gap-3 p-3 rounded-xl bg-black/35 backdrop-blur-md border border-white/15">
                                 <div className="p-1.5 rounded-lg bg-amber-400/20 text-amber-300 shrink-0">
                                     <MapPin className="h-4 w-4" />
                                 </div>
@@ -248,8 +315,8 @@ export default function OrganizationShow({
 
                 {/* 3. MAIN CONTENT GRID (8 COLS / 4 COLS) */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-                    {/* LEFT COLUMN: Main Information (8 COLS) */}
-                    <div className="lg:col-span-8 space-y-6">
+                    {/* LEFT COLUMN: Main Information (8 COLS) - order-2 on mobile so Leader Card appears first */}
+                    <div className="lg:col-span-8 space-y-6 order-2 lg:order-1">
                         {/* A. TENTANG LEMBAGA (Unboxed Editorial Presentation) */}
                         <section aria-labelledby="tentang-lembaga-heading" className="space-y-4">
                             {/* Section Header (Bersih, tanpa badge, tanpa background kotak ikon) */}
@@ -275,38 +342,7 @@ export default function OrganizationShow({
                                 </p>
                             </div>
 
-                            {/* Ringkasan Spesifikasi Kelembagaan (Royal Red Gradient Hitam Coklat & Batik Watermark) */}
-                            <div className="relative overflow-hidden p-4 rounded-lg bg-gradient-to-r from-[#74151e] via-[#561017] to-[#2a0509] dark:from-[#2d070b] dark:via-[#1a0406] dark:to-[#0d0203] text-white border border-amber-400/35 shadow-md">
-                                {/* Siluet Batik Truntum Watermark */}
-                                <div
-                                    className="absolute inset-0 pointer-events-none opacity-[0.08] dark:opacity-[0.12] bg-repeat"
-                                    style={{
-                                        backgroundImage: `url("${BATIK_TRUNTUM_PATTERN}")`,
-                                        backgroundSize: "60px 60px",
-                                    }}
-                                />
-                                {/* Ambient gold light flare */}
-                                <div className="absolute top-0 right-0 w-36 h-full bg-gradient-to-l from-amber-400/15 via-transparent to-transparent pointer-events-none" />
 
-                                <div className="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-3">
-                                    <div className="space-y-0.5">
-                                        <span className="text-[10px] sm:text-[10.5px] font-semibold text-amber-200/80 uppercase tracking-wider block">Kedudukan</span>
-                                        <span className="text-xs sm:text-sm font-bold text-white block">Mitra Pemdes</span>
-                                    </div>
-                                    <div className="space-y-0.5 sm:border-l sm:border-white/15 dark:sm:border-amber-400/20 sm:pl-4">
-                                        <span className="text-[10px] sm:text-[10.5px] font-semibold text-amber-200/80 uppercase tracking-wider block">Wilayah Kerja</span>
-                                        <span className="text-xs sm:text-sm font-bold text-white block">Karangwungu</span>
-                                    </div>
-                                    <div className="space-y-0.5 sm:border-l sm:border-white/15 dark:sm:border-amber-400/20 sm:pl-4">
-                                        <span className="text-[10px] sm:text-[10.5px] font-semibold text-amber-200/80 uppercase tracking-wider block">Asas Kerja</span>
-                                        <span className="text-xs sm:text-sm font-bold text-white block">Musyawarah Mufakat</span>
-                                    </div>
-                                    <div className="space-y-0.5 sm:border-l sm:border-white/15 dark:sm:border-amber-400/20 sm:pl-4">
-                                        <span className="text-[10px] sm:text-[10.5px] font-semibold text-amber-200/80 uppercase tracking-wider block">Masa Bakti</span>
-                                        <span className="text-xs sm:text-sm font-bold text-white block">{organization.period || '2020 - 2026'}</span>
-                                    </div>
-                                </div>
-                            </div>
                         </section>
 
                         {/* B. VISI, MISI & TUJUAN (Unboxed Editorial Section) */}
@@ -324,25 +360,27 @@ export default function OrganizationShow({
                                 </div>
                             </div>
 
-                            {/* 1. Visi Card (Desain signature red gradient, batik watermark, dan quotes) */}
-                            <div className="relative overflow-hidden rounded-lg bg-gradient-to-r from-red-800 via-red-900 to-[#2c0508] p-5 sm:p-6 text-white border border-amber-400/40 shadow-md space-y-3 group/visi">
-                                {/* Siluet Batik Truntum */}
+                            {/* 1. Visi Card (Executive Quote Card - Crimson Murni & Batik Halus) */}
+                            <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-red-700 via-red-800 to-zinc-950 dark:from-red-800 dark:via-red-950 dark:to-zinc-950 p-5 sm:p-6 text-white border border-red-500/30 dark:border-red-500/40 shadow-xl space-y-3 group/visi">
+                                {/* Siluet Batik Truntum Lembut (0.05 opacity, anti-coklat) */}
                                 <div
-                                    className="absolute inset-0 pointer-events-none opacity-10 sm:opacity-15 group-hover/visi:opacity-20 transition-opacity duration-500 bg-repeat"
+                                    className="absolute inset-0 pointer-events-none opacity-[0.05] group-hover/visi:opacity-10 transition-opacity duration-500 bg-repeat"
                                     style={{
                                         backgroundImage: `url("${BATIK_TRUNTUM_PATTERN}")`,
                                         backgroundSize: "60px 60px",
                                     }}
                                 />
-                                <div className="relative z-10 space-y-2.5">
+                                <div className="absolute -top-10 -right-10 w-36 h-36 bg-red-500/20 rounded-full blur-2xl pointer-events-none" />
+
+                                <div className="relative z-10 space-y-3">
                                     <div className="flex items-center justify-between">
-                                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-black/40 text-amber-300 text-[10px] font-black tracking-widest uppercase border border-amber-400/40">
+                                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/40 text-amber-300 text-[10px] font-black tracking-widest uppercase border border-amber-400/40 shadow-xs">
                                             <Compass className="h-3.5 w-3.5 text-amber-400" />
                                             <span>VISI UTAMA</span>
                                         </span>
-                                        <Quote className="h-7 w-7 text-amber-300/30 shrink-0" />
+                                        <Quote className="h-8 w-8 text-amber-400/30 shrink-0" />
                                     </div>
-                                    <p className="text-sm sm:text-base font-bold text-amber-100 italic leading-relaxed">
+                                    <p className="text-sm sm:text-base font-medium text-white italic leading-relaxed pl-3.5 border-l-2 border-amber-400/70">
                                         "{vision}"
                                     </p>
                                 </div>
@@ -421,7 +459,7 @@ export default function OrganizationShow({
                                 {duties.map((duty, idx) => (
                                     <div
                                         key={idx}
-                                        className="group/duty relative p-3.5 sm:p-4 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200/85 dark:border-zinc-800 hover:border-red-500/40 dark:hover:border-amber-400/40 hover:shadow-xs transition-all flex items-start gap-3.5"
+                                        className="group/duty relative p-3.5 sm:p-4 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200/85 dark:border-zinc-800 hover:border-red-500/40 dark:hover:border-amber-400/40 hover:shadow-xs transition-all flex items-start gap-3.5"
                                     >
                                         <span className="h-6 w-6 rounded-md bg-gradient-to-br from-red-600 to-red-800 text-amber-200 text-xs font-black flex items-center justify-center shrink-0 mt-0.5 shadow-xs border border-amber-400/30">
                                             {idx + 1}
@@ -462,7 +500,7 @@ export default function OrganizationShow({
                                     return (
                                         <div
                                             key={idx}
-                                            className="group/prog relative p-3.5 sm:p-4 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200/85 dark:border-zinc-800 hover:border-red-500/40 dark:hover:border-amber-400/40 hover:shadow-xs transition-all flex items-start gap-3.5"
+                                            className="group/prog relative p-3.5 sm:p-4 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200/85 dark:border-zinc-800 hover:border-red-500/40 dark:hover:border-amber-400/40 hover:shadow-xs transition-all flex items-start gap-3.5"
                                         >
                                             <div className="h-6 w-6 rounded-md bg-gradient-to-br from-red-600 to-red-800 text-amber-200 flex items-center justify-center shrink-0 mt-0.5 shadow-xs border border-amber-400/30">
                                                 <CheckCircle2 className="h-3.5 w-3.5" />
@@ -512,9 +550,9 @@ export default function OrganizationShow({
                                 {structure.map((item, idx) => (
                                     <div
                                         key={idx}
-                                        className="flex items-center gap-3.5 p-3.5 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200/85 dark:border-zinc-800 hover:border-red-400/50 dark:hover:border-amber-400/50 hover:shadow-xs transition-all group"
+                                        className="flex items-center gap-3.5 p-3.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200/85 dark:border-zinc-800 hover:border-red-400/50 dark:hover:border-amber-400/50 hover:shadow-xs transition-all group"
                                     >
-                                        <div className="h-11 w-11 rounded-lg overflow-hidden bg-red-950 shrink-0 border border-amber-400/40 flex items-center justify-center shadow-xs">
+                                        <div className="h-11 w-11 rounded-xl overflow-hidden bg-red-950 shrink-0 border border-amber-400/40 flex items-center justify-center shadow-xs">
                                             {item.photo ? (
                                                 <img
                                                     src={item.photo}
@@ -543,113 +581,167 @@ export default function OrganizationShow({
                                 ))}
                             </div>
                         </section>
+
+                        {/* REKOMENDASI LEMBAGA LAINNYA (Mobile only: muncul di paling bawah setelah struktur pengurus) */}
+                        {renderOtherOrganizations(true)}
                     </div>
 
-                    {/* RIGHT COLUMN: Sidebar (4 COLS) */}
-                    <div className="lg:col-span-4 space-y-5">
-                        {/* 1. KETUA / PIMPINAN CARD */}
-                        <div className="group relative overflow-hidden rounded-lg bg-gradient-to-b from-red-800 via-red-900 to-[#2e0508] text-white shadow-md border border-amber-400/40 p-6 space-y-4">
-                            {/* Siluet Batik Truntum Overlay */}
+                    {/* RIGHT COLUMN: Sidebar (4 COLS) - order-1 on mobile so Leader Card and Quick Contacts appear right below Hero */}
+                    <div className="lg:col-span-4 space-y-5 order-1 lg:order-2">
+                        {/* 1. KETUA / PIMPINAN CARD (Executive Showcase Card with Batik Silhouette) */}
+                        <div className="group relative overflow-hidden rounded-xl bg-gradient-to-b from-red-700 via-red-800 to-zinc-950 dark:from-red-800 dark:via-red-950 dark:to-[#080102] text-white shadow-xl hover:shadow-2xl border border-amber-400/40 hover:border-amber-400/70 transition-all duration-300 flex flex-col">
+                            {/* Siluet Batik Truntum Background Layer (Covering entire card) */}
                             <div
-                                className="absolute inset-0 pointer-events-none opacity-10 group-hover:opacity-15 transition-opacity duration-500 bg-repeat"
+                                className="absolute inset-0 pointer-events-none opacity-[0.06] group-hover:opacity-[0.10] transition-opacity duration-500 bg-repeat"
                                 style={{
                                     backgroundImage: `url("${BATIK_TRUNTUM_PATTERN}")`,
                                     backgroundSize: "60px 60px",
                                 }}
                             />
 
-                            <div className="relative z-10 space-y-4">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-[10px] font-black tracking-widest text-amber-300 uppercase px-2.5 py-0.5 rounded-lg bg-black/40 border border-amber-400/30">
+                            {/* Ambient Glows */}
+                            <div className="absolute -top-12 -right-12 w-36 h-36 bg-red-600/25 rounded-full blur-2xl pointer-events-none" />
+                            <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-amber-400/15 via-transparent to-transparent pointer-events-none" />
+
+                            {/* Header Top Bar */}
+                            <div className="relative z-10 px-4 py-3 border-b border-amber-400/25 flex items-center justify-between">
+                                <div className="flex items-center gap-1.5">
+                                    <div className="h-6 w-6 rounded-md bg-amber-400/20 text-amber-300 border border-amber-400/40 flex items-center justify-center shrink-0">
+                                        <Award className="h-3.5 w-3.5" />
+                                    </div>
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-amber-300">
                                         Pimpinan Lembaga
                                     </span>
-                                    <span className="text-[10px] font-bold text-amber-200/80">
-                                        {organization.period || '2020 - 2026'}
-                                    </span>
                                 </div>
+                                <span className="text-[10px] font-mono font-bold text-amber-200/90 bg-black/40 px-2.5 py-1 rounded-full border border-amber-400/30">
+                                    {organization.period || '2020 - 2026'}
+                                </span>
+                            </div>
 
-                                <div className="flex flex-col items-center text-center space-y-3 pt-1">
-                                    {/* Leader Portrait */}
-                                    <div className="h-28 w-28 rounded-lg overflow-hidden bg-red-950 border-2 border-amber-400 shadow-lg ring-4 ring-amber-400/20 flex items-center justify-center">
-                                        {leader.photo && !leaderPhotoError ? (
-                                            <img
-                                                src={leader.photo}
-                                                alt={leader.name}
-                                                onError={() => setLeaderPhotoError(true)}
-                                                className="w-full h-full object-cover"
-                                            />
-                                        ) : (
-                                            <div className="w-full h-full flex items-center justify-center bg-red-950 text-amber-300 font-extrabold text-2xl tracking-wider select-none">
+                            {/* Portrait Photo Container (With side spacing & rounded-xl frame) */}
+                            <div className="px-4 sm:px-5 pt-3.5 sm:pt-4">
+                                <div className="relative w-full h-[240px] sm:h-[265px] rounded-xl overflow-hidden bg-zinc-950 border border-amber-400/35 shadow-md group/photo">
+                                    {leader.photo && !leaderPhotoError ? (
+                                        <img
+                                            src={leader.photo}
+                                            alt={leader.name}
+                                            onError={() => setLeaderPhotoError(true)}
+                                            className="w-full h-full object-cover object-[center_15%] transition-transform duration-700 group-hover:scale-105"
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full flex flex-col items-center justify-center bg-zinc-950 text-amber-300 p-4">
+                                            <div className="h-20 w-20 rounded-full bg-red-900/50 border-2 border-amber-400/50 flex items-center justify-center font-black text-2xl mb-2 shadow-inner">
                                                 {getInitials(leader.name)}
                                             </div>
-                                        )}
-                                    </div>
+                                            <span className="text-xs text-amber-200/70 font-semibold">{leader.name}</span>
+                                        </div>
+                                    )}
 
-                                    <div>
-                                        <h3 className="text-base font-black text-white leading-tight">
-                                            {leader.name}
-                                        </h3>
-                                        <p className="text-xs font-bold text-amber-300 mt-1 uppercase tracking-wider">
-                                            {leader.role || 'Ketua Lembaga'}
-                                        </p>
+                                    {/* Bottom Gradient Vignette on Photo */}
+                                    <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/85 via-black/40 to-transparent pointer-events-none" />
+
+                                    {/* Floating Role Badge over Photo Bottom */}
+                                    <div className="absolute bottom-2.5 left-2.5">
+                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 text-zinc-950 font-black text-[11px] sm:text-xs uppercase tracking-wide shadow-lg shadow-black/50">
+                                            <ShieldCheck className="h-3.5 w-3.5 text-zinc-950 shrink-0" />
+                                            <span className="truncate">{leader.role || 'Ketua Lembaga'}</span>
+                                        </span>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        {/* 2. INFORMASI SEKRETARIAT & LAYANAN */}
-                        <div className="group relative overflow-hidden p-5 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200/90 dark:border-zinc-800 shadow-xs space-y-4">
-                            {/* Siluet Batik Truntum Watermark */}
-                            <div
-                                className="absolute inset-0 pointer-events-none opacity-[0.02] dark:opacity-[0.04] bg-repeat"
-                                style={{
-                                    backgroundImage: `url("${BATIK_TRUNTUM_PATTERN}")`,
-                                    backgroundSize: "65px 65px",
-                                }}
-                            />
-
-                            <div className="relative z-10 space-y-3.5">
-                                <div className="flex items-center gap-2 pb-3 border-b border-zinc-200/90 dark:border-zinc-800">
-                                    <MapPin className="h-4 w-4 text-red-600 dark:text-amber-400 shrink-0" />
-                                    <h3 className="text-sm font-black text-zinc-900 dark:text-zinc-100">
-                                        Sekretariat & Koordinasi
+                            {/* Card Content (With Batik Silhouette Backdrop) */}
+                            <div className="relative z-10 p-4 sm:p-5 space-y-3">
+                                <div>
+                                    <span className="text-[9px] uppercase font-bold tracking-widest text-amber-400/90 block mb-0.5">
+                                        Nama Lengkap Pejabat
+                                    </span>
+                                    <h3 className="text-base sm:text-lg font-black text-white group-hover:text-amber-300 transition-colors tracking-tight leading-snug">
+                                        {leader.name}
                                     </h3>
                                 </div>
 
-                                <div className="space-y-3 text-xs">
-                                    <div className="flex items-start gap-3">
-                                        <MapPin className="h-4 w-4 text-red-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                                <div className="h-px w-full bg-gradient-to-r from-amber-400/50 via-amber-400/20 to-transparent" />
+
+                                {/* Responsibility / Mandate Description */}
+                                <div className="p-3 rounded-lg bg-black/40 backdrop-blur-xs border border-amber-400/25 space-y-1 text-left">
+                                    <span className="text-[9px] font-extrabold uppercase tracking-wider text-amber-300 block">
+                                        Amanat & Peran Kepemimpinan
+                                    </span>
+                                    <p className="text-xs text-red-100/90 leading-relaxed font-normal">
+                                        Penanggung jawab tertinggi dalam memimpin tata kelola {organization.name || 'lembaga desa'}, mengkoordinasikan agenda kerja strategis, dan mewakili aspirasi warga Karangwungu.
+                                    </p>
+                                </div>
+
+                                {/* Official Legitimacy Badge */}
+                                <div className="flex items-center justify-between p-2.5 rounded-lg bg-black/30 border border-white/10 text-xs">
+                                    <div className="flex items-center gap-2 text-zinc-200">
+                                        <Landmark className="h-3.5 w-3.5 text-amber-400 shrink-0" />
+                                        <span className="text-[11px] font-semibold">SK & Regulasi Pemerintah Desa</span>
+                                    </div>
+                                    <span className="text-[10px] font-bold text-amber-300 bg-amber-400/15 border border-amber-400/30 px-2 py-0.5 rounded">
+                                        Sah
+                                    </span>
+                                </div>
+
+                                {/* WhatsApp / Contact Button if Phone is available */}
+                                {leader.phone && (
+                                    <a
+                                        href={`https://wa.me/${leader.phone.replace(/[^0-9]/g, '')}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="w-full inline-flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md transition-all cursor-pointer"
+                                    >
+                                        <Phone className="h-3.5 w-3.5" />
+                                        <span>Hubungi Pimpinan Lembaga</span>
+                                    </a>
+                                )}
+
+                                {/* INTEGRATED: SEKRETARIAT & KOORDINASI */}
+                                <div className="pt-3 border-t border-amber-400/30 space-y-2 text-left">
+                                    <div className="flex items-center gap-2 pb-1.5 border-b border-white/10">
+                                        <MapPin className="h-3.5 w-3.5 text-amber-400 shrink-0" />
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-amber-300">
+                                            Sekretariat & Koordinasi
+                                        </span>
+                                    </div>
+
+                                    {/* Alamat Sekretariat */}
+                                    <div className="p-2.5 rounded-lg bg-black/35 backdrop-blur-xs border border-white/10 flex items-start gap-2.5">
+                                        <MapPin className="h-3.5 w-3.5 text-amber-400 shrink-0 mt-0.5" />
                                         <div className="space-y-0.5 flex-1 min-w-0">
-                                            <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider block">
-                                                Alamat Sekretariat
+                                            <span className="text-[8.5px] font-bold text-amber-300/80 uppercase tracking-wider block">
+                                                Alamat Kantor
                                             </span>
-                                            <p className="font-semibold text-zinc-800 dark:text-zinc-200 leading-relaxed text-xs sm:text-[13px]">
+                                            <p className="text-xs text-zinc-100 font-medium leading-relaxed">
                                                 {organization.secretariat || 'Kompleks Balai Desa Karangwungu, Kec. Karanggeneng, Kab. Lamongan, Jawa Timur 62254'}
                                             </p>
                                         </div>
                                     </div>
 
-                                    <div className="flex items-start gap-3 pt-3 border-t border-zinc-100 dark:border-zinc-800/80">
-                                        <Calendar className="h-4 w-4 text-red-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                                    {/* Jadwal Koordinasi */}
+                                    <div className="p-2.5 rounded-lg bg-black/35 backdrop-blur-xs border border-white/10 flex items-start gap-2.5">
+                                        <Calendar className="h-3.5 w-3.5 text-amber-400 shrink-0 mt-0.5" />
                                         <div className="space-y-0.5 flex-1 min-w-0">
-                                            <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider block">
+                                            <span className="text-[8.5px] font-bold text-amber-300/80 uppercase tracking-wider block">
                                                 Jadwal Koordinasi
                                             </span>
-                                            <p className="font-semibold text-zinc-800 dark:text-zinc-200 leading-relaxed text-xs sm:text-[13px]">
+                                            <p className="text-xs text-zinc-100 font-medium leading-relaxed">
                                                 {organization.meeting_schedule || 'Setiap Minggu Ke-1 & Koordinasi Rutin Bulanan'}
                                             </p>
                                         </div>
                                     </div>
 
-                                    <div className="flex items-start gap-3 pt-3 border-t border-zinc-100 dark:border-zinc-800/80">
-                                        <Mail className="h-4 w-4 text-red-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                                    {/* Email Resmi */}
+                                    <div className="p-2.5 rounded-lg bg-black/35 backdrop-blur-xs border border-white/10 flex items-start gap-2.5">
+                                        <Mail className="h-3.5 w-3.5 text-amber-400 shrink-0 mt-0.5" />
                                         <div className="space-y-0.5 flex-1 min-w-0">
-                                            <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider block">
+                                            <span className="text-[8.5px] font-bold text-amber-300/80 uppercase tracking-wider block">
                                                 Email Resmi
                                             </span>
                                             <a
                                                 href={`mailto:${organization.email || 'pemdes@karangwungu-lamongan.desa.id'}`}
-                                                className="font-mono text-xs font-semibold text-red-600 dark:text-amber-400 hover:underline block break-all"
+                                                className="font-mono text-xs font-semibold text-amber-300 hover:text-white hover:underline block break-all"
                                             >
                                                 {organization.email || 'pemdes@karangwungu-lamongan.desa.id'}
                                             </a>
@@ -659,68 +751,8 @@ export default function OrganizationShow({
                             </div>
                         </div>
 
-                        {/* 3. REKOMENDASI LEMBAGA LAINNYA (Unboxed, mengikuti referensi card ServicesSection) */}
-                        {otherOrganizations.length > 0 && (
-                            <div className="space-y-3 pt-1">
-                                <div className="flex items-center justify-between pb-2.5 border-b border-zinc-200/90 dark:border-zinc-800">
-                                    <div className="flex items-center gap-2">
-                                        <Users className="h-4 w-4 text-red-600 dark:text-amber-400 shrink-0" />
-                                        <h3 className="text-sm font-black text-zinc-900 dark:text-zinc-100">
-                                            Lembaga Desa Lainnya
-                                        </h3>
-                                    </div>
-                                    <Link
-                                        href="/profil/lembaga"
-                                        className="text-[11px] font-bold text-red-600 dark:text-amber-400 hover:underline inline-flex items-center gap-1"
-                                    >
-                                        <span>Lihat Semua</span>
-                                        <ArrowRight className="h-3 w-3" />
-                                    </Link>
-                                </div>
-
-                                <div className="space-y-2.5">
-                                    {otherOrganizations.slice(0, 5).map((other) => {
-                                        const OtherIcon = getIconComponent(other.icon, Users);
-                                        return (
-                                            <Link
-                                                key={other.id}
-                                                href={`/profil/lembaga/${other.id}`}
-                                                className="group relative overflow-hidden p-3 sm:p-3.5 rounded-lg bg-gradient-to-br from-white via-red-50/40 to-amber-50/30 dark:from-zinc-900 dark:via-[#1c080b] dark:to-zinc-950 backdrop-blur-xl border border-red-500/20 dark:border-red-900/40 hover:border-amber-500/70 dark:hover:border-amber-400/60 shadow-xs hover:shadow-md hover:shadow-red-950/10 transition-all duration-200 hover:-translate-y-0.5 flex items-center justify-between gap-3 cursor-pointer pl-4"
-                                            >
-                                                {/* Aksen Gradasi Garis Tipis Vertikal: Merah - Hitam - Kuning */}
-                                                <div className="absolute left-0 inset-y-0 w-1 sm:w-1.5 bg-gradient-to-b from-red-600 via-zinc-900 to-amber-400 opacity-85 group-hover:opacity-100 transition-opacity" />
-
-                                                {/* Bias Gradasi Halus di Sudut Belakang */}
-                                                <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full bg-gradient-to-br from-red-600/10 via-zinc-900/5 to-amber-500/15 blur-xl pointer-events-none group-hover:scale-125 transition-transform duration-500" />
-
-                                                <div className="relative z-10 flex items-center gap-3 min-w-0">
-                                                    <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-amber-500/15 via-red-500/10 to-amber-500/5 border border-amber-500/30 text-amber-500 dark:text-amber-400 flex items-center justify-center shrink-0 p-1.5 group-hover:scale-105 group-hover:bg-gradient-to-br group-hover:from-red-600 group-hover:to-amber-500 group-hover:text-white group-hover:border-amber-300 transition-all shadow-xs">
-                                                        {other.logo ? (
-                                                            <img
-                                                                src={other.logo}
-                                                                alt={other.shortName || other.name}
-                                                                className="w-full h-full object-contain"
-                                                            />
-                                                        ) : (
-                                                            <OtherIcon className="h-4 w-4" />
-                                                        )}
-                                                    </div>
-                                                    <div className="min-w-0">
-                                                        <h4 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-300 transition-colors truncate">
-                                                            {other.shortName || other.name}
-                                                        </h4>
-                                                        <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate mt-0.5">
-                                                            {other.tagline || 'Lembaga Desa Karangwungu'}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                                <ArrowRight className="relative z-10 h-4 w-4 text-zinc-400 dark:text-zinc-500 group-hover:text-amber-500 dark:group-hover:text-amber-400 group-hover:translate-x-1 transition-all shrink-0 ml-1" />
-                                            </Link>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-                        )}
+                        {/* 3. REKOMENDASI LEMBAGA LAINNYA (Desktop Sidebar only) */}
+                        {renderOtherOrganizations(false)}
                     </div>
                 </div>
 

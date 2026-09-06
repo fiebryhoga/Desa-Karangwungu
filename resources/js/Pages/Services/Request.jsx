@@ -128,7 +128,7 @@ export default function Request({ services = [] }) {
                         return (
                             <div
                                 key={service.id}
-                                className="group relative rounded-lg overflow-hidden bg-gradient-to-b from-[#74151e] via-[#5c1018] to-[#420a11] dark:from-[#2a0509] dark:via-[#1a0305] dark:to-[#0d0103] text-white shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between border border-amber-400/40 dark:border-amber-500/35 hover:border-amber-400/80 p-5 sm:p-6"
+                                className="group relative rounded-lg overflow-hidden bg-gradient-to-b from-red-700 via-red-800 to-zinc-950 dark:from-red-800 dark:via-red-950 dark:to-[#080102] text-white shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between border border-amber-400/40 dark:border-amber-500/35 hover:border-amber-400/80 p-5 sm:p-6"
                             >
                                 {/* Siluet Motif Batik Parang Kencana Background Layer */}
                                 <div
