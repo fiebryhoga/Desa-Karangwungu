@@ -523,7 +523,7 @@ export default function AdminLayout({ children, title = 'Panel Administrator', b
                                 title={`${currentUser.name} (Profil)`}
                             >
                                 <div className="relative">
-                                    <div className="h-7 w-7 rounded-full bg-zinc-900 text-white font-bold text-xs flex items-center justify-center shadow-xs ring-1 ring-black/5">
+                                    <div className="h-7 w-7 rounded-full bg-gradient-to-tr from-red-800 via-red-700 to-amber-500 text-amber-100 font-bold text-xs flex items-center justify-center shadow-xs ring-1 ring-amber-400/30">
                                         {currentUser.name.charAt(0).toUpperCase()}
                                     </div>
                                     <span className="absolute bottom-0 right-0 h-1.5 w-1.5 rounded-full bg-emerald-500 ring-2 ring-white" />
@@ -556,7 +556,7 @@ export default function AdminLayout({ children, title = 'Panel Administrator', b
                                 title="Buka Profil Administrator"
                             >
                                 <div className="relative shrink-0">
-                                    <div className="h-8 w-8 rounded-full bg-zinc-900 text-white font-bold text-xs flex items-center justify-center shadow-xs ring-1 ring-black/5 group-hover/user:scale-105 transition-transform">
+                                    <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-red-800 via-red-700 to-amber-500 text-amber-100 font-bold text-xs flex items-center justify-center shadow-xs ring-1 ring-amber-400/30 group-hover/user:scale-105 transition-transform">
                                         {currentUser.name.charAt(0).toUpperCase()}
                                     </div>
                                     <span className="absolute bottom-0 right-0 h-2 w-2 rounded-full bg-emerald-500 ring-2 ring-white" />
@@ -666,7 +666,7 @@ export default function AdminLayout({ children, title = 'Panel Administrator', b
                             className="flex items-center gap-2.5 p-1 rounded-lg hover:bg-zinc-100/80 transition-colors group cursor-pointer"
                         >
                             <div className="relative shrink-0">
-                                <div className="h-8 w-8 rounded-full bg-zinc-900 text-white flex items-center justify-center font-bold text-xs shadow-xs ring-1 ring-black/5 group-hover:scale-105 transition-transform">
+                                <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-red-800 via-red-700 to-amber-500 text-amber-100 flex items-center justify-center font-bold text-xs shadow-xs ring-1 ring-amber-400/30 group-hover:scale-105 transition-transform">
                                     {currentUser.name.charAt(0).toUpperCase()}
                                 </div>
                                 <span className="absolute bottom-0 right-0 h-2 w-2 rounded-full bg-emerald-500 ring-2 ring-white" />

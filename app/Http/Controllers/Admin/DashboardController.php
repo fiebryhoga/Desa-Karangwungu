@@ -25,8 +25,8 @@ class DashboardController extends Controller
             'total_letters' => LetterRequest::count(),
             'today_letters' => LetterRequest::whereDate('created_at', today())->count(),
             'pending_letters' => LetterRequest::whereIn('status', ['menunggu', 'pending'])->count(),
-            'processing_letters' => LetterRequest::whereIn('status', ['diproses', 'processing'])->count(),
-            'completed_letters' => LetterRequest::whereIn('status', ['selesai', 'completed', 'bisa_diambil', 'ready'])->count(),
+            'processing_letters' => LetterRequest::whereIn('status', ['diproses', 'processing', 'bisa_diambil'])->count(),
+            'completed_letters' => LetterRequest::whereIn('status', ['selesai', 'completed'])->count(),
             'rejected_letters' => LetterRequest::whereIn('status', ['ditolak', 'rejected'])->count(),
             'total_posts' => Post::count(),
             'today_posts' => Post::whereDate('created_at', today())->count(),
@@ -48,37 +48,61 @@ class DashboardController extends Controller
             'productive_age_percent' => (float) (SiteSetting::getValue('productive_age_percent', 66.5) ?: 66.5),
         ];
 
-        // 6 Month Letter Trend
-        $monthlyTrend = [];
-        $indoMonths = ['Jan' => 'Jan', 'Feb' => 'Feb', 'Mar' => 'Mar', 'Apr' => 'Apr', 'May' => 'Mei', 'Jun' => 'Jun', 'Jul' => 'Jul', 'Aug' => 'Agu', 'Sep' => 'Sep', 'Oct' => 'Okt', 'Nov' => 'Nov', 'Dec' => 'Des'];
-        for ($i = 5; $i >= 0; $i--) {
-            $date = now()->subMonths($i);
-            $rawMonth = $date->format('M');
-            $label = $indoMonths[$rawMonth] ?? $rawMonth;
-            $year = $date->year;
-            $month = $date->month;
+        // 7 Days Letter Trend (7 Hari Terakhir)
+        $dailyTrend = [];
+        $indoDays = [
+            'Sun' => 'Min',
+            'Mon' => 'Sen',
+            'Tue' => 'Sel',
+            'Wed' => 'Rab',
+            'Thu' => 'Kam',
+            'Fri' => 'Jum',
+            'Sat' => 'Sab',
+        ];
 
-            $completed = LetterRequest::whereYear('created_at', $year)
-                ->whereMonth('created_at', $month)
-                ->whereIn('status', ['selesai', 'completed', 'bisa_diambil', 'ready'])
+        for ($i = 6; $i >= 0; $i--) {
+            $date = now()->subDays($i);
+            $dayCode = $date->format('D');
+            $dayName = $indoDays[$dayCode] ?? $dayCode;
+            $dateShort = $date->format('d/m');
+            $dateStr = $date->toDateString();
+
+            $completed = LetterRequest::whereDate('created_at', $dateStr)
+                ->whereIn('status', ['selesai', 'completed'])
                 ->count();
-            $pending = LetterRequest::whereYear('created_at', $year)
-                ->whereMonth('created_at', $month)
-                ->whereIn('status', ['menunggu', 'pending', 'diproses', 'processing'])
+            $pending = LetterRequest::whereDate('created_at', $dateStr)
+                ->whereIn('status', ['menunggu', 'pending', 'diproses', 'processing', 'bisa_diambil'])
                 ->count();
-            $rejected = LetterRequest::whereYear('created_at', $year)
-                ->whereMonth('created_at', $month)
+            $rejected = LetterRequest::whereDate('created_at', $dateStr)
                 ->whereIn('status', ['ditolak', 'rejected'])
                 ->count();
 
-            $monthlyTrend[] = [
-                'month' => $label,
+            $dailyTrend[] = [
+                'day' => $dayName,
+                'date' => $dateShort,
+                'full_date' => $date->format('d M Y'),
+                'is_today' => $i === 0,
                 'completed' => $completed,
                 'pending' => $pending,
                 'rejected' => $rejected,
                 'total' => $completed + $pending + $rejected,
             ];
         }
+
+        $pendingLetters = LetterRequest::whereIn('status', ['menunggu', 'pending'])
+            ->latest()
+            ->take(5)
+            ->get(['id', 'tracking_code', 'citizen_name', 'letter_type', 'status', 'created_at']);
+
+        $processingLetters = LetterRequest::whereIn('status', ['diproses', 'processing', 'bisa_diambil'])
+            ->latest()
+            ->take(5)
+            ->get(['id', 'tracking_code', 'citizen_name', 'letter_type', 'status', 'created_at']);
+
+        $completedLetters = LetterRequest::whereIn('status', ['selesai', 'completed'])
+            ->latest()
+            ->take(5)
+            ->get(['id', 'tracking_code', 'citizen_name', 'letter_type', 'status', 'created_at']);
 
         $recentLetters = LetterRequest::latest()
             ->take(6)
@@ -92,12 +116,36 @@ class DashboardController extends Controller
             ->take(5)
             ->get(['id', 'username', 'action', 'details', 'created_at']);
 
+        // Letter Type Distribution (Top categories)
+        $letterTypeDistribution = LetterRequest::selectRaw('letter_type, count(*) as count')
+            ->groupBy('letter_type')
+            ->orderByDesc('count')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'type' => $item->letter_type ?: 'Lainnya',
+                    'count' => (int) $item->count,
+                ];
+            })
+            ->values();
+
+        $recentComments = Comment::with('post:id,title')
+            ->latest('created_at')
+            ->take(5)
+            ->get(['id', 'post_id', 'name', 'content', 'is_approved', 'created_at']);
+
         return Inertia::render('Admin/Dashboard', [
             'stats' => $stats,
             'demographics' => $demographics,
-            'monthlyTrend' => $monthlyTrend,
+            'dailyTrend' => $dailyTrend,
+            'monthlyTrend' => $dailyTrend,
+            'letterTypeDistribution' => $letterTypeDistribution,
+            'pendingLetters' => $pendingLetters,
+            'processingLetters' => $processingLetters,
+            'completedLetters' => $completedLetters,
             'recentLetters' => $recentLetters,
             'recentPosts' => $recentPosts,
+            'recentComments' => $recentComments,
             'recentActivities' => $recentActivities,
         ]);
     }

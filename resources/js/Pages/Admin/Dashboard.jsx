@@ -7,6 +7,7 @@ import {
     Newspaper,
     Sparkles,
     MessageSquare,
+    MessageCircle,
     Users,
     Clock,
     CheckCircle2,
@@ -35,17 +36,26 @@ import {
 export default function Dashboard({
     stats = {},
     demographics = {},
+    dailyTrend = [],
     monthlyTrend = [],
+    letterTypeDistribution = [],
+    pendingLetters = [],
+    processingLetters = [],
+    completedLetters = [],
     recentLetters = [],
     recentPosts = [],
+    recentComments = [],
     recentActivities = [],
 }) {
     const { props } = usePage();
     const adminPath = props?.admin_path || 'portal-karangwungu';
     const currentUser = props?.auth?.user || { name: 'Administrator', username: 'admin', role: 'Superadmin' };
 
+    // 7-day service trend data
+    const serviceTrend = dailyTrend && dailyTrend.length > 0 ? dailyTrend : monthlyTrend;
+
     // State for interactive chart tooltip
-    const [hoveredMonth, setHoveredMonth] = useState(null);
+    const [hoveredDay, setHoveredDay] = useState(null);
 
     // Dynamic greeting based on current hour
     const getGreeting = () => {
@@ -87,7 +97,7 @@ export default function Dashboard({
     const totalFamilies = demographics.total_families || 985;
     const productivePercent = demographics.productive_age_percent || 66.5;
 
-    // SVG Donut calculation for Demographics
+    // Donut calculation for Demographics
     const donutRadius = 42;
     const circumference = 2 * Math.PI * donutRadius; // ~263.89
     const malePercent = (maleCitizens / totalCitizens) * 100;
@@ -95,42 +105,73 @@ export default function Dashboard({
     const maleDash = (malePercent / 100) * circumference;
     const femaleDash = (femalePercent / 100) * circumference;
 
-    // KPI Stat cards configuration
+    // Donut calculation for Letter Type Distribution (100% Real Database Data)
+    const letterColors = [
+        { stroke: '#dc2626', bg: 'bg-red-600', text: 'text-red-700' },
+        { stroke: '#f59e0b', bg: 'bg-amber-500', text: 'text-amber-700' },
+        { stroke: '#2563eb', bg: 'bg-blue-600', text: 'text-blue-700' },
+        { stroke: '#10b981', bg: 'bg-emerald-500', text: 'text-emerald-700' },
+        { stroke: '#8b5cf6', bg: 'bg-purple-500', text: 'text-purple-700' },
+        { stroke: '#06b6d4', bg: 'bg-cyan-500', text: 'text-cyan-700' },
+    ];
+
+    const totalLetterTypes = letterTypeDistribution.reduce((acc, curr) => acc + (curr.count || 0), 0) || (stats.total_letters || 0);
+    const letterDonutRadius = 38;
+    const letterCircumference = 2 * Math.PI * letterDonutRadius; // ~238.76
+
+    let letterCumulativeOffset = 0;
+    const letterSegments = letterTypeDistribution.map((item, idx) => {
+        const count = item.count || 0;
+        const percent = totalLetterTypes > 0 ? (count / totalLetterTypes) * 100 : 0;
+        const dashLength = (percent / 100) * letterCircumference;
+        const dashOffset = letterCumulativeOffset;
+        letterCumulativeOffset += dashLength;
+        const color = letterColors[idx % letterColors.length];
+        return {
+            ...item,
+            percent: Math.round(percent),
+            dashLength,
+            dashOffset,
+            color,
+        };
+    });
+
+    // KPI Stat cards configuration: Total (Semua) & Hari Ini (Today)
     const statCards = [
         {
             title: 'Permohonan Surat',
-            value: stats.total_letters || 0,
-            badge: `${stats.pending_letters || 0} Perlu Verifikasi`,
-            badgeColor: stats.pending_letters > 0 ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200',
+            total: stats.total_letters || 0,
+            today: stats.today_letters || 0,
+            subtext: stats.pending_letters > 0 ? `${stats.pending_letters} perlu verifikasi` : 'Semua terverifikasi',
             icon: FileText,
-            iconBg: 'bg-red-50 text-red-600 border border-red-100',
-            link: '/layanan/lacak',
+            iconColor: 'text-red-500',
+            link: `/${adminPath}/settings/letters`,
         },
         {
             title: 'Berita & Publikasi',
-            value: stats.total_posts || 0,
-            badge: 'Publikasi Aktif',
-            badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+            total: stats.total_posts || 0,
+            today: stats.today_posts || 0,
+            subtext: 'Warta informasi desa',
             icon: Newspaper,
-            iconBg: 'bg-emerald-50 text-emerald-600 border border-emerald-100',
-            link: '/berita',
+            iconColor: 'text-emerald-500',
+            link: `/${adminPath}/settings/news`,
         },
         {
-            title: 'Potensi & UMKM',
-            value: stats.total_potentials || 0,
-            badge: 'Direktori Warga',
-            badgeColor: 'bg-blue-50 text-blue-700 border-blue-200',
-            icon: Sparkles,
-            iconBg: 'bg-amber-50 text-amber-600 border border-amber-100',
-            link: '/potensi',
+            title: 'Komentar di Berita',
+            total: stats.total_comments || 0,
+            today: stats.today_comments || 0,
+            subtext: stats.pending_comments > 0 ? `${stats.pending_comments} belum disetujui` : 'Interaksi pembaca',
+            icon: MessageCircle,
+            iconColor: 'text-blue-500',
+            link: `/${adminPath}/settings/news`,
         },
         {
             title: 'Aspirasi Masuk',
-            value: stats.total_feedbacks || 0,
-            badge: 'Kritik & Saran',
-            badgeColor: 'bg-purple-50 text-purple-700 border-purple-200',
+            total: stats.total_feedbacks || 0,
+            today: stats.today_feedbacks || 0,
+            subtext: 'Kritik & masukan warga',
             icon: MessageSquare,
-            iconBg: 'bg-purple-50 text-purple-600 border border-purple-100',
+            iconColor: 'text-purple-500',
             link: `/${adminPath}/settings/feedbacks`,
         },
     ];
@@ -153,8 +194,9 @@ export default function Dashboard({
         return <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-zinc-100 text-zinc-600 border border-zinc-200">{status}</span>;
     };
 
-    // Calculate max value for chart scaling
-    const trendMax = Math.max(...monthlyTrend.map((d) => d.total || 0), 6);
+    // Calculate max value and 7-day total for chart scaling
+    const trendMax = Math.max(...serviceTrend.map((d) => d.total || 0), 4);
+    const total7Days = serviceTrend.reduce((acc, curr) => acc + (curr.total || 0), 0);
 
     return (
         <AdminLayout title="Dashboard">
@@ -239,14 +281,14 @@ export default function Dashboard({
                                         Desa Karangwungu
                                     </span>
                                     <span className="text-[9px] text-red-100 font-medium block">
-                                        Kec. Karangdowo, Klaten
+                                        Kec. Karanggeneng, Lamongan
                                     </span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* 2. Stat KPI Cards Grid (4 Cards) */}
+                    {/* 2. Stat KPI Cards Grid (4 Cards: Total & Hari Ini - White Background with Subtle Dark Red-Gold Gradient Touch) */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                         {statCards.map((card, idx) => {
                             const Icon = card.icon;
@@ -254,23 +296,44 @@ export default function Dashboard({
                                 <Link
                                     key={idx}
                                     href={card.link}
-                                    className="p-3.5 sm:p-4 rounded-lg bg-white border border-zinc-200 hover:border-zinc-300 shadow-xs hover:shadow-md transition-all group cursor-pointer flex flex-col justify-between space-y-2.5"
+                                    className="relative p-3.5 sm:p-4 rounded-lg bg-white border border-zinc-200/90 hover:border-red-600/40 hover:shadow-md transition-all group flex flex-col justify-between"
                                 >
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-xs font-semibold text-zinc-500 truncate">
+                                    {/* Header: Title & Frameless Accent Icon */}
+                                    <div className="relative z-10 flex items-center justify-between">
+                                        <span className="text-xs font-semibold text-zinc-600 group-hover:text-zinc-900 transition-colors">
                                             {card.title}
                                         </span>
-                                        <div className={`p-2 rounded-lg ${card.iconBg} group-hover:scale-110 transition-transform`}>
-                                            <Icon className="h-4 w-4" />
+                                        <Icon className={`h-4.5 w-4.5 ${card.iconColor} group-hover:scale-110 transition-transform`} />
+                                    </div>
+
+                                    {/* Metrics: Semua (Total) & Hari Ini */}
+                                    <div className="relative z-10 mt-3 pt-2.5 border-t border-zinc-100 flex items-baseline justify-between">
+                                        <div>
+                                            <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block">
+                                                Semua
+                                            </span>
+                                            <span className="text-2xl sm:text-[26px] font-black text-zinc-900 tracking-tight leading-none mt-1 block">
+                                                {card.total}
+                                            </span>
+                                        </div>
+                                        <div className="text-right">
+                                            <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block">
+                                                Hari Ini
+                                            </span>
+                                            <span className={`text-lg sm:text-xl font-black leading-none mt-1 block ${
+                                                card.today > 0 ? 'bg-gradient-to-r from-red-700 to-red-500 bg-clip-text text-transparent' : 'text-zinc-400'
+                                            }`}>
+                                                {card.today > 0 ? `+${card.today}` : '0'}
+                                            </span>
                                         </div>
                                     </div>
-                                    <div>
-                                        <div className="text-2xl font-black text-zinc-900 tracking-tight">
-                                            {card.value}
-                                        </div>
-                                        <span className={`inline-block mt-1 px-2 py-0.5 rounded-md text-[10px] font-bold border ${card.badgeColor}`}>
-                                            {card.badge}
+
+                                    {/* Footer: Clean Subtext info without badge frame */}
+                                    <div className="relative z-10 mt-2.5 pt-1.5 border-t border-zinc-50 flex items-center justify-between text-[11px] text-zinc-400">
+                                        <span className="truncate group-hover:text-zinc-600 transition-colors">
+                                            {card.subtext}
                                         </span>
+                                        <ChevronRight className="h-3 w-3 text-zinc-300 group-hover:text-red-700 group-hover:translate-x-0.5 transition-all shrink-0 ml-1" />
                                     </div>
                                 </Link>
                             );
@@ -279,7 +342,7 @@ export default function Dashboard({
 
                     {/* 3. Charts & Analytics Grid (Bar Chart & Service Efficiency Gauge) */}
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-                        {/* Chart 1: Tren Layanan Surat 6 Bulan Terakhir (8 of 12) */}
+                        {/* Chart 1: Tren Layanan Surat 7 Hari Terakhir (8 of 12) */}
                         <div className="lg:col-span-7 rounded-lg bg-white border border-zinc-200 p-4 space-y-3 shadow-xs">
                             <div className="flex items-center justify-between border-b border-zinc-100 pb-2.5">
                                 <div>
@@ -288,7 +351,7 @@ export default function Dashboard({
                                         <span>Tren Permohonan Surat</span>
                                     </h2>
                                     <p className="text-xs text-zinc-400 mt-0.5">
-                                        Volume pelayanan 6 bulan terakhir
+                                        Volume pelayanan 7 hari terakhir
                                     </p>
                                 </div>
                                 <div className="flex items-center gap-3 text-[11px]">
@@ -305,8 +368,8 @@ export default function Dashboard({
 
                             {/* SVG Bar Chart */}
                             <div className="relative pt-1">
-                                <div className="h-40 flex items-end justify-between gap-3 px-2 border-b border-zinc-200 pb-2">
-                                    {monthlyTrend.map((item, i) => {
+                                <div className="h-40 flex items-end justify-between gap-2.5 px-2 border-b border-zinc-200 pb-2">
+                                    {serviceTrend.map((item, i) => {
                                         const total = item.total || 0;
                                         const completed = item.completed || 0;
                                         const pending = (item.pending || 0) + (item.rejected || 0);
@@ -315,26 +378,28 @@ export default function Dashboard({
                                         const totalHeightPct = total > 0 ? Math.max((total / trendMax) * 100, 14) : 8;
                                         const completedHeightPct = total > 0 ? (completed / total) * 100 : 50;
 
-                                        const isHovered = hoveredMonth === i;
+                                        const isHovered = hoveredDay === i;
 
                                         return (
                                             <div
                                                 key={i}
                                                 className="flex-1 flex flex-col items-center h-full justify-end group/bar cursor-pointer"
-                                                onMouseEnter={() => setHoveredMonth(i)}
-                                                onMouseLeave={() => setHoveredMonth(null)}
+                                                onMouseEnter={() => setHoveredDay(i)}
+                                                onMouseLeave={() => setHoveredDay(null)}
                                             >
                                                 {/* Tooltip on hover */}
                                                 {isHovered && (
-                                                    <div className="absolute -top-7 px-2 py-1 rounded-md bg-zinc-900 text-white text-[10px] font-semibold shadow-lg whitespace-nowrap z-20 pointer-events-none animate-in fade-in zoom-in-95">
-                                                        {item.month}: {completed} Selesai, {pending} Proses
+                                                    <div className="absolute -top-8 px-2.5 py-1 rounded-md bg-zinc-900 text-white text-[10px] font-semibold shadow-lg whitespace-nowrap z-20 pointer-events-none animate-in fade-in zoom-in-95">
+                                                        {item.day}, {item.date} {item.is_today ? '(Hari Ini)' : ''}: {completed} Selesai, {pending} Proses
                                                     </div>
                                                 )}
 
                                                 {/* Stacked Bar Container */}
                                                 <div
                                                     style={{ height: `${totalHeightPct}%` }}
-                                                    className="w-full max-w-[32px] rounded-t-md overflow-hidden flex flex-col justify-end transition-all duration-300 group-hover/bar:brightness-110 shadow-xs"
+                                                    className={`w-full max-w-[32px] rounded-t-md overflow-hidden flex flex-col justify-end transition-all duration-300 group-hover/bar:brightness-110 shadow-xs ${
+                                                        item.is_today ? 'ring-1.5 ring-red-500/40' : ''
+                                                    }`}
                                                 >
                                                     {/* Pending portion (top) */}
                                                     {pending > 0 && (
@@ -352,203 +417,346 @@ export default function Dashboard({
                                                     />
                                                 </div>
 
-                                                {/* Month Label */}
-                                                <span className={`text-[11px] font-semibold mt-1.5 transition-colors ${
-                                                    isHovered ? 'text-red-600 font-bold' : 'text-zinc-500'
-                                                }`}>
-                                                    {item.month}
-                                                </span>
+                                                {/* Day & Date Label */}
+                                                <div className="flex flex-col items-center mt-1.5 text-center leading-tight">
+                                                    <span className={`text-[11px] font-bold transition-colors ${
+                                                        item.is_today ? 'text-red-700' : isHovered ? 'text-zinc-900' : 'text-zinc-600'
+                                                    }`}>
+                                                        {item.day}
+                                                    </span>
+                                                    <span className="text-[9.5px] text-zinc-400 font-medium">
+                                                        {item.date}
+                                                    </span>
+                                                </div>
                                             </div>
                                         );
                                     })}
                                 </div>
                                 <div className="flex items-center justify-between text-[10px] text-zinc-400 pt-1.5 px-1">
-                                    <span>Skala otomatis berdasarkan arsip sistem</span>
-                                    <span className="font-semibold text-zinc-600">Total Periode: {stats.total_letters || 0} Pengajuan</span>
+                                    <span>Skala otomatis arsip harian</span>
+                                    <span className="font-semibold text-zinc-600">Total 7 Hari: {total7Days} Pengajuan</span>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Chart 2: Indeks & Efisiensi Pelayanan Desa (5 of 12) */}
+                        {/* Chart 2: Distribusi Jenis Surat (5 of 12) */}
                         <div className="lg:col-span-5 rounded-lg bg-white border border-zinc-200 p-4 space-y-3 shadow-xs flex flex-col justify-between">
-                            <div className="border-b border-zinc-100 pb-2.5">
-                                <h2 className="text-sm font-bold text-zinc-900 flex items-center gap-2">
-                                    <Award className="h-4 w-4 text-amber-500" />
-                                    <span>Kinerja Layanan Desa</span>
-                                </h2>
-                                <p className="text-xs text-zinc-400 mt-0.5">
-                                    Kepatuhan SOP & kecepatan respon
-                                </p>
-                            </div>
-
-                            {/* Gauge / Score Display */}
-                            <div className="flex flex-col items-center justify-center py-1">
-                                <div className="relative flex items-center justify-center">
-                                    <svg className="w-28 h-28 -rotate-90" viewBox="0 0 100 100">
-                                        <circle
-                                            cx="50"
-                                            cy="50"
-                                            r="40"
-                                            fill="transparent"
-                                            stroke="#f4f4f5"
-                                            strokeWidth="8"
-                                        />
-                                        <circle
-                                            cx="50"
-                                            cy="50"
-                                            r="40"
-                                            fill="transparent"
-                                            stroke="#10b981"
-                                            strokeWidth="8"
-                                            strokeDasharray="251.2"
-                                            strokeDashoffset="25.12"
-                                            strokeLinecap="round"
-                                        />
-                                    </svg>
-                                    <div className="absolute flex flex-col items-center justify-center text-center">
-                                        <span className="text-xl font-black text-zinc-900">96.8%</span>
-                                        <span className="text-[9px] font-bold text-emerald-600 uppercase tracking-wider">Kategori Prima</span>
-                                    </div>
+                            {/* Header with Total Pill */}
+                            <div className="flex items-center justify-between border-b border-zinc-100 pb-2.5">
+                                <div>
+                                    <h2 className="text-sm font-bold text-zinc-900 flex items-center gap-2">
+                                        <PieChart className="h-4 w-4 text-red-600" />
+                                        <span>Distribusi Jenis Surat</span>
+                                    </h2>
+                                    <p className="text-xs text-zinc-400 mt-0.5">
+                                        Surat paling sering diajukan warga
+                                    </p>
+                                </div>
+                                <div className="text-right shrink-0">
+                                    <span className="text-xs font-black text-zinc-900">{totalLetterTypes}</span>
+                                    <span className="text-[11px] text-zinc-400 font-medium ml-1">Berkas</span>
                                 </div>
                             </div>
 
-                            {/* Service Benchmarks */}
-                            <div className="space-y-1.5 pt-1.5 border-t border-zinc-100 text-xs">
-                                <div className="flex items-center justify-between text-zinc-600">
-                                    <span className="flex items-center gap-1.5">
-                                        <Clock className="h-3.5 w-3.5 text-zinc-400" />
-                                        <span>Rata-rata Respon</span>
-                                    </span>
-                                    <span className="font-bold text-zinc-900">&lt; 24 Jam</span>
+                            {letterSegments.length === 0 ? (
+                                <div className="py-10 text-center text-xs text-zinc-400">
+                                    Belum ada data pengajuan surat masuk.
                                 </div>
-                                <div className="flex items-center justify-between text-zinc-600">
-                                    <span className="flex items-center gap-1.5">
-                                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
-                                        <span>Penyelesaian Surat</span>
-                                    </span>
-                                    <span className="font-bold text-emerald-600">{stats.completed_letters || 0} Terverifikasi</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* 4. Permohonan Surat Masuk Terbaru (Tabel) */}
-                    <div className="rounded-lg bg-white border border-zinc-200 p-4 space-y-3 shadow-xs">
-                        <div className="flex items-center justify-between border-b border-zinc-100 pb-2.5">
-                            <div>
-                                <h2 className="text-sm font-bold text-zinc-900 flex items-center gap-2">
-                                    <FileText className="h-4 w-4 text-red-600" />
-                                    <span>Permohonan Surat Terbaru</span>
-                                </h2>
-                                <p className="text-xs text-zinc-400 mt-0.5">
-                                    Pengajuan surat mandiri yang masuk dari warga
-                                </p>
-                            </div>
-                            <a
-                                href="/layanan/lacak"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-xs font-semibold text-red-600 hover:text-red-700 hover:underline flex items-center gap-1"
-                            >
-                                <span>Lacak Surat</span>
-                                <ExternalLink className="h-3 w-3" />
-                            </a>
-                        </div>
-
-                        {recentLetters.length === 0 ? (
-                            <div className="py-8 text-center text-xs text-zinc-400">
-                                Belum ada permohonan surat masuk.
-                            </div>
-                        ) : (
-                            <div className="divide-y divide-zinc-100">
-                                {recentLetters.map((letter) => (
-                                    <div key={letter.id} className="py-3 flex items-center justify-between gap-3 text-xs">
-                                        <div className="min-w-0">
-                                            <p className="font-bold text-zinc-900 truncate">
-                                                {letter.citizen_name}
-                                            </p>
-                                            <p className="text-zinc-500 text-[11px] truncate mt-0.5">
-                                                {letter.letter_type} &bull;{' '}
-                                                <span className="text-red-700 font-mono font-semibold">
-                                                    {letter.tracking_code}
+                            ) : (
+                                <>
+                                    {/* Donut Chart & Category Breakdown */}
+                                    <div className="flex flex-col sm:flex-row items-center gap-4 py-1">
+                                        {/* Donut Graphic */}
+                                        <div className="relative shrink-0 flex items-center justify-center">
+                                            <svg className="w-28 h-28 -rotate-90" viewBox="0 0 100 100">
+                                                {/* Base track */}
+                                                <circle
+                                                    cx="50"
+                                                    cy="50"
+                                                    r={letterDonutRadius}
+                                                    fill="transparent"
+                                                    stroke="#f4f4f5"
+                                                    strokeWidth="9"
+                                                />
+                                                {/* Segments */}
+                                                {letterSegments.map((seg, idx) => (
+                                                    <circle
+                                                        key={idx}
+                                                        cx="50"
+                                                        cy="50"
+                                                        r={letterDonutRadius}
+                                                        fill="transparent"
+                                                        stroke={seg.color.stroke}
+                                                        strokeWidth="9"
+                                                        strokeDasharray={`${seg.dashLength} ${letterCircumference}`}
+                                                        strokeDashoffset={-seg.dashOffset}
+                                                        className="transition-all duration-700"
+                                                    />
+                                                ))}
+                                            </svg>
+                                            {/* Center Label */}
+                                            <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
+                                                <span className="text-xl font-black text-zinc-900 leading-none">
+                                                    {totalLetterTypes}
                                                 </span>
-                                            </p>
-                                        </div>
-                                        <div className="shrink-0 flex items-center gap-2.5">
-                                            <a
-                                                href={`/layanan/surat/pdf/${letter.tracking_code}`}
-                                                target="_blank"
-                                                rel="noreferrer"
-                                                title="Cetak PDF Format Resmi"
-                                                className="p-1.5 rounded-lg border border-zinc-200 bg-zinc-50 hover:bg-zinc-100 text-zinc-700 transition-colors"
-                                            >
-                                                <Printer className="h-3.5 w-3.5 text-red-600" />
-                                            </a>
-                                            <div className="flex flex-col items-end gap-1">
-                                                {getStatusBadge(letter.status)}
-                                                <span className="text-[10px] text-zinc-400">
-                                                    {formatDateIndo(letter.created_at)}
+                                                <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider mt-0.5">
+                                                    Surat
                                                 </span>
                                             </div>
                                         </div>
+
+                                        {/* Category List & Progress */}
+                                        <div className="flex-1 w-full min-w-0 space-y-2">
+                                            {letterSegments.slice(0, 4).map((item, idx) => (
+                                                <div key={idx} className="space-y-1">
+                                                    <div className="flex items-center justify-between text-[11px] gap-2">
+                                                        <div className="flex items-center gap-1.5 min-w-0">
+                                                            <span className={`h-2 w-2 rounded-full ${item.color.bg} shrink-0`} />
+                                                            <span className="font-semibold text-zinc-800 truncate" title={item.type}>
+                                                                {item.type}
+                                                            </span>
+                                                        </div>
+                                                        <span className="font-bold text-zinc-900 shrink-0">
+                                                            {item.count} <span className="text-[10px] text-zinc-400 font-normal">({item.percent}%)</span>
+                                                        </span>
+                                                    </div>
+                                                    <div className="h-1.5 w-full bg-zinc-100 rounded-full overflow-hidden">
+                                                        <div
+                                                            className={`h-full ${item.color.bg} rounded-full transition-all duration-700`}
+                                                            style={{ width: `${item.percent}%` }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
-                                ))}
-                            </div>
-                        )}
+
+                                    {/* Footer: Most popular category */}
+                                    <div className="pt-2 border-t border-zinc-100 flex items-center justify-between text-[10px] text-zinc-400">
+                                        <span>Permohonan Terbanyak:</span>
+                                        <span className="font-bold text-zinc-800 truncate max-w-[200px]" title={letterSegments[0]?.type}>
+                                            {letterSegments[0]?.type} ({letterSegments[0]?.count} berkas)
+                                        </span>
+                                    </div>
+                                </>
+                            )}
+                        </div>
                     </div>
 
-                    {/* 5. Publikasi Berita Desa Terbaru */}
-                    <div className="rounded-lg bg-white border border-zinc-200 p-4 space-y-3 shadow-xs">
-                        <div className="flex items-center justify-between border-b border-zinc-100 pb-2.5">
-                            <div>
-                                <h2 className="text-sm font-bold text-zinc-900 flex items-center gap-2">
-                                    <Newspaper className="h-4 w-4 text-amber-500" />
-                                    <span>Publikasi Berita & Pengumuman Terbaru</span>
-                                </h2>
-                                <p className="text-xs text-zinc-400 mt-0.5">
-                                    Arsip artikel informasi dan kegiatan desa
-                                </p>
+                    {/* 4. Tiga Kolom Status Permohonan Surat: Menunggu, Diproses, dan Selesai */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3.5 sm:gap-4">
+                        {/* Kolom 1: Status Menunggu / Baru Diterima */}
+                        <div className="rounded-lg bg-white border border-zinc-200 p-4 space-y-3 shadow-xs flex flex-col justify-between">
+                            <div className="flex items-center justify-between border-b border-zinc-100 pb-2.5">
+                                <div className="min-w-0 flex-1">
+                                    <h2 className="text-sm font-bold text-zinc-900 flex items-center gap-2 truncate">
+                                        <Clock className="h-4 w-4 text-amber-500 shrink-0" />
+                                        <span className="truncate">Menunggu / Baru Masuk</span>
+                                    </h2>
+                                    <p className="text-xs text-zinc-400 mt-0.5 truncate">
+                                        Permohonan butuh verifikasi
+                                    </p>
+                                </div>
+                                <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                                    <span className="text-xs font-bold text-amber-600 font-mono">
+                                        {stats.pending_letters ?? pendingLetters.length}
+                                    </span>
+                                    <span className="text-[10px] text-zinc-400">berkas</span>
+                                </div>
                             </div>
-                            <a
-                                href="/berita"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-xs font-semibold text-amber-600 hover:text-amber-700 hover:underline flex items-center gap-1"
+
+                            {pendingLetters.length === 0 ? (
+                                <div className="py-8 text-center text-xs text-zinc-400 flex-1 flex items-center justify-center">
+                                    Tidak ada permohonan yang menunggu.
+                                </div>
+                            ) : (
+                                <div className="divide-y divide-zinc-100 flex-1">
+                                    {pendingLetters.slice(0, 5).map((letter) => (
+                                        <div key={letter.id} className="py-2.5 flex items-center justify-between gap-2 text-xs">
+                                            <div className="min-w-0 flex-1">
+                                                <Link
+                                                    href={`/${adminPath}/settings/letters?status=menunggu&search=${letter.tracking_code}`}
+                                                    className="font-bold text-zinc-900 truncate hover:text-red-700 block transition-colors"
+                                                    title={letter.citizen_name}
+                                                >
+                                                    {letter.citizen_name}
+                                                </Link>
+                                                <p className="text-zinc-500 text-[11px] truncate mt-0.5">
+                                                    {letter.letter_type} &bull;{' '}
+                                                    <span className="text-red-700 font-mono font-semibold">
+                                                        {letter.tracking_code}
+                                                    </span>
+                                                </p>
+                                            </div>
+                                            <div className="shrink-0 flex items-center gap-2">
+                                                <a
+                                                    href={`/layanan/surat/pdf/${letter.tracking_code}`}
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                    title="Cetak PDF Format Resmi"
+                                                    className="p-1.5 rounded-lg border border-zinc-200 bg-zinc-50 hover:bg-zinc-100 text-zinc-700 transition-colors"
+                                                >
+                                                    <Printer className="h-3.5 w-3.5 text-red-600" />
+                                                </a>
+                                                <span className="text-[9.5px] text-zinc-400 shrink-0">
+                                                    {timeAgo(letter.created_at)}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            <Link
+                                href={`/${adminPath}/settings/letters?status=menunggu`}
+                                className="text-[11px] font-semibold text-amber-700 hover:text-amber-800 hover:underline flex items-center justify-between pt-2 border-t border-zinc-100 group"
                             >
-                                <span>Lihat Semua</span>
-                                <ExternalLink className="h-3 w-3" />
-                            </a>
+                                <span>Verifikasi Permohonan</span>
+                                <ChevronRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
+                            </Link>
                         </div>
 
-                        {recentPosts.length === 0 ? (
-                            <div className="py-6 text-center text-xs text-zinc-400">
-                                Belum ada publikasi berita.
+                        {/* Kolom 2: Status Sedang Diproses */}
+                        <div className="rounded-lg bg-white border border-zinc-200 p-4 space-y-3 shadow-xs flex flex-col justify-between">
+                            <div className="flex items-center justify-between border-b border-zinc-100 pb-2.5">
+                                <div className="min-w-0 flex-1">
+                                    <h2 className="text-sm font-bold text-zinc-900 flex items-center gap-2 truncate">
+                                        <FileText className="h-4 w-4 text-blue-600 shrink-0" />
+                                        <span className="truncate">Sedang Diproses</span>
+                                    </h2>
+                                    <p className="text-xs text-zinc-400 mt-0.5 truncate">
+                                        Pengerjaan & siap diambil
+                                    </p>
+                                </div>
+                                <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                                    <span className="text-xs font-bold text-blue-600 font-mono">
+                                        {stats.processing_letters ?? processingLetters.length}
+                                    </span>
+                                    <span className="text-[10px] text-zinc-400">berkas</span>
+                                </div>
                             </div>
-                        ) : (
-                            <div className="divide-y divide-zinc-100">
-                                {recentPosts.map((post) => (
-                                    <div key={post.id} className="py-2.5 flex items-center justify-between gap-3 text-xs">
-                                        <div className="min-w-0">
-                                            <p className="font-bold text-zinc-900 truncate hover:text-red-700 transition-colors">
-                                                {post.title}
-                                            </p>
-                                            <p className="text-zinc-500 text-[11px] mt-0.5">
-                                                Kategori:{' '}
-                                                <span className="text-amber-700 font-semibold">{post.category}</span>
-                                            </p>
+
+                            {processingLetters.length === 0 ? (
+                                <div className="py-8 text-center text-xs text-zinc-400 flex-1 flex items-center justify-center">
+                                    Tidak ada surat yang sedang diproses.
+                                </div>
+                            ) : (
+                                <div className="divide-y divide-zinc-100 flex-1">
+                                    {processingLetters.slice(0, 5).map((letter) => (
+                                        <div key={letter.id} className="py-2.5 flex items-center justify-between gap-2 text-xs">
+                                            <div className="min-w-0 flex-1">
+                                                <Link
+                                                    href={`/${adminPath}/settings/letters?status=bisa_diambil&search=${letter.tracking_code}`}
+                                                    className="font-bold text-zinc-900 truncate hover:text-red-700 block transition-colors"
+                                                    title={letter.citizen_name}
+                                                >
+                                                    {letter.citizen_name}
+                                                </Link>
+                                                <p className="text-zinc-500 text-[11px] truncate mt-0.5">
+                                                    {letter.letter_type} &bull;{' '}
+                                                    <span className="text-red-700 font-mono font-semibold">
+                                                        {letter.tracking_code}
+                                                    </span>
+                                                </p>
+                                            </div>
+                                            <div className="shrink-0 flex items-center gap-2">
+                                                <a
+                                                    href={`/layanan/surat/pdf/${letter.tracking_code}`}
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                    title="Cetak PDF Format Resmi"
+                                                    className="p-1.5 rounded-lg border border-zinc-200 bg-zinc-50 hover:bg-zinc-100 text-zinc-700 transition-colors"
+                                                >
+                                                    <Printer className="h-3.5 w-3.5 text-red-600" />
+                                                </a>
+                                                <span className="text-[9.5px] text-zinc-400 shrink-0">
+                                                    {timeAgo(letter.created_at)}
+                                                </span>
+                                            </div>
                                         </div>
-                                        <div className="shrink-0 text-right">
-                                            <span className="text-[10px] text-zinc-400 block">
-                                                {formatDateIndo(post.created_at)}
-                                            </span>
-                                            <span className="text-[10px] text-zinc-500 font-medium">
-                                                {post.views || 0} dibaca
-                                            </span>
-                                        </div>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
+                            )}
+
+                            <Link
+                                href={`/${adminPath}/settings/letters?status=bisa_diambil`}
+                                className="text-[11px] font-semibold text-blue-700 hover:text-blue-800 hover:underline flex items-center justify-between pt-2 border-t border-zinc-100 group"
+                            >
+                                <span>Kelola Surat Diproses</span>
+                                <ChevronRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
+                            </Link>
+                        </div>
+
+                        {/* Kolom 3: Status Selesai */}
+                        <div className="rounded-lg bg-white border border-zinc-200 p-4 space-y-3 shadow-xs flex flex-col justify-between">
+                            <div className="flex items-center justify-between border-b border-zinc-100 pb-2.5">
+                                <div className="min-w-0 flex-1">
+                                    <h2 className="text-sm font-bold text-zinc-900 flex items-center gap-2 truncate">
+                                        <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                                        <span className="truncate">Selesai / Diambil</span>
+                                    </h2>
+                                    <p className="text-xs text-zinc-400 mt-0.5 truncate">
+                                        Dokumen diserahkan ke warga
+                                    </p>
+                                </div>
+                                <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                                    <span className="text-xs font-bold text-emerald-600 font-mono">
+                                        {stats.completed_letters ?? completedLetters.length}
+                                    </span>
+                                    <span className="text-[10px] text-zinc-400">berkas</span>
+                                </div>
                             </div>
-                        )}
+
+                            {completedLetters.length === 0 ? (
+                                <div className="py-8 text-center text-xs text-zinc-400 flex-1 flex items-center justify-center">
+                                    Belum ada arsip surat yang selesai.
+                                </div>
+                            ) : (
+                                <div className="divide-y divide-zinc-100 flex-1">
+                                    {completedLetters.slice(0, 5).map((letter) => (
+                                        <div key={letter.id} className="py-2.5 flex items-center justify-between gap-2 text-xs">
+                                            <div className="min-w-0 flex-1">
+                                                <Link
+                                                    href={`/${adminPath}/settings/letters?status=selesai&search=${letter.tracking_code}`}
+                                                    className="font-bold text-zinc-900 truncate hover:text-red-700 block transition-colors"
+                                                    title={letter.citizen_name}
+                                                >
+                                                    {letter.citizen_name}
+                                                </Link>
+                                                <p className="text-zinc-500 text-[11px] truncate mt-0.5">
+                                                    {letter.letter_type} &bull;{' '}
+                                                    <span className="text-red-700 font-mono font-semibold">
+                                                        {letter.tracking_code}
+                                                    </span>
+                                                </p>
+                                            </div>
+                                            <div className="shrink-0 flex items-center gap-2">
+                                                <a
+                                                    href={`/layanan/surat/pdf/${letter.tracking_code}`}
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                    title="Cetak PDF Format Resmi"
+                                                    className="p-1.5 rounded-lg border border-zinc-200 bg-zinc-50 hover:bg-zinc-100 text-zinc-700 transition-colors"
+                                                >
+                                                    <Printer className="h-3.5 w-3.5 text-red-600" />
+                                                </a>
+                                                <span className="text-[9.5px] text-zinc-400 shrink-0">
+                                                    {timeAgo(letter.created_at)}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            <Link
+                                href={`/${adminPath}/settings/letters?status=selesai`}
+                                className="text-[11px] font-semibold text-emerald-700 hover:text-emerald-800 hover:underline flex items-center justify-between pt-2 border-t border-zinc-100 group"
+                            >
+                                <span>Arsip Surat Selesai</span>
+                                <ChevronRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
+                            </Link>
+                        </div>
                     </div>
                 </div>
 
@@ -559,7 +767,7 @@ export default function Dashboard({
                     {/* Widget 1: Status Petugas & Operasional Hari Ini */}
                     <div className="rounded-lg bg-white border border-zinc-200 p-4 space-y-3 shadow-xs">
                         <div className="flex items-center gap-2.5">
-                            <div className="h-8.5 w-8.5 rounded-full bg-zinc-900 text-white font-bold text-xs flex items-center justify-center shadow-xs ring-1 ring-black/5 shrink-0">
+                            <div className="h-8.5 w-8.5 rounded-full bg-gradient-to-tr from-red-800 via-red-700 to-amber-500 text-amber-100 font-bold text-xs flex items-center justify-center shadow-xs ring-1 ring-amber-400/30 shrink-0">
                                 {currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'A'}
                             </div>
                             <div className="min-w-0 flex-1 leading-tight">
@@ -573,7 +781,8 @@ export default function Dashboard({
                                     {currentUser.role || 'Administrator'}
                                 </span>
                             </div>
-                            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[8.5px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
+                            <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 shrink-0">
+                                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                                 Aktif
                             </span>
                         </div>
