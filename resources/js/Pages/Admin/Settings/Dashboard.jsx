@@ -40,6 +40,7 @@ import {
     Square,
     Newspaper,
     ChevronDown,
+    Crop,
 } from 'lucide-react';
 import ImageCropModal from '@/Components/Admin/ImageCropModal';
 import IconPickerModal from '@/Components/Admin/IconPickerModal';
