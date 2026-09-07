@@ -7,6 +7,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\PotentialController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SeoController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\TransparencyController;
@@ -15,6 +16,11 @@ use Illuminate\Support\Facades\Route;
 // SEO Routes
 Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->name('seo.sitemap');
 Route::get('/robots.txt', [SeoController::class, 'robots'])->name('seo.robots');
+
+// Pencarian Global (Site-wide Search)
+Route::get('/cari', [SearchController::class, 'index'])->name('search.index');
+Route::get('/search', [SearchController::class, 'index'])->name('search.alias');
+Route::get('/api/search', [SearchController::class, 'apiSearch'])->name('api.search');
 
 // Beranda (Home)
 Route::get('/', [HomeController::class, 'index'])->name('home');

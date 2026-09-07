@@ -38,7 +38,7 @@ class ServiceController extends Controller
         return redirect()->back()->with('error', 'Berkas dokumen belum tersedia untuk diunduh.');
     }
 
-    public function getAvailableLetterServices()
+    public static function getAvailableLetterServices()
     {
         return [
             [

@@ -129,6 +129,6 @@ return [
     |--------------------------------------------------------------------------
     */
     'admin_path' => env('ADMIN_PATH', 'portal-karangwungu'),
-    'admin_security_pin' => env('ADMIN_SECURITY_PIN', '622540'),
+    'admin_security_pin' => env('ADMIN_SECURITY_PIN', '62254'),
 
 ];

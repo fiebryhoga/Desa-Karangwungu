@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, usePage, router } from "@inertiajs/react";
 import { createPortal } from "react-dom";
 import {
@@ -25,6 +25,9 @@ import {
     LayoutGrid,
     Target,
     Scale,
+    Loader2,
+    ChevronRight,
+    Compass,
 } from "lucide-react";
 
 export default function Navbar() {
@@ -42,10 +45,79 @@ export default function Navbar() {
 
     // Global Search State
     const [searchQuery, setSearchQuery] = useState("");
+    const [liveResults, setLiveResults] = useState(null);
+    const [isSearching, setIsSearching] = useState(false);
+    const [showDropdown, setShowDropdown] = useState(false);
+    const [activeFilter, setActiveFilter] = useState("all");
+    const searchContainerRef = useRef(null);
 
     // Dark Mode Theme State
     const [isDark, setIsDark] = useState(false);
     const [mounted, setMounted] = useState(false);
+
+    // Reset activeFilter when query changes
+    useEffect(() => {
+        setActiveFilter("all");
+    }, [searchQuery]);
+
+    // Live Debounced Autocomplete for Global Search
+    useEffect(() => {
+        const q = searchQuery.trim();
+        if (q.length < 2) {
+            setLiveResults(null);
+            setIsSearching(false);
+            return;
+        }
+
+        setIsSearching(true);
+        const timer = setTimeout(async () => {
+            try {
+                const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    setLiveResults(data);
+                    setShowDropdown(true);
+                }
+            } catch (err) {
+                console.error("Gagal memuat hasil pencarian langsung:", err);
+            } finally {
+                setIsSearching(false);
+            }
+        }, 250);
+
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
+
+    // Close Dropdown on Outside Click or Escape
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (
+                searchContainerRef.current &&
+                !searchContainerRef.current.contains(e.target)
+            ) {
+                setShowDropdown(false);
+            }
+        };
+
+        const handleKeyDown = (e) => {
+            if (e.key === "Escape") {
+                setShowDropdown(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        document.addEventListener("keydown", handleKeyDown);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+            document.removeEventListener("keydown", handleKeyDown);
+        };
+    }, []);
+
+    // Close Dropdown & Mobile Menu on URL Change
+    useEffect(() => {
+        setShowDropdown(false);
+        setMobileMenuOpen(false);
+    }, [url]);
 
     useEffect(() => {
         setMounted(true);
@@ -103,8 +175,101 @@ export default function Navbar() {
     const handleSearchSubmit = (e) => {
         e.preventDefault();
         if (!searchQuery.trim()) return;
-        router.get("/berita", { search: searchQuery.trim() });
+        setShowDropdown(false);
+        setMobileMenuOpen(false);
+        router.get("/cari", { q: searchQuery.trim() });
     };
+
+    const getCategoryDetails = (item) => {
+        const key = (item.category_key || "").toLowerCase();
+        switch (key) {
+            case "layanan":
+                return {
+                    name: "Layanan",
+                    badgeClass: "bg-emerald-950/70 text-emerald-300 border-emerald-400/40",
+                    iconBg: "bg-emerald-950/70 border-emerald-400/40 text-emerald-300",
+                    icon: <FileText className="h-4 w-4" />,
+                };
+            case "berita":
+                return {
+                    name: "Berita",
+                    badgeClass: "bg-sky-950/70 text-sky-300 border-sky-400/40",
+                    iconBg: "bg-sky-950/70 border-sky-400/40 text-sky-300",
+                    icon: <Newspaper className="h-4 w-4" />,
+                };
+            case "regulasi":
+                return {
+                    name: "Regulasi",
+                    badgeClass: "bg-purple-950/70 text-purple-300 border-purple-400/40",
+                    iconBg: "bg-purple-950/70 border-purple-400/40 text-purple-300",
+                    icon: <Scale className="h-4 w-4" />,
+                };
+            case "aparatur":
+                return {
+                    name: "Aparatur",
+                    badgeClass: "bg-amber-950/70 text-amber-300 border-amber-400/40",
+                    iconBg: "bg-amber-950/70 border-amber-400/40 text-amber-300",
+                    icon: <Users className="h-4 w-4" />,
+                };
+            case "lembaga":
+                return {
+                    name: "Lembaga",
+                    badgeClass: "bg-indigo-950/70 text-indigo-300 border-indigo-400/40",
+                    iconBg: "bg-indigo-950/70 border-indigo-400/40 text-indigo-300",
+                    icon: <Shield className="h-4 w-4" />,
+                };
+            case "potensi":
+                return {
+                    name: "Potensi",
+                    badgeClass: "bg-rose-950/70 text-rose-300 border-rose-400/40",
+                    iconBg: "bg-rose-950/70 border-rose-400/40 text-rose-300",
+                    icon: <Store className="h-4 w-4" />,
+                };
+            case "transparansi":
+                return {
+                    name: "APBDes",
+                    badgeClass: "bg-teal-950/70 text-teal-300 border-teal-400/40",
+                    iconBg: "bg-teal-950/70 border-teal-400/40 text-teal-300",
+                    icon: <PieChart className="h-4 w-4" />,
+                };
+            case "galeri":
+                return {
+                    name: "Galeri",
+                    badgeClass: "bg-pink-950/70 text-pink-300 border-pink-400/40",
+                    iconBg: "bg-pink-950/70 border-pink-400/40 text-pink-300",
+                    icon: <Image className="h-4 w-4" />,
+                };
+            default:
+                return {
+                    name: "Halaman",
+                    badgeClass: "bg-black/50 text-amber-300 border-amber-400/40",
+                    iconBg: "bg-black/50 border-amber-400/40 text-amber-300",
+                    icon: <Compass className="h-4 w-4" />,
+                };
+        }
+    };
+
+    const availableCategories = React.useMemo(() => {
+        if (!liveResults || !liveResults.results) return [];
+        const map = {};
+        liveResults.results.forEach((item) => {
+            const k = item.category_key || "halaman";
+            const meta = getCategoryDetails(item);
+            if (!map[k]) {
+                map[k] = { key: k, label: meta.name, count: 0 };
+            }
+            map[k].count++;
+        });
+        return Object.values(map);
+    }, [liveResults]);
+
+    const displayedResults = React.useMemo(() => {
+        if (!liveResults || !liveResults.results) return [];
+        if (activeFilter === "all") return liveResults.results;
+        return liveResults.results.filter(
+            (item) => (item.category_key || "halaman") === activeFilter
+        );
+    }, [liveResults, activeFilter]);
 
     return (
         <header className="sticky top-0 z-50 w-full transition-all duration-200">
@@ -156,7 +321,7 @@ export default function Navbar() {
                     <div className="hidden lg:flex items-center gap-6 xl:gap-8 text-sm font-medium">
                         <Link
                             href="/"
-                            className={`py-1 transition-colors relative ${
+                            className={`py-1 transition-colors relative whitespace-nowrap ${
                                 isActive("/") && url === "/"
                                     ? "text-amber-300 font-bold"
                                     : "text-red-100 hover:text-amber-300"
@@ -175,7 +340,7 @@ export default function Navbar() {
                             onMouseLeave={() => setProfileDropdownOpen(false)}
                         >
                             <button
-                                className={`flex items-center gap-1.5 py-1 transition-colors cursor-pointer relative ${
+                                className={`flex items-center gap-1.5 py-1 transition-colors cursor-pointer relative whitespace-nowrap ${
                                     isActive("/profil")
                                         ? "text-amber-300 font-bold"
                                         : "text-red-100 hover:text-amber-300"
@@ -273,7 +438,7 @@ export default function Navbar() {
                             onMouseLeave={() => setServicesDropdownOpen(false)}
                         >
                             <button
-                                className={`flex items-center gap-1.5 py-1 transition-colors cursor-pointer relative ${
+                                className={`flex items-center gap-1.5 py-1 transition-colors cursor-pointer relative whitespace-nowrap ${
                                     isActive("/layanan")
                                         ? "text-amber-300 font-bold"
                                         : "text-red-100 hover:text-amber-300"
@@ -338,7 +503,7 @@ export default function Navbar() {
 
                         <Link
                             href="/berita"
-                            className={`py-1 transition-colors relative ${
+                            className={`py-1 transition-colors relative whitespace-nowrap ${
                                 isActive("/berita")
                                     ? "text-amber-300 font-bold"
                                     : "text-red-100 hover:text-amber-300"
@@ -357,7 +522,7 @@ export default function Navbar() {
                             onMouseLeave={() => setMoreDropdownOpen(false)}
                         >
                             <button
-                                className={`flex items-center gap-1.5 py-1 transition-colors cursor-pointer relative ${
+                                className={`flex items-center gap-1.5 py-1 transition-colors cursor-pointer relative whitespace-nowrap ${
                                     isMoreActive()
                                         ? "text-amber-300 font-bold"
                                         : "text-red-100 hover:text-amber-300"
@@ -450,32 +615,233 @@ export default function Navbar() {
                     </div>
 
                     {/* Right Action: Sleek Inline Pill Search Bar & Theme Toggle */}
-                    <div className="flex items-center gap-2.5">
-                        {/* Desktop Inline Pill Search Form */}
-                        <form
-                            onSubmit={handleSearchSubmit}
-                            className="hidden md:flex items-center relative group"
-                        >
-                            <div className="flex items-center h-9 w-44 lg:w-56 focus-within:w-64 transition-all duration-300 rounded-full bg-black/30 border border-white/20 group-hover:border-amber-400/60 focus-within:border-amber-400 focus-within:ring-2 focus-within:ring-amber-400/20 px-3 shadow-inner">
-                                <Search className="h-3.5 w-3.5 text-amber-300 group-hover:text-amber-200 transition-colors shrink-0 mr-2" />
-                                <input
-                                    type="text"
-                                    placeholder="Cari informasi..."
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full bg-transparent text-xs text-white placeholder:text-red-200/70 focus:outline-none"
-                                />
-                                {searchQuery && (
-                                    <button
-                                        type="button"
-                                        onClick={() => setSearchQuery("")}
-                                        className="text-red-200 hover:text-white p-0.5"
-                                    >
-                                        <X className="h-3 w-3" />
-                                    </button>
-                                )}
-                            </div>
-                        </form>
+                    <div className="flex items-center gap-2.5 shrink-0">
+                        {/* Desktop Inline Pill Search Form & Luxury Live Dropdown */}
+                        <div ref={searchContainerRef} className="relative hidden md:block">
+                            <form
+                                onSubmit={handleSearchSubmit}
+                                className="flex items-center relative group"
+                            >
+                                <div className="flex items-center h-9 w-44 lg:w-52 focus-within:w-52 lg:focus-within:w-60 transition-all duration-200 rounded-full bg-black/40 border border-white/20 group-hover:border-amber-400/60 focus-within:border-amber-400 focus-within:ring-2 focus-within:ring-amber-400/30 px-3 shadow-inner">
+                                    {isSearching ? (
+                                        <Loader2 className="h-3.5 w-3.5 text-amber-300 animate-spin shrink-0 mr-2" />
+                                    ) : (
+                                        <Search className="h-3.5 w-3.5 text-amber-300 group-hover:text-amber-200 transition-colors shrink-0 mr-2" />
+                                    )}
+                                    <input
+                                        type="text"
+                                        placeholder="Cari informasi..."
+                                        value={searchQuery}
+                                        onFocus={() => {
+                                            if (searchQuery.trim().length >= 2 && liveResults) {
+                                                setShowDropdown(true);
+                                            }
+                                        }}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        className="w-full bg-transparent text-xs text-white placeholder:text-red-200/70 focus:outline-none"
+                                    />
+                                    {searchQuery && (
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setSearchQuery("");
+                                                setShowDropdown(false);
+                                            }}
+                                            className="text-red-200 hover:text-white p-0.5 transition-colors cursor-pointer"
+                                        >
+                                            <X className="h-3 w-3" />
+                                        </button>
+                                    )}
+                                </div>
+                            </form>
+
+                            {/* Floating Red Batik Live Search Dropdown */}
+                            {showDropdown && searchQuery.trim().length >= 2 && (
+                                <div className="absolute right-0 top-full mt-2.5 w-[440px] lg:w-[480px] max-w-[calc(100vw-2rem)] rounded-2xl border border-amber-400/40 bg-gradient-to-b from-red-700 via-red-800 to-red-950 text-white backdrop-blur-2xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85),0_0_30px_rgba(220,38,38,0.35)] ring-1 ring-amber-400/30 z-50 overflow-hidden animate-in fade-in-0 zoom-in-95 duration-150">
+                                    {/* Siluet Motif Batik Tradisional Emas */}
+                                    <div
+                                        className="absolute inset-0 opacity-[0.20] pointer-events-none bg-repeat"
+                                        style={{
+                                            backgroundImage: `url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 60 Q 30 30, 60 60 T 120 60 M0 0 Q 30 -30, 60 0 T 120 0 M0 120 Q 30 90, 60 120 T 120 120 M-30 30 L 30 90 M30 -30 L 90 30 M90 -30 L 150 30 M-30 90 L 30 150 M30 90 L 90 150 M90 90 L 150 150' stroke='%23fde047' stroke-width='2' fill='none' stroke-linecap='round' stroke-dasharray='1 4'/%3E%3Cpath d='M12 48 Q 30 24, 48 48 Q 66 72, 84 48 Q 102 24, 120 48' stroke='%23fde047' stroke-width='1.8' fill='none'/%3E%3Ccircle cx='30' cy='30' r='4' fill='%23fde047'/%3E%3Ccircle cx='90' cy='90' r='4' fill='%23fde047'/%3E%3Ccircle cx='90' cy='30' r='2' fill='%23fde047'/%3E%3Ccircle cx='30' cy='90' r='2' fill='%23fde047'/%3E%3C/svg%3E")`,
+                                            backgroundSize: '95px 95px',
+                                        }}
+                                    />
+
+                                    <div className="relative z-10 flex flex-col">
+                                        {/* Top Header */}
+                                        <div className="p-3.5 bg-black/25 backdrop-blur-md border-b border-red-500/30 flex items-center justify-between">
+                                            <div className="flex items-center gap-2.5 min-w-0">
+                                                <div className="p-1.5 rounded-lg bg-amber-400/20 text-amber-300 border border-amber-400/40 shadow-xs shrink-0">
+                                                    {isSearching ? (
+                                                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                                    ) : (
+                                                        <Search className="h-3.5 w-3.5" />
+                                                    )}
+                                                </div>
+                                                <div className="min-w-0">
+                                                    <div className="text-[10px] uppercase tracking-wider text-amber-300 font-bold">
+                                                        Pencarian Cepat
+                                                    </div>
+                                                    <div className="text-xs font-semibold text-white truncate">
+                                                        {isSearching ? (
+                                                            "Mencari seluruh data desa..."
+                                                        ) : (
+                                                            <>
+                                                                Hasil untuk <span className="text-amber-300 font-bold">"{searchQuery}"</span>
+                                                            </>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {liveResults && (
+                                                <span className="px-2.5 py-0.5 rounded-full bg-black/40 text-amber-300 border border-amber-400/40 font-bold text-[11px] shrink-0 shadow-sm">
+                                                    {liveResults.total} Ditemukan
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        {/* Category Filter Chips Bar */}
+                                        {availableCategories.length > 1 && (
+                                            <div className="px-3 py-2 bg-black/35 backdrop-blur-sm border-b border-red-500/20 flex items-center gap-1.5 overflow-x-auto no-scrollbar text-[11px]">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setActiveFilter("all")}
+                                                    className={`px-2.5 py-1 rounded-lg font-medium transition-all shrink-0 cursor-pointer ${
+                                                        activeFilter === "all"
+                                                            ? "bg-amber-400 text-red-950 font-bold shadow-md shadow-amber-400/20"
+                                                            : "bg-black/30 text-red-100 hover:bg-black/50 hover:text-white border border-white/10"
+                                                    }`}
+                                                >
+                                                    Semua ({liveResults.results.length})
+                                                </button>
+                                                {availableCategories.map((cat) => (
+                                                    <button
+                                                        key={cat.key}
+                                                        type="button"
+                                                        onClick={() => setActiveFilter(cat.key)}
+                                                        className={`px-2.5 py-1 rounded-lg font-medium transition-all shrink-0 cursor-pointer ${
+                                                            activeFilter === cat.key
+                                                                ? "bg-amber-400 text-red-950 font-bold shadow-md shadow-amber-400/20"
+                                                                : "bg-black/30 text-red-100 hover:bg-black/50 hover:text-white border border-white/10"
+                                                        }`}
+                                                    >
+                                                        {cat.label} ({cat.count})
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        )}
+
+                                        {/* Scrollable Results List */}
+                                        <div className="max-h-[340px] overflow-y-auto p-1.5 space-y-1">
+                                            {isSearching && (!liveResults || liveResults.results.length === 0) ? (
+                                                <div className="py-12 flex flex-col items-center justify-center text-red-200/80 text-xs gap-2">
+                                                    <Loader2 className="h-6 w-6 animate-spin text-amber-300" />
+                                                    <span>Menyisir seluruh informasi desa...</span>
+                                                </div>
+                                            ) : displayedResults.length > 0 ? (
+                                                displayedResults.slice(0, 7).map((item) => {
+                                                    const catInfo = getCategoryDetails(item);
+                                                    return (
+                                                        <Link
+                                                            key={item.id}
+                                                            href={item.url}
+                                                            onClick={() => setShowDropdown(false)}
+                                                            className="group flex items-start gap-3 p-2.5 rounded-xl bg-black/25 hover:bg-black/45 active:bg-black/60 border border-white/10 hover:border-amber-400/50 transition-all duration-150 text-left"
+                                                        >
+                                                            {/* Category Icon */}
+                                                            <div
+                                                                className={`h-9 w-9 rounded-xl flex items-center justify-center shrink-0 border transition-transform group-hover:scale-105 shadow-sm mt-0.5 ${catInfo.iconBg}`}
+                                                            >
+                                                                {catInfo.icon}
+                                                            </div>
+
+                                                            {/* Content */}
+                                                            <div className="min-w-0 flex-1">
+                                                                <div className="flex items-center justify-between gap-2 mb-0.5">
+                                                                    <h4 className="text-xs font-bold text-white group-hover:text-amber-300 transition-colors truncate">
+                                                                        {item.title}
+                                                                    </h4>
+                                                                    <span
+                                                                        className={`text-[9px] px-2 py-0.5 rounded-full border font-semibold tracking-wide shrink-0 ${catInfo.badgeClass}`}
+                                                                    >
+                                                                        {catInfo.name}
+                                                                    </span>
+                                                                </div>
+
+                                                                <p className="text-[11px] text-red-100/80 line-clamp-1 leading-relaxed">
+                                                                    {item.description || item.snippet || item.subtitle || "Lihat rincian informasi desa..."}
+                                                                </p>
+
+                                                                {(item.badge || item.date) && (
+                                                                    <div className="mt-1 flex items-center gap-2 text-[10px]">
+                                                                        {item.badge && (
+                                                                            <span className="bg-black/30 text-amber-300 px-1.5 py-0.5 rounded border border-amber-400/20 font-medium">
+                                                                                {item.badge}
+                                                                            </span>
+                                                                        )}
+                                                                        {item.date && (
+                                                                            <span className="text-red-200/70">{item.date}</span>
+                                                                        )}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+
+                                                            {/* Chevron Arrow */}
+                                                            <div className="shrink-0 self-center text-red-300/50 group-hover:text-amber-300 group-hover:translate-x-0.5 transition-all pl-1">
+                                                                <ChevronRight className="h-4 w-4" />
+                                                            </div>
+                                                        </Link>
+                                                    );
+                                                })
+                                            ) : (
+                                                <div className="py-10 px-4 text-center">
+                                                    <div className="w-12 h-12 rounded-full bg-black/30 border border-amber-400/30 flex items-center justify-center mx-auto mb-3 text-amber-300">
+                                                        <Search className="h-5 w-5" />
+                                                    </div>
+                                                    <p className="text-xs font-bold text-white mb-1">
+                                                        Tidak ditemukan hasil untuk "{searchQuery}"
+                                                    </p>
+                                                    <p className="text-[11px] text-red-200/80 max-w-xs mx-auto mb-3">
+                                                        Coba gunakan kata kunci umum seperti:{" "}
+                                                        <span className="text-amber-300 font-medium">
+                            SKTM, BPD, Perdes, Berita, Pajak, BLT
+                                                        </span>
+                                                    </p>
+                                                    <button
+                                                        type="button"
+                                                        onClick={handleSearchSubmit}
+                                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/40 hover:bg-black/60 border border-amber-400/30 text-xs text-amber-300 transition-colors cursor-pointer"
+                                                    >
+                                                        <span>Buka Halaman Pencarian</span>
+                                                        <ArrowRight className="h-3 w-3" />
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Bottom Footer Bar */}
+                                        <div className="p-3 bg-black/30 backdrop-blur-sm border-t border-red-500/30 flex items-center justify-between gap-3">
+                                            <div className="hidden sm:flex items-center gap-1.5 text-[11px] text-red-200/80">
+                                                <span>Tekan</span>
+                                                <kbd className="px-1.5 py-0.5 rounded bg-black/40 border border-white/20 text-[10px] text-amber-300 font-mono">
+                                                    ↵ Enter
+                                                </kbd>
+                                                <span>untuk hasil lengkap</span>
+                                            </div>
+
+                                            <button
+                                                type="button"
+                                                onClick={handleSearchSubmit}
+                                                className="w-full sm:w-auto ml-auto py-2 px-4 rounded-xl bg-gradient-to-r from-amber-400 via-amber-300 to-amber-400 hover:from-amber-300 hover:to-amber-200 text-red-950 font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-black/40 transition-all cursor-pointer group/btn"
+                                            >
+                                                <span>Lihat Semua {liveResults?.total ? `(${liveResults.total})` : ""} Hasil</span>
+                                                <ArrowRight className="h-3.5 w-3.5 group-hover/btn:translate-x-1 transition-transform text-red-950" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
 
                         {/* Dark / Light Mode Circular Toggle Button */}
                         <button
@@ -621,10 +987,108 @@ export default function Navbar() {
                                     placeholder="Cari informasi..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full rounded-xl bg-black/30 border border-white/20 text-white text-xs pl-9 pr-4 py-2.5 focus:outline-none focus:border-amber-400 placeholder:text-red-200/70 shadow-inner"
+                                    className="w-full rounded-xl bg-black/30 border border-white/20 text-white text-xs pl-9 pr-8 py-2.5 focus:outline-none focus:border-amber-400 placeholder:text-red-200/70 shadow-inner"
                                 />
-                                <Search className="absolute left-3 top-3 h-3.5 w-3.5 text-amber-300" />
+                                {isSearching ? (
+                                    <Loader2 className="absolute left-3 top-3 h-3.5 w-3.5 text-amber-300 animate-spin" />
+                                ) : (
+                                    <Search className="absolute left-3 top-3 h-3.5 w-3.5 text-amber-300" />
+                                )}
+                                {searchQuery && (
+                                    <button
+                                        type="button"
+                                        onClick={() => setSearchQuery("")}
+                                        className="absolute right-3 top-3 text-red-200 hover:text-white"
+                                    >
+                                        <X className="h-3.5 w-3.5" />
+                                    </button>
+                                )}
                             </form>
+
+                            {/* Mobile Live Results if Searching */}
+                            {searchQuery.trim().length >= 2 && (
+                                <div className="relative rounded-2xl border border-amber-400/40 bg-gradient-to-b from-red-700 via-red-800 to-red-950 p-3 space-y-2.5 shadow-xl overflow-hidden">
+                                    {/* Siluet Motif Batik Tradisional Emas */}
+                                    <div
+                                        className="absolute inset-0 opacity-[0.20] pointer-events-none bg-repeat"
+                                        style={{
+                                            backgroundImage: `url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 60 Q 30 30, 60 60 T 120 60 M0 0 Q 30 -30, 60 0 T 120 0 M0 120 Q 30 90, 60 120 T 120 120 M-30 30 L 30 90 M30 -30 L 90 30 M90 -30 L 150 30 M-30 90 L 30 150 M30 90 L 90 150 M90 90 L 150 150' stroke='%23fde047' stroke-width='2' fill='none' stroke-linecap='round' stroke-dasharray='1 4'/%3E%3Cpath d='M12 48 Q 30 24, 48 48 Q 66 72, 84 48 Q 102 24, 120 48' stroke='%23fde047' stroke-width='1.8' fill='none'/%3E%3Ccircle cx='30' cy='30' r='4' fill='%23fde047'/%3E%3Ccircle cx='90' cy='90' r='4' fill='%23fde047'/%3E%3Ccircle cx='90' cy='30' r='2' fill='%23fde047'/%3E%3Ccircle cx='30' cy='90' r='2' fill='%23fde047'/%3E%3C/svg%3E")`,
+                                            backgroundSize: '95px 95px',
+                                        }}
+                                    />
+
+                                    <div className="relative z-10 space-y-2.5">
+                                        <div className="flex items-center justify-between text-xs pb-2 border-b border-red-500/30">
+                                            <div className="flex items-center gap-1.5">
+                                                <span className="text-[10px] uppercase font-bold text-amber-300">Hasil:</span>
+                                                <span className="font-bold text-white truncate max-w-[150px]">"{searchQuery}"</span>
+                                            </div>
+                                            {liveResults && (
+                                                <span className="px-2 py-0.5 rounded-full bg-black/40 text-amber-300 border border-amber-400/40 font-bold text-[10px]">
+                                                    {liveResults.total} data
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        <div className="space-y-1 max-h-64 overflow-y-auto pr-0.5">
+                                            {liveResults && liveResults.results.length > 0 ? (
+                                                liveResults.results.slice(0, 6).map((item) => {
+                                                    const catInfo = getCategoryDetails(item);
+                                                    return (
+                                                        <Link
+                                                            key={item.id}
+                                                            href={item.url}
+                                                            onClick={() => {
+                                                                setMobileMenuOpen(false);
+                                                                setSearchQuery("");
+                                                            }}
+                                                            className="flex items-start gap-2.5 p-2 rounded-xl bg-black/25 hover:bg-black/45 border border-white/10 hover:border-amber-400/30 transition-colors text-left"
+                                                        >
+                                                            <div className={`h-7 w-7 rounded-lg flex items-center justify-center shrink-0 border mt-0.5 ${catInfo.iconBg}`}>
+                                                                {catInfo.icon}
+                                                            </div>
+                                                            <div className="min-w-0 flex-1">
+                                                                <div className="flex items-center justify-between gap-1 mb-0.5">
+                                                                    <div className="text-xs font-bold text-white truncate">
+                                                                        {item.title}
+                                                                    </div>
+                                                                    <span className={`text-[8px] px-1.5 py-0.2 rounded-full border font-semibold shrink-0 ${catInfo.badgeClass}`}>
+                                                                        {catInfo.name}
+                                                                    </span>
+                                                                </div>
+                                                                <div className="text-[10px] text-red-100/80 line-clamp-1">
+                                                                    {item.description || item.snippet || item.subtitle || "Lihat rincian..."}
+                                                                </div>
+                                                            </div>
+                                                        </Link>
+                                                    );
+                                                })
+                                            ) : !isSearching ? (
+                                                <p className="text-center py-4 text-xs text-red-200/70">
+                                                    Tidak ditemukan informasi terkait.
+                                                </p>
+                                            ) : (
+                                                <div className="text-center py-4 text-xs text-amber-300 flex items-center justify-center gap-2">
+                                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                                    <span>Mencari data...</span>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <button
+                                            type="button"
+                                            onClick={(e) => {
+                                                handleSearchSubmit(e);
+                                                setMobileMenuOpen(false);
+                                            }}
+                                            className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-amber-400 via-amber-300 to-amber-400 hover:from-amber-300 hover:to-amber-200 text-red-950 font-bold text-xs flex items-center justify-center gap-1.5 shadow-md shadow-black/40 transition-all cursor-pointer"
+                                        >
+                                            <span>Buka Semua {liveResults?.total ? `(${liveResults.total})` : ""} Hasil</span>
+                                            <ArrowRight className="h-3.5 w-3.5 text-red-950" />
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Navigation Links Accordion */}
                             <div className="space-y-1 text-sm font-medium">

@@ -52,9 +52,6 @@ class HandleInertiaRequests extends Middleware
             ],
             'app_url' => config('app.url'),
             'admin_path' => config('app.admin_path', 'portal-karangwungu'),
-            'admin_notifications' => fn () => $request->user()
-                ? \App\Models\AdminActivityLog::latest('id')->take(15)->get(['id', 'username', 'action', 'ip_address', 'details', 'created_at'])
-                : [],
             'general_settings' => fn () => \App\Models\SiteSetting::getGroup('general'),
             'village_info' => function () {
                 $general = \App\Models\SiteSetting::getGroup('general');

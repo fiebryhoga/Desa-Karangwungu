@@ -19,15 +19,8 @@ import {
     AlertCircle,
     Sun,
     Moon,
-    Bell,
-    BellRing,
     PanelLeftClose,
     PanelLeftOpen,
-    Activity,
-    ShieldAlert,
-    UserPlus,
-    Trash2,
-    Clock,
     RefreshCw,
     Sliders,
     Building2,
@@ -44,30 +37,10 @@ const BATIK_DARK = `data:image/svg+xml,%3Csvg width='120' height='120' viewBox='
 
 const BATIK_LIGHT = `data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 60 Q 30 30, 60 60 T 120 60 M0 0 Q 30 -30, 60 0 T 120 0 M0 120 Q 30 90, 60 120 T 120 120 M-30 30 L 30 90 M30 -30 L 90 30 M90 -30 L 150 30 M-30 90 L 30 150 M30 90 L 90 150 M90 90 L 150 150' stroke='%23b91c1c' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-dasharray='1 4'/%3E%3Cpath d='M12 48 Q 30 24, 48 48 Q 66 72, 84 48 Q 102 24, 120 48' stroke='%23b91c1c' stroke-width='1.5' fill='none'/%3E%3Ccircle cx='30' cy='30' r='3.5' fill='%23d97706'/%3E%3Ccircle cx='90' cy='90' r='3.5' fill='%23d97706'/%3E%3Ccircle cx='90' cy='30' r='2' fill='%23d97706'/%3E%3Ccircle cx='30' cy='90' r='2' fill='%23d97706'/%3E%3C/svg%3E`;
 
-function formatTimeAgo(dateString) {
-    if (!dateString) return '';
-    try {
-        const date = new Date(dateString);
-        const now = new Date();
-        const diffInSec = Math.floor((now - date) / 1000);
-        if (diffInSec < 60) return 'Baru saja';
-        const diffInMin = Math.floor(diffInSec / 60);
-        if (diffInMin < 60) return `${diffInMin} mnt lalu`;
-        const diffInHours = Math.floor(diffInMin / 60);
-        if (diffInHours < 24) return `${diffInHours} jam lalu`;
-        const diffInDays = Math.floor(diffInHours / 24);
-        if (diffInDays < 7) return `${diffInDays} hari lalu`;
-        return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
-    } catch {
-        return '';
-    }
-}
-
 export default function AdminLayout({ children, title = 'Panel Administrator' }) {
     const { url, props } = usePage();
-    const { auth, flash, admin_path, admin_notifications } = props || {};
+    const { auth, flash, admin_path } = props || {};
     const adminPath = admin_path || 'portal-karangwungu';
-    const notifications = Array.isArray(admin_notifications) ? admin_notifications : [];
 
     // State 1: Mobile sidebar drawer
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -88,11 +61,7 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
         return 'dark';
     });
 
-    // State 4: Notification Dropdown
-    const [notifOpen, setNotifOpen] = useState(false);
-    const notifRef = useRef(null);
-
-    // State 5: Floating Toast Flash Notification (Top-Right, Auto-dismiss or Closeable)
+    // State 4: Floating Toast Flash Notification (Top-Right, Auto-dismiss or Closeable)
     const [toast, setToast] = useState(null);
 
     useEffect(() => {
@@ -160,16 +129,6 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
         }
     }, [theme]);
 
-    // Close notification dropdown on outside click
-    useEffect(() => {
-        function handleClickOutside(event) {
-            if (notifRef.current && !notifRef.current.contains(event.target)) {
-                setNotifOpen(false);
-            }
-        }
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
 
     const handleLogout = () => {
         router.post(`/${adminPath}/logout`);
@@ -298,52 +257,6 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
     const isDark = theme === 'dark';
     const currentBatik = isDark ? BATIK_DARK : BATIK_LIGHT;
 
-    const getLogIcon = (action) => {
-        switch (action) {
-            case 'login_success':
-                return <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />;
-            case 'login_failed_bad_credentials':
-            case 'login_failed_invalid_pin':
-                return <ShieldAlert className="h-4 w-4 text-rose-500 shrink-0" />;
-            case 'login_rate_limited':
-            case 'session_hijack_blocked':
-                return <ShieldAlert className="h-4 w-4 text-red-400 shrink-0 animate-pulse" />;
-            case 'password_changed':
-            case 'admin_password_reset':
-                return <KeyRound className="h-4 w-4 text-amber-400 shrink-0" />;
-            case 'admin_created':
-                return <UserPlus className="h-4 w-4 text-blue-400 shrink-0" />;
-            case 'admin_deleted':
-                return <Trash2 className="h-4 w-4 text-red-400 shrink-0" />;
-            default:
-                return <Activity className="h-4 w-4 text-zinc-400 shrink-0" />;
-        }
-    };
-
-    const getLogTitle = (action) => {
-        switch (action) {
-            case 'login_success':
-                return 'Login Berhasil';
-            case 'login_failed_bad_credentials':
-                return 'Gagal Masuk (Sandi Salah)';
-            case 'login_failed_invalid_pin':
-                return 'Gagal Masuk (PIN Salah)';
-            case 'login_rate_limited':
-                return 'Percobaan Diblokir (Rate Limit)';
-            case 'session_hijack_blocked':
-                return 'Pembajakan Sesi Dicegah';
-            case 'password_changed':
-                return 'Kata Sandi Diubah';
-            case 'admin_created':
-                return 'Admin Baru Ditambahkan';
-            case 'admin_updated':
-                return 'Data Admin Diperbarui';
-            case 'admin_deleted':
-                return 'Akun Admin Dihapus';
-            default:
-                return action;
-        }
-    };
 
     return (
         <div className={`min-h-screen flex flex-col md:flex-row transition-colors duration-300 relative overflow-x-clip ${
@@ -775,7 +688,7 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
                         </button>
                     </div>
 
-                    {/* Right: Actions (Theme Toggle, Notifications Bell, Web Preview, Profile) */}
+                    {/* Right: Actions (Theme Toggle, Web Preview, Profile) */}
                     <div className="relative z-10 flex items-center gap-2 sm:gap-3">
                         {/* 1. Theme Toggle (Dark / Light) */}
                         <button
@@ -793,109 +706,6 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
                                 <Moon className="h-4 w-4 transform hover:-rotate-12 transition-transform" />
                             )}
                         </button>
-
-                        {/* 2. Log Activity Notification Bell with Interactive Dropdown */}
-                        <div className="relative" ref={notifRef}>
-                            <button
-                                onClick={() => setNotifOpen(!notifOpen)}
-                                title="Catatan Audit Keamanan & Notifikasi"
-                                className={`p-2 rounded-xl transition-all relative cursor-pointer border ${
-                                    isDark
-                                        ? 'bg-zinc-800/80 border-zinc-700 text-zinc-300 hover:text-white hover:bg-zinc-700'
-                                        : 'bg-zinc-100 border-zinc-200 text-zinc-700 hover:text-zinc-900 hover:bg-zinc-200'
-                                }`}
-                            >
-                                <Bell className="h-4 w-4" />
-                                {notifications.length > 0 && (
-                                    <span className="absolute -top-1 -right-1 h-3.5 w-3.5 bg-red-600 text-white font-black text-[9px] rounded-full flex items-center justify-center border-2 border-zinc-900 animate-pulse">
-                                        {notifications.length > 9 ? '9+' : notifications.length}
-                                    </span>
-                                )}
-                            </button>
-
-                            {/* Dropdown Modal/Pop-over */}
-                            {notifOpen && (
-                                <div className={`absolute right-0 top-full mt-2 w-80 sm:w-96 rounded-2xl border shadow-2xl z-[100] animate-in fade-in slide-in-from-top-2 duration-200 overflow-hidden ${
-                                    isDark
-                                        ? 'bg-zinc-900/98 backdrop-blur-md border-zinc-800 text-zinc-100 shadow-black/90'
-                                        : 'bg-white/98 backdrop-blur-md border-zinc-200 text-zinc-900 shadow-2xl'
-                                }`}>
-                                    {/* Header */}
-                                    <div className={`p-3.5 border-b flex items-center justify-between ${
-                                        isDark
-                                            ? 'border-zinc-800/80 bg-gradient-to-r from-red-950/60 to-zinc-900'
-                                            : 'border-zinc-200 bg-gradient-to-r from-red-50/70 to-slate-50'
-                                    }`}>
-                                        <div className="flex items-center gap-2">
-                                            <Activity className="h-4 w-4 text-amber-500" />
-                                            <span className="text-xs font-bold">Log Aktivitas & Keamanan</span>
-                                        </div>
-                                        <span className="text-[10px] px-2 py-0.5 rounded-full font-mono font-bold bg-amber-400/10 text-amber-500 border border-amber-400/20">
-                                            {notifications.length} Catatan
-                                        </span>
-                                    </div>
-
-                                    {/* Logs List */}
-                                    <div className={`max-h-80 overflow-y-auto divide-y custom-scrollbar ${
-                                        isDark ? 'divide-zinc-800/50' : 'divide-zinc-100'
-                                    }`}>
-                                        {notifications.length === 0 ? (
-                                            <div className="p-6 text-center text-xs text-zinc-500">
-                                                Belum ada catatan aktivitas baru.
-                                            </div>
-                                        ) : (
-                                            notifications.map((notif) => (
-                                                <div
-                                                    key={notif.id}
-                                                    className={`p-3 flex items-start gap-3 transition-colors ${
-                                                        isDark ? 'hover:bg-zinc-800/50' : 'hover:bg-red-50/30'
-                                                    }`}
-                                                >
-                                                    <div className="mt-0.5">
-                                                        {getLogIcon(notif.action)}
-                                                    </div>
-                                                    <div className="min-w-0 flex-1 space-y-0.5">
-                                                        <div className="flex items-center justify-between gap-1">
-                                                            <span className={`text-xs font-bold truncate ${
-                                                                isDark ? 'text-zinc-100' : 'text-zinc-900'
-                                                            }`}>
-                                                                {getLogTitle(notif.action)}
-                                                            </span>
-                                                            <span className="text-[10px] text-zinc-500 shrink-0">
-                                                                {formatTimeAgo(notif.created_at)}
-                                                            </span>
-                                                        </div>
-                                                        <p className={`text-[11px] leading-snug line-clamp-2 ${
-                                                            isDark ? 'text-zinc-400' : 'text-zinc-600'
-                                                        }`}>
-                                                            {notif.details || `Aktivitas dilakukan oleh @${notif.username}`}
-                                                        </p>
-                                                        <div className="flex items-center gap-2 pt-0.5 text-[10px] text-zinc-500 font-mono">
-                                                            <span>IP: {notif.ip_address}</span>
-                                                            <span>&bull;</span>
-                                                            <span>@{notif.username}</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ))
-                                        )}
-                                    </div>
-
-                                    {/* Footer */}
-                                    <div className={`p-2.5 text-center border-t ${
-                                        isDark ? 'border-zinc-800 bg-zinc-950/60' : 'border-zinc-200 bg-zinc-50'
-                                    }`}>
-                                        <Link
-                                            href={`/${adminPath}/profile`}
-                                            onClick={() => setNotifOpen(false)}
-                                            className="text-xs font-bold text-amber-500 hover:text-amber-400 transition-colors block py-1"
-                                        >
-                                            Buka Semua Riwayat Audit Lengkap &rarr;
-                                        </Link>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
 
                         {/* 3. Open Public Web Link */}
                         <a

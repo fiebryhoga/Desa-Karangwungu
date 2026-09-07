@@ -63,7 +63,7 @@ class AuthController extends Controller
         }
 
         // 2. Secret Security PIN Verification
-        $expectedPin = (string) config('app.admin_security_pin', '622540');
+        $expectedPin = (string) config('app.admin_security_pin', '62254');
         if (!hash_equals($expectedPin, (string) $request->input('security_pin'))) {
             RateLimiter::hit($throttleKey, 60);
 
