@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, usePage, router, Head } from '@inertiajs/react';
 import {
+    Home,
     LayoutDashboard,
     Users,
     UserCheck,
@@ -17,8 +18,6 @@ import {
     KeyRound,
     CheckCircle2,
     AlertCircle,
-    Sun,
-    Moon,
     PanelLeftClose,
     PanelLeftOpen,
     RefreshCw,
@@ -33,11 +32,9 @@ import {
     FileText,
 } from 'lucide-react';
 
-const BATIK_DARK = `data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 60 Q 30 30, 60 60 T 120 60 M0 0 Q 30 -30, 60 0 T 120 0 M0 120 Q 30 90, 60 120 T 120 120 M-30 30 L 30 90 M30 -30 L 90 30 M90 -30 L 150 30 M-30 90 L 30 150 M30 90 L 90 150 M90 90 L 150 150' stroke='%23fde047' stroke-width='2' fill='none' stroke-linecap='round' stroke-dasharray='1 4'/%3E%3Cpath d='M12 48 Q 30 24, 48 48 Q 66 72, 84 48 Q 102 24, 120 48' stroke='%23fde047' stroke-width='1.8' fill='none'/%3E%3Ccircle cx='30' cy='30' r='4' fill='%23fde047'/%3E%3Ccircle cx='90' cy='90' r='4' fill='%23fde047'/%3E%3Ccircle cx='90' cy='30' r='2' fill='%23fde047'/%3E%3Ccircle cx='30' cy='90' r='2' fill='%23fde047'/%3E%3C/svg%3E`;
 
-const BATIK_LIGHT = `data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 60 Q 30 30, 60 60 T 120 60 M0 0 Q 30 -30, 60 0 T 120 0 M0 120 Q 30 90, 60 120 T 120 120 M-30 30 L 30 90 M30 -30 L 90 30 M90 -30 L 150 30 M-30 90 L 30 150 M30 90 L 90 150 M90 90 L 150 150' stroke='%23b91c1c' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-dasharray='1 4'/%3E%3Cpath d='M12 48 Q 30 24, 48 48 Q 66 72, 84 48 Q 102 24, 120 48' stroke='%23b91c1c' stroke-width='1.5' fill='none'/%3E%3Ccircle cx='30' cy='30' r='3.5' fill='%23d97706'/%3E%3Ccircle cx='90' cy='90' r='3.5' fill='%23d97706'/%3E%3Ccircle cx='90' cy='30' r='2' fill='%23d97706'/%3E%3Ccircle cx='30' cy='90' r='2' fill='%23d97706'/%3E%3C/svg%3E`;
 
-export default function AdminLayout({ children, title = 'Panel Administrator' }) {
+export default function AdminLayout({ children, title = 'Panel Administrator', breadcrumbs }) {
     const { url, props } = usePage();
     const { auth, flash, admin_path } = props || {};
     const adminPath = admin_path || 'portal-karangwungu';
@@ -53,15 +50,30 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
         return false;
     });
 
-    // State 3: Dark / Light Theme
-    const [theme, setTheme] = useState(() => {
+    // Ensure admin backend is always pure white / light mode (no theme toggle)
+    useEffect(() => {
         if (typeof window !== 'undefined') {
-            return localStorage.getItem('admin_theme') || 'dark';
+            document.documentElement.classList.remove('dark');
+            document.documentElement.classList.add('light');
+            localStorage.setItem('admin_theme', 'light');
+            localStorage.setItem('theme', 'light');
         }
-        return 'dark';
-    });
+    }, []);
 
-    // State 4: Floating Toast Flash Notification (Top-Right, Auto-dismiss or Closeable)
+    // Toggle Desktop Sidebar
+    const toggleSidebarCollapse = () => {
+        const nextState = !sidebarCollapsed;
+        setSidebarCollapsed(nextState);
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('admin_sidebar_collapsed', String(nextState));
+        }
+    };
+
+    const handleLogout = () => {
+        router.post(`/${adminPath}/logout`);
+    };
+
+    // Toast Flash Notification
     const [toast, setToast] = useState(null);
 
     useEffect(() => {
@@ -88,50 +100,6 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
         name: 'Administrator',
         username: 'admin',
         role: 'superadmin',
-    };
-
-    // Toggle Theme
-    const toggleTheme = () => {
-        const nextTheme = theme === 'dark' ? 'light' : 'dark';
-        setTheme(nextTheme);
-        if (typeof window !== 'undefined') {
-            localStorage.setItem('admin_theme', nextTheme);
-            localStorage.setItem('theme', nextTheme);
-            if (nextTheme === 'dark') {
-                document.documentElement.classList.add('dark');
-                document.documentElement.classList.remove('light');
-            } else {
-                document.documentElement.classList.remove('dark');
-                document.documentElement.classList.add('light');
-            }
-        }
-    };
-
-    // Toggle Desktop Sidebar
-    const toggleSidebarCollapse = () => {
-        const nextState = !sidebarCollapsed;
-        setSidebarCollapsed(nextState);
-        if (typeof window !== 'undefined') {
-            localStorage.setItem('admin_sidebar_collapsed', String(nextState));
-        }
-    };
-
-    // Sync theme class to html root
-    useEffect(() => {
-        if (typeof window !== 'undefined') {
-            if (theme === 'dark') {
-                document.documentElement.classList.add('dark');
-                document.documentElement.classList.remove('light');
-            } else {
-                document.documentElement.classList.remove('dark');
-                document.documentElement.classList.add('light');
-            }
-        }
-    }, [theme]);
-
-
-    const handleLogout = () => {
-        router.post(`/${adminPath}/logout`);
     };
 
     const mainNav = [
@@ -254,16 +222,47 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
         },
     ];
 
-    const isDark = theme === 'dark';
-    const currentBatik = isDark ? BATIK_DARK : BATIK_LIGHT;
+    // Dynamic Intelligent Breadcrumbs Resolver
+    const getBreadcrumbs = () => {
+        if (Array.isArray(breadcrumbs) && breadcrumbs.length > 0) {
+            return breadcrumbs;
+        }
 
+        const crumbs = [
+            { label: 'Admin', href: `/${adminPath}/dashboard` }
+        ];
+
+        // Check matching navigation items across categories
+        const navSections = [
+            { category: null, items: mainNav },
+            { category: 'Konfigurasi', items: websiteConfigNav },
+            { category: 'Publikasi & Layanan', items: publicationNav },
+            { category: 'Sistem', items: systemNav },
+        ];
+
+        let matched = false;
+        for (const section of navSections) {
+            const activeItem = section.items.find((item) => item.active);
+            if (activeItem) {
+                if (section.category) {
+                    crumbs.push({ label: section.category });
+                }
+                crumbs.push({ label: activeItem.name });
+                matched = true;
+                break;
+            }
+        }
+
+        // Fallback to title if no nav item was marked active
+        if (!matched && title && title !== 'Panel Administrator') {
+            crumbs.push({ label: title });
+        }
+
+        return crumbs;
+    };
 
     return (
-        <div className={`min-h-screen flex flex-col md:flex-row transition-colors duration-300 relative overflow-x-clip ${
-            isDark
-                ? 'dark bg-zinc-950 text-zinc-100 selection:bg-red-600 selection:text-white'
-                : 'bg-slate-100 text-zinc-900 selection:bg-red-600 selection:text-white'
-        }`}>
+        <div className="min-h-screen flex flex-col md:flex-row bg-white text-zinc-900 selection:bg-red-600 selection:text-white relative overflow-x-clip">
             <Head title={`${title} - Admin Desa Karangwungu`} />
 
             {/* Mobile Sidebar Overlay */}
@@ -278,94 +277,79 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
             {/* SIDEBAR NAVIGATION (Collapsible on Desktop & Drawer on Mobile) */}
             {/* ========================================================= */}
             <aside
-                className={`fixed inset-y-0 left-0 z-50 md:z-30 flex flex-col transition-all duration-300 ease-in-out h-screen ${
+                className={`fixed inset-y-0 left-0 z-50 md:z-30 flex flex-col transition-all duration-300 ease-in-out h-screen bg-white border-r border-zinc-200 shadow-sm ${
                     sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
                 } ${
-                    sidebarCollapsed ? 'w-20' : 'w-72 md:w-64 lg:w-72'
-                } ${
-                    isDark
-                        ? 'bg-zinc-900 border-r border-zinc-800 shadow-2xl'
-                        : 'bg-white border-r border-zinc-200 shadow-lg'
+                    sidebarCollapsed ? 'w-12' : 'w-60'
                 }`}
             >
-                {/* Brand Header with Theme-Adaptive Batik Silhouette (h-16, pixel-perfect sejajar dgn Navbar) */}
-                <div className={`relative h-16 px-4 flex items-center justify-between border-b overflow-hidden shrink-0 transition-colors duration-300 ${
-                    isDark
-                        ? 'border-zinc-800 bg-gradient-to-r from-red-950 via-red-900 to-zinc-950'
-                        : 'border-zinc-200 bg-gradient-to-r from-red-50/90 via-red-50/50 to-white'
+                {/* Brand Header with Toggle beside Logo */}
+                <div className={`relative h-14 border-b border-zinc-200 bg-white overflow-hidden shrink-0 flex items-center ${
+                    sidebarCollapsed ? 'justify-center px-0' : 'justify-between px-3'
                 }`}>
-                    {/* Siluet Motif Batik Tradisional Sinkron */}
-                    <div
-                        className={`absolute inset-0 pointer-events-none bg-repeat transition-opacity duration-300 ${
-                            isDark ? 'opacity-20' : 'opacity-15'
-                        }`}
-                        style={{
-                            backgroundImage: `url("${currentBatik}")`,
-                            backgroundSize: '80px 80px',
-                            backgroundPosition: '0 0',
-                        }}
-                    />
-                    <div className={`absolute inset-0 pointer-events-none ${
-                        isDark
-                            ? 'bg-gradient-to-t from-black/40 via-transparent to-transparent'
-                            : 'bg-gradient-to-r from-red-100/25 via-transparent to-transparent'
-                    }`} />
+                    {sidebarCollapsed ? (
+                        <button
+                            onClick={toggleSidebarCollapse}
+                            title="Buka Sidebar"
+                            className="w-8 h-8 flex items-center justify-center rounded-lg text-zinc-400 hover:text-zinc-800 hover:bg-zinc-100 transition-colors cursor-pointer"
+                        >
+                            <PanelLeftOpen className="h-4 w-4" />
+                        </button>
+                    ) : (
+                        <>
+                            <Link
+                                href={`/${adminPath}/dashboard`}
+                                className="relative z-10 flex items-center gap-2 min-w-0 group"
+                            >
+                                <img
+                                    src="/assets/images/logo.png"
+                                    alt="Logo Karangwungu"
+                                    className="h-7.5 w-auto object-contain shrink-0 group-hover:scale-105 transition-transform drop-shadow-xs"
+                                />
+                                <div className="min-w-0 leading-tight">
+                                    <span className="text-[13px] font-bold tracking-tight text-zinc-900 block truncate">
+                                        Panel Admin
+                                    </span>
+                                    <span className="text-[9.5px] font-bold uppercase tracking-wider text-red-700 block truncate">
+                                        Desa Karangwungu
+                                    </span>
+                                </div>
+                            </Link>
 
-                    <Link
-                        href={`/${adminPath}/dashboard`}
-                        title={sidebarCollapsed ? 'Panel Admin Desa Karangwungu' : undefined}
-                        className={`relative z-10 flex items-center gap-3 group transition-transform ${
-                            sidebarCollapsed ? 'mx-auto' : ''
-                        }`}
-                    >
-                        <img
-                            src="/assets/images/logo.png"
-                            alt="Logo Karangwungu"
-                            className="h-10 w-auto object-contain shrink-0 group-hover:scale-105 transition-transform drop-shadow-md"
-                        />
-                        {!sidebarCollapsed && (
-                            <div className="min-w-0">
-                                <span className={`text-sm font-black tracking-tight block truncate ${
-                                    isDark ? 'text-white drop-shadow-xs' : 'text-zinc-900'
-                                }`}>
-                                    Panel Admin
-                                </span>
-                                <span className={`text-[10px] font-bold uppercase tracking-wider block truncate ${
-                                    isDark ? 'text-amber-300 drop-shadow-xs' : 'text-red-700'
-                                }`}>
-                                    Desa Karangwungu
-                                </span>
+                            <div className="flex items-center gap-1 shrink-0">
+                                {/* Desktop Sidebar Collapse Toggle Button (Clean Borderless) */}
+                                <button
+                                    onClick={toggleSidebarCollapse}
+                                    title="Ciutkan Sidebar"
+                                    className="hidden md:inline-flex p-1.5 rounded-lg text-zinc-400 hover:text-zinc-800 hover:bg-zinc-100 transition-colors cursor-pointer"
+                                >
+                                    <PanelLeftClose className="h-4 w-4" />
+                                </button>
+
+                                {/* Mobile Close Drawer Button */}
+                                <button
+                                    onClick={() => setSidebarOpen(false)}
+                                    className="md:hidden p-1.5 rounded-lg text-zinc-400 hover:text-zinc-900 hover:bg-zinc-100 transition-colors"
+                                >
+                                    <X className="h-4 w-4" />
+                                </button>
                             </div>
-                        )}
-                    </Link>
-
-                    {/* Mobile Close Button */}
-                    <button
-                        onClick={() => setSidebarOpen(false)}
-                        className={`md:hidden relative z-10 p-1.5 rounded-lg transition-colors ${
-                            isDark
-                                ? 'text-zinc-300 hover:text-white hover:bg-white/10'
-                                : 'text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100'
-                        }`}
-                    >
-                        <X className="h-5 w-5" />
-                    </button>
+                        </>
+                    )}
                 </div>
 
                 {/* Nav Links (overflow-visible when collapsed so tooltips are never cut off!) */}
-                <div className={`flex-1 px-3 py-4 space-y-6 ${
-                    sidebarCollapsed ? 'overflow-visible' : 'overflow-y-auto custom-scrollbar'
+                <div className={`flex-1 ${
+                    sidebarCollapsed ? 'overflow-visible px-1.5 py-2.5 space-y-2' : 'overflow-y-auto custom-scrollbar px-2.5 py-3 space-y-3.5'
                 }`}>
                     {/* 1. Main Admin Nav */}
-                    <div className="space-y-1">
+                    <div className="space-y-0.5">
                         {!sidebarCollapsed && (
-                            <span className={`px-3 text-[10px] font-bold uppercase tracking-wider ${
-                                isDark ? 'text-zinc-500' : 'text-zinc-400'
-                            }`}>
+                            <span className="px-2 text-[9px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">
                                 Menu Utama
                             </span>
                         )}
-                        <div className="mt-1.5 space-y-1">
+                        <div className="space-y-0.5">
                             {mainNav.map((item) => {
                                 const Icon = item.icon;
                                 return (
@@ -374,14 +358,14 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
                                         href={item.href}
                                         title={item.name}
                                         onClick={() => setSidebarOpen(false)}
-                                        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all relative group ${
-                                            sidebarCollapsed ? 'justify-center' : ''
+                                        className={`flex items-center transition-all relative group ${
+                                            sidebarCollapsed
+                                                ? 'w-8 h-8 aspect-square justify-center mx-auto rounded-lg p-0 shrink-0'
+                                                : 'gap-2.5 px-2.5 py-1.5 rounded-lg text-xs font-medium'
                                         } ${
                                             item.active
-                                                ? 'bg-gradient-to-r from-red-700 via-red-800 to-red-950 text-amber-300 border border-amber-400/30 shadow-md shadow-red-950/40'
-                                                : isDark
-                                                    ? 'text-zinc-400 hover:text-white hover:bg-zinc-800/60'
-                                                    : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
+                                                ? 'bg-red-600 text-white font-semibold shadow-xs shadow-red-600/20'
+                                                : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
                                         }`}
                                     >
                                         <Icon className="h-4 w-4 shrink-0" />
@@ -389,8 +373,8 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
 
                                         {/* Floating Tooltip in Collapsed Mode */}
                                         {sidebarCollapsed && (
-                                            <div className="hidden group-hover:flex items-center absolute left-full top-1/2 -translate-y-1/2 ml-3 px-3 py-1.5 rounded-lg bg-zinc-900 text-white text-xs font-bold whitespace-nowrap shadow-2xl border border-zinc-700 z-50 pointer-events-none">
-                                                <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-zinc-900 border-l border-b border-zinc-700 rotate-45" />
+                                            <div className="hidden group-hover:flex items-center absolute left-full top-1/2 -translate-y-1/2 ml-3 px-2.5 py-1 rounded-md bg-zinc-900 text-white text-xs font-semibold whitespace-nowrap shadow-2xl border border-zinc-700 z-50 pointer-events-none">
+                                                <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-zinc-900 border-l border-b border-zinc-700 rotate-45" />
                                                 <span>{item.name}</span>
                                             </div>
                                         )}
@@ -401,15 +385,13 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
                     </div>
 
                     {/* 2. Konfigurasi Website */}
-                    <div className="space-y-1">
+                    <div className="space-y-0.5">
                         {!sidebarCollapsed && (
-                            <span className={`px-3 text-[10px] font-bold uppercase tracking-wider ${
-                                isDark ? 'text-zinc-500' : 'text-zinc-400'
-                            }`}>
+                            <span className="px-2 text-[9px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">
                                 Konfigurasi Website
                             </span>
                         )}
-                        <div className="mt-1.5 space-y-1">
+                        <div className="space-y-0.5">
                             {websiteConfigNav.map((item) => {
                                 const Icon = item.icon;
                                 return (
@@ -418,14 +400,14 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
                                         href={item.href}
                                         title={item.name}
                                         onClick={() => setSidebarOpen(false)}
-                                        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all relative group ${
-                                            sidebarCollapsed ? 'justify-center' : ''
+                                        className={`flex items-center transition-all relative group ${
+                                            sidebarCollapsed
+                                                ? 'w-8 h-8 aspect-square justify-center mx-auto rounded-lg p-0 shrink-0'
+                                                : 'gap-2.5 px-2.5 py-1.5 rounded-lg text-xs font-medium'
                                         } ${
                                             item.active
-                                                ? 'bg-gradient-to-r from-red-700 via-red-800 to-red-950 text-amber-300 border border-amber-400/30 shadow-md shadow-red-950/40'
-                                                : isDark
-                                                    ? 'text-zinc-400 hover:text-white hover:bg-zinc-800/60'
-                                                    : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
+                                                ? 'bg-red-600 text-white font-semibold shadow-xs shadow-red-600/20'
+                                                : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
                                         }`}
                                     >
                                         <Icon className="h-4 w-4 shrink-0" />
@@ -433,8 +415,8 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
 
                                         {/* Floating Tooltip in Collapsed Mode */}
                                         {sidebarCollapsed && (
-                                            <div className="hidden group-hover:flex items-center absolute left-full top-1/2 -translate-y-1/2 ml-3 px-3 py-1.5 rounded-lg bg-zinc-900 text-white text-xs font-bold whitespace-nowrap shadow-2xl border border-zinc-700 z-50 pointer-events-none">
-                                                <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-zinc-900 border-l border-b border-zinc-700 rotate-45" />
+                                            <div className="hidden group-hover:flex items-center absolute left-full top-1/2 -translate-y-1/2 ml-3 px-2.5 py-1 rounded-md bg-zinc-900 text-white text-xs font-semibold whitespace-nowrap shadow-2xl border border-zinc-700 z-50 pointer-events-none">
+                                                <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-zinc-900 border-l border-b border-zinc-700 rotate-45" />
                                                 <span>{item.name}</span>
                                             </div>
                                         )}
@@ -445,15 +427,13 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
                     </div>
 
                     {/* 3. Publikasi & Layanan Warga */}
-                    <div className="space-y-1">
+                    <div className="space-y-0.5">
                         {!sidebarCollapsed && (
-                            <span className={`px-3 text-[10px] font-bold uppercase tracking-wider ${
-                                isDark ? 'text-zinc-500' : 'text-zinc-400'
-                            }`}>
+                            <span className="px-2 text-[9px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">
                                 Publikasi & Layanan Warga
                             </span>
                         )}
-                        <div className="mt-1.5 space-y-1">
+                        <div className="space-y-0.5">
                             {publicationNav.map((item) => {
                                 const Icon = item.icon;
                                 return (
@@ -462,14 +442,14 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
                                         href={item.href}
                                         title={item.name}
                                         onClick={() => setSidebarOpen(false)}
-                                        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all relative group ${
-                                            sidebarCollapsed ? 'justify-center' : ''
+                                        className={`flex items-center transition-all relative group ${
+                                            sidebarCollapsed
+                                                ? 'w-8 h-8 aspect-square justify-center mx-auto rounded-lg p-0 shrink-0'
+                                                : 'gap-2.5 px-2.5 py-1.5 rounded-lg text-xs font-medium'
                                         } ${
                                             item.active
-                                                ? 'bg-gradient-to-r from-red-700 via-red-800 to-red-950 text-amber-300 border border-amber-400/30 shadow-md shadow-red-950/40'
-                                                : isDark
-                                                    ? 'text-zinc-400 hover:text-white hover:bg-zinc-800/60'
-                                                    : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
+                                                ? 'bg-red-600 text-white font-semibold shadow-xs shadow-red-600/20'
+                                                : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
                                         }`}
                                     >
                                         <Icon className="h-4 w-4 shrink-0" />
@@ -477,8 +457,8 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
 
                                         {/* Floating Tooltip in Collapsed Mode */}
                                         {sidebarCollapsed && (
-                                            <div className="hidden group-hover:flex items-center absolute left-full top-1/2 -translate-y-1/2 ml-3 px-3 py-1.5 rounded-lg bg-zinc-900 text-white text-xs font-bold whitespace-nowrap shadow-2xl border border-zinc-700 z-50 pointer-events-none">
-                                                <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-zinc-900 border-l border-b border-zinc-700 rotate-45" />
+                                            <div className="hidden group-hover:flex items-center absolute left-full top-1/2 -translate-y-1/2 ml-3 px-2.5 py-1 rounded-md bg-zinc-900 text-white text-xs font-semibold whitespace-nowrap shadow-2xl border border-zinc-700 z-50 pointer-events-none">
+                                                <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-zinc-900 border-l border-b border-zinc-700 rotate-45" />
                                                 <span>{item.name}</span>
                                             </div>
                                         )}
@@ -488,16 +468,14 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
                         </div>
                     </div>
 
-                    {/* 4. System & Admin Access Nav (Ditaruh di Bagian Bawah) */}
-                    <div className="space-y-1 pt-2 border-t border-zinc-200 dark:border-zinc-800/60">
+                    {/* 4. System & Admin Access Nav */}
+                    <div className="space-y-0.5 pt-2 border-t border-zinc-100">
                         {!sidebarCollapsed && (
-                            <span className={`px-3 text-[10px] font-bold uppercase tracking-wider ${
-                                isDark ? 'text-zinc-500' : 'text-zinc-400'
-                            }`}>
+                            <span className="px-2 text-[9px] font-bold uppercase tracking-wider text-zinc-400 block mb-1">
                                 Pengaturan & Akses
                             </span>
                         )}
-                        <div className="mt-1.5 space-y-1">
+                        <div className="space-y-0.5">
                             {systemNav.map((item) => {
                                 const Icon = item.icon;
                                 return (
@@ -506,14 +484,14 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
                                         href={item.href}
                                         title={item.name}
                                         onClick={() => setSidebarOpen(false)}
-                                        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all relative group ${
-                                            sidebarCollapsed ? 'justify-center' : ''
+                                        className={`flex items-center transition-all relative group ${
+                                            sidebarCollapsed
+                                                ? 'w-8 h-8 aspect-square justify-center mx-auto rounded-lg p-0 shrink-0'
+                                                : 'gap-2.5 px-2.5 py-1.5 rounded-lg text-xs font-medium'
                                         } ${
                                             item.active
-                                                ? 'bg-gradient-to-r from-red-700 via-red-800 to-red-950 text-amber-300 border border-amber-400/30 shadow-md shadow-red-950/40'
-                                                : isDark
-                                                    ? 'text-zinc-400 hover:text-white hover:bg-zinc-800/60'
-                                                    : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
+                                                ? 'bg-red-600 text-white font-semibold shadow-xs shadow-red-600/20'
+                                                : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
                                         }`}
                                     >
                                         <Icon className="h-4 w-4 shrink-0" />
@@ -521,8 +499,8 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
 
                                         {/* Floating Tooltip in Collapsed Mode */}
                                         {sidebarCollapsed && (
-                                            <div className="hidden group-hover:flex items-center absolute left-full top-1/2 -translate-y-1/2 ml-3 px-3 py-1.5 rounded-lg bg-zinc-900 text-white text-xs font-bold whitespace-nowrap shadow-2xl border border-zinc-700 z-50 pointer-events-none">
-                                                <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-zinc-900 border-l border-b border-zinc-700 rotate-45" />
+                                            <div className="hidden group-hover:flex items-center absolute left-full top-1/2 -translate-y-1/2 ml-3 px-2.5 py-1 rounded-md bg-zinc-900 text-white text-xs font-semibold whitespace-nowrap shadow-2xl border border-zinc-700 z-50 pointer-events-none">
+                                                <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-zinc-900 border-l border-b border-zinc-700 rotate-45" />
                                                 <span>{item.name}</span>
                                             </div>
                                         )}
@@ -533,210 +511,174 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
                     </div>
                 </div>
 
-                {/* Sidebar Desktop Collapse Toggle Button */}
-                <div className={`hidden md:flex items-center justify-center p-2 border-t relative group shrink-0 ${
-                    isDark ? 'border-zinc-800 bg-zinc-950/50' : 'border-zinc-200 bg-zinc-50'
+                {/* Admin User Footer & Logout (Clean Modern Card) */}
+                <div className={`border-t border-zinc-200/80 bg-zinc-50/40 shrink-0 ${
+                    sidebarCollapsed ? 'p-1.5' : 'p-2'
                 }`}>
-                    <button
-                        onClick={toggleSidebarCollapse}
-                        title={sidebarCollapsed ? 'Buka Sidebar' : 'Ciutkan Sidebar'}
-                        className={`p-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition-colors cursor-pointer w-full justify-center ${
-                            isDark
-                                ? 'text-zinc-400 hover:text-white hover:bg-zinc-800'
-                                : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-200'
-                        }`}
-                    >
-                        {sidebarCollapsed ? (
-                            <PanelLeftOpen className="h-4 w-4 text-amber-400" />
-                        ) : (
-                            <>
-                                <PanelLeftClose className="h-4 w-4" />
-                                <span className="text-[11px]">Sembunyikan Sidebar</span>
-                            </>
-                        )}
-                    </button>
+                    {sidebarCollapsed ? (
+                        <div className="flex flex-col items-center gap-1.5 py-0.5">
+                            <Link
+                                href={`/${adminPath}/profile`}
+                                className="group relative p-0.5 rounded-lg hover:bg-zinc-200/60 transition-colors"
+                                title={`${currentUser.name} (Profil)`}
+                            >
+                                <div className="relative">
+                                    <div className="h-7 w-7 rounded-full bg-zinc-900 text-white font-bold text-xs flex items-center justify-center shadow-xs ring-1 ring-black/5">
+                                        {currentUser.name.charAt(0).toUpperCase()}
+                                    </div>
+                                    <span className="absolute bottom-0 right-0 h-1.5 w-1.5 rounded-full bg-emerald-500 ring-2 ring-white" />
+                                </div>
+                                <div className="hidden group-hover:flex flex-col absolute left-full top-1/2 -translate-y-1/2 ml-3 px-2.5 py-1 rounded-md bg-zinc-900 text-white text-xs font-semibold whitespace-nowrap shadow-2xl border border-zinc-700 z-50 pointer-events-none">
+                                    <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-zinc-900 border-l border-b border-zinc-700 rotate-45" />
+                                    <span>{currentUser.name}</span>
+                                    <span className="text-[9.5px] text-zinc-400">Lihat Profil</span>
+                                </div>
+                            </Link>
 
-                    {/* Tooltip for toggle button when collapsed */}
-                    {sidebarCollapsed && (
-                        <div className="hidden group-hover:flex items-center absolute left-full top-1/2 -translate-y-1/2 ml-3 px-3 py-1.5 rounded-lg bg-zinc-900 text-white text-xs font-bold whitespace-nowrap shadow-2xl border border-zinc-700 z-50 pointer-events-none">
-                            <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-zinc-900 border-l border-b border-zinc-700 rotate-45" />
-                            <span>Buka Sidebar</span>
+                            <button
+                                onClick={handleLogout}
+                                title="Keluar Sistem"
+                                className="w-7 h-7 flex items-center justify-center rounded-lg text-zinc-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer group relative"
+                            >
+                                <LogOut className="h-3.5 w-3.5" />
+                                <div className="hidden group-hover:flex items-center absolute left-full top-1/2 -translate-y-1/2 ml-3 px-2.5 py-1 rounded-md bg-zinc-900 text-red-400 text-xs font-semibold whitespace-nowrap shadow-2xl border border-zinc-700 z-50 pointer-events-none">
+                                    <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-zinc-900 border-l border-b border-zinc-700 rotate-45" />
+                                    <span>Keluar Sistem</span>
+                                </div>
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="rounded-lg border border-zinc-200/80 bg-white p-2 shadow-2xs space-y-2">
+                            {/* User Profile Info */}
+                            <Link
+                                href={`/${adminPath}/profile`}
+                                className="flex items-center gap-2.5 p-1 rounded-lg hover:bg-zinc-50 transition-colors group/user"
+                                title="Buka Profil Administrator"
+                            >
+                                <div className="relative shrink-0">
+                                    <div className="h-8 w-8 rounded-full bg-zinc-900 text-white font-bold text-xs flex items-center justify-center shadow-xs ring-1 ring-black/5 group-hover/user:scale-105 transition-transform">
+                                        {currentUser.name.charAt(0).toUpperCase()}
+                                    </div>
+                                    <span className="absolute bottom-0 right-0 h-2 w-2 rounded-full bg-emerald-500 ring-2 ring-white" />
+                                </div>
+                                <div className="min-w-0 flex-1 leading-tight">
+                                    <p className="text-xs font-semibold text-zinc-900 truncate group-hover/user:text-red-700 transition-colors">
+                                        {currentUser.name}
+                                    </p>
+                                    <div className="flex items-center gap-1.5 mt-0.5">
+                                        <span className="text-[10px] text-zinc-400 truncate">
+                                            @{currentUser.username || 'admin'}
+                                        </span>
+                                        <span className="text-zinc-300 text-[10px]">•</span>
+                                        <span className="text-[10px] font-medium text-zinc-500 capitalize truncate">
+                                            {currentUser.role || 'Admin'}
+                                        </span>
+                                    </div>
+                                </div>
+                            </Link>
+
+                            {/* Clean Logout Button */}
+                            <button
+                                onClick={handleLogout}
+                                className="w-full flex items-center justify-center gap-2 py-1.5 px-3 rounded-lg text-xs font-medium text-zinc-600 hover:text-red-600 bg-zinc-50 hover:bg-red-50/70 border border-zinc-200/70 hover:border-red-200 transition-all cursor-pointer group/btn"
+                            >
+                                <LogOut className="h-3.5 w-3.5 text-zinc-400 group-hover/btn:text-red-600 transition-colors" />
+                                <span>Keluar Sistem</span>
+                            </button>
                         </div>
                     )}
-                </div>
-
-                {/* Admin User Footer & Logout */}
-                <div className={`p-3.5 border-t space-y-2.5 relative shrink-0 ${
-                    isDark ? 'border-zinc-800 bg-zinc-950/60' : 'border-zinc-200 bg-white'
-                }`}>
-                    <div
-                        title={sidebarCollapsed ? `${currentUser.name} (@${currentUser.username || 'admin'})` : undefined}
-                        className={`flex items-center gap-3 px-2 py-1.5 rounded-xl group relative ${
-                            sidebarCollapsed ? 'justify-center cursor-pointer' : ''
-                        }`}
-                    >
-                        <div className="h-8 w-8 rounded-xl bg-gradient-to-b from-red-800 to-red-950 border border-red-700 flex items-center justify-center text-amber-300 font-bold text-xs shrink-0 shadow-sm">
-                            {currentUser.name.charAt(0)}
-                        </div>
-                        {!sidebarCollapsed && (
-                            <div className="min-w-0 flex-1">
-                                <p className={`text-xs font-bold truncate ${isDark ? 'text-white' : 'text-zinc-900'}`}>
-                                    {currentUser.name}
-                                </p>
-                                <div className="flex items-center gap-1.5 mt-0.5">
-                                    <span className="font-mono text-[10px] text-amber-500 font-bold">
-                                        @{currentUser.username || 'admin'}
-                                    </span>
-                                    <span className="inline-block px-1.5 py-0.2 rounded text-[8px] font-semibold bg-amber-400/10 text-amber-500 border border-amber-400/20 uppercase tracking-wider">
-                                        {currentUser.role}
-                                    </span>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Tooltip for avatar in collapsed mode */}
-                        {sidebarCollapsed && (
-                            <div className="hidden group-hover:flex flex-col absolute left-full top-1/2 -translate-y-1/2 ml-3 px-3 py-1.5 rounded-lg bg-zinc-900 text-white text-xs font-bold whitespace-nowrap shadow-2xl border border-zinc-700 z-50 pointer-events-none">
-                                <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-zinc-900 border-l border-b border-zinc-700 rotate-45" />
-                                <span>{currentUser.name}</span>
-                                <span className="text-[10px] text-amber-400 font-mono">@{currentUser.username || 'admin'} ({currentUser.role})</span>
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="relative group">
-                        <button
-                            onClick={handleLogout}
-                            title={sidebarCollapsed ? 'Keluar Sistem' : undefined}
-                            className={`w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-red-500 hover:text-red-400 transition-all cursor-pointer ${
-                                isDark
-                                    ? 'bg-red-950/25 hover:bg-red-950/50 border border-red-900/40'
-                                    : 'bg-red-50 hover:bg-red-100 border border-red-200'
-                            }`}
-                        >
-                            <LogOut className="h-3.5 w-3.5 shrink-0" />
-                            {!sidebarCollapsed && <span>Keluar Sistem</span>}
-                        </button>
-
-                        {/* Tooltip for logout in collapsed mode */}
-                        {sidebarCollapsed && (
-                            <div className="hidden group-hover:flex items-center absolute left-full top-1/2 -translate-y-1/2 ml-3 px-3 py-1.5 rounded-lg bg-zinc-900 text-red-400 text-xs font-bold whitespace-nowrap shadow-2xl border border-zinc-700 z-50 pointer-events-none">
-                                <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-zinc-900 border-l border-b border-zinc-700 rotate-45" />
-                                <span>Keluar Sistem</span>
-                            </div>
-                        )}
-                    </div>
                 </div>
             </aside>
 
             {/* ========================================================= */}
             {/* MAIN CONTENT AREA */}
             {/* ========================================================= */}
-            <div className={`flex-1 flex flex-col min-w-0 relative z-10 transition-all duration-300 ${
-                sidebarCollapsed ? 'md:ml-20' : 'md:ml-64 lg:ml-72'
+            <div className={`flex-1 flex flex-col min-w-0 relative z-10 transition-all duration-300 bg-white ${
+                sidebarCollapsed ? 'md:ml-12' : 'md:ml-60'
             }`}>
-                {/* Topbar Header (Sinkron & Sejajar Siluet Batik dgn Sidebar Brand Header) */}
-                <header className={`h-16 border-b px-4 sm:px-6 lg:px-8 flex items-center justify-between sticky top-0 z-40 transition-colors duration-300 shrink-0 ${
-                    isDark
-                        ? 'bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 border-zinc-800 shadow-md shadow-black/20'
-                        : 'bg-gradient-to-r from-white via-white to-slate-50 border-zinc-200 shadow-sm'
-                }`}>
-                    {/* Siluet Batik Parang Sinkron & Sejajar */}
-                    <div
-                        className={`absolute inset-0 pointer-events-none bg-repeat transition-opacity duration-300 ${
-                            isDark ? 'opacity-20' : 'opacity-15'
-                        }`}
-                        style={{
-                            backgroundImage: `url("${currentBatik}")`,
-                            backgroundSize: '80px 80px',
-                            backgroundPosition: '0 0',
-                        }}
-                    />
-                    <div className={`absolute inset-0 pointer-events-none ${
-                        isDark
-                            ? 'bg-gradient-to-r from-red-950/40 via-transparent to-black/30'
-                            : 'bg-gradient-to-r from-red-100/25 via-transparent to-transparent'
-                    }`} />
-
-                    {/* Left: Mobile Toggle & Breadcrumb */}
-                    <div className="relative z-10 flex items-center gap-3">
+                {/* Topbar Header (Clean Full White with Breadcrumbs, No Theme Toggle) */}
+                <header className="h-14 border-b border-zinc-200 px-4 sm:px-5 lg:px-6 flex items-center justify-between sticky top-0 z-40 bg-white shadow-xs shrink-0">
+                    {/* Left: Mobile Toggle, Desktop Expand Toggle (When Collapsed), & Breadcrumbs Navigation */}
+                    <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
+                        {/* Mobile Toggle */}
                         <button
                             onClick={() => setSidebarOpen(true)}
-                            className={`md:hidden p-2 rounded-xl transition-colors ${
-                                isDark
-                                    ? 'text-zinc-400 hover:text-white hover:bg-zinc-800'
-                                    : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
-                            }`}
+                            className="md:hidden p-2 rounded-lg text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 border border-zinc-200 transition-all shadow-xs shrink-0"
                         >
                             <Menu className="h-5 w-5" />
                         </button>
 
-                        <button
-                            onClick={toggleSidebarCollapse}
-                            title={sidebarCollapsed ? 'Buka Sidebar' : 'Ciutkan Sidebar'}
-                            className={`hidden md:inline-flex p-1.5 rounded-lg transition-colors cursor-pointer ${
-                                isDark
-                                    ? 'text-zinc-400 hover:text-white hover:bg-zinc-800'
-                                    : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100'
-                            }`}
-                        >
-                            {sidebarCollapsed ? (
-                                <PanelLeftOpen className="h-4 w-4 text-amber-400" />
-                            ) : (
-                                <PanelLeftClose className="h-4 w-4" />
-                            )}
-                        </button>
+
+                        {/* Breadcrumbs Navigation */}
+                        <nav aria-label="Breadcrumb" className="hidden sm:flex items-center gap-1.5 text-xs min-w-0">
+                            {getBreadcrumbs().map((crumb, idx, arr) => {
+                                const isLast = idx === arr.length - 1;
+                                return (
+                                    <React.Fragment key={idx}>
+                                        {idx > 0 && (
+                                            <ChevronRight className="h-3.5 w-3.5 text-zinc-400 shrink-0" />
+                                        )}
+                                        {isLast ? (
+                                            <span className="font-bold text-zinc-900 truncate max-w-[200px] sm:max-w-[320px]">
+                                                {crumb.label}
+                                            </span>
+                                        ) : crumb.href ? (
+                                            <Link
+                                                href={crumb.href}
+                                                className="font-semibold text-zinc-500 hover:text-zinc-900 transition-colors flex items-center gap-1.5 hover:underline shrink-0"
+                                            >
+                                                {idx === 0 && <Home className="h-3.5 w-3.5 text-zinc-400" />}
+                                                <span>{crumb.label}</span>
+                                            </Link>
+                                        ) : (
+                                            <span className="font-medium text-zinc-400 shrink-0">
+                                                {crumb.label}
+                                            </span>
+                                        )}
+                                    </React.Fragment>
+                                );
+                            })}
+                        </nav>
+
+                        {/* Mobile Active Page Title */}
+                        <span className="sm:hidden font-bold text-xs text-zinc-900 truncate max-w-[150px]">
+                            {title}
+                        </span>
                     </div>
 
-                    {/* Right: Actions (Theme Toggle, Web Preview, Profile) */}
-                    <div className="relative z-10 flex items-center gap-2 sm:gap-3">
-                        {/* 1. Theme Toggle (Dark / Light) */}
-                        <button
-                            onClick={toggleTheme}
-                            title={isDark ? 'Beralih ke Mode Terang' : 'Beralih ke Mode Gelap'}
-                            className={`p-2 rounded-xl transition-all cursor-pointer border ${
-                                isDark
-                                    ? 'bg-zinc-800/80 border-zinc-700 text-amber-400 hover:bg-zinc-700'
-                                    : 'bg-zinc-100 border-zinc-200 text-indigo-600 hover:bg-zinc-200'
-                            }`}
-                        >
-                            {isDark ? (
-                                <Sun className="h-4 w-4 transform hover:rotate-45 transition-transform" />
-                            ) : (
-                                <Moon className="h-4 w-4 transform hover:-rotate-12 transition-transform" />
-                            )}
-                        </button>
-
-                        {/* 3. Open Public Web Link */}
+                    {/* Right: Actions (Buka Web Desa, Profile - Clean Frameless) */}
+                    <div className="flex items-center gap-2 sm:gap-3">
+                        {/* Open Public Web Link */}
                         <a
                             href="/"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className={`hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors ${
-                                isDark
-                                    ? 'bg-zinc-800/80 hover:bg-zinc-800 text-zinc-300 hover:text-amber-300 border-zinc-700'
-                                    : 'bg-zinc-100 hover:bg-zinc-200 text-zinc-700 hover:text-zinc-900 border-zinc-200'
-                            }`}
+                            className="hidden sm:inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-lg text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 transition-colors"
                         >
-                            <Globe className="h-3.5 w-3.5" />
+                            <Globe className="h-3.5 w-3.5 text-zinc-400" />
                             <span>Buka Web Desa</span>
                         </a>
 
-                        {/* 4. Topbar Profile Link */}
+                        {/* Topbar Profile (Frameless & Clean) */}
                         <Link
                             href={`/${adminPath}/profile`}
-                            className={`flex items-center gap-2 px-2.5 py-1 rounded-xl transition-colors ${
-                                isDark ? 'hover:bg-zinc-800/80' : 'hover:bg-zinc-200/60'
-                            }`}
+                            title="Buka Profil Administrator"
+                            className="flex items-center gap-2.5 p-1 rounded-lg hover:bg-zinc-100/80 transition-colors group cursor-pointer"
                         >
-                            <div className="h-7 w-7 rounded-lg bg-gradient-to-b from-red-700 to-red-900 text-amber-300 flex items-center justify-center font-bold text-xs border border-amber-400/30 shrink-0 shadow-xs">
-                                {currentUser.name.charAt(0)}
+                            <div className="relative shrink-0">
+                                <div className="h-8 w-8 rounded-full bg-zinc-900 text-white flex items-center justify-center font-bold text-xs shadow-xs ring-1 ring-black/5 group-hover:scale-105 transition-transform">
+                                    {currentUser.name.charAt(0).toUpperCase()}
+                                </div>
+                                <span className="absolute bottom-0 right-0 h-2 w-2 rounded-full bg-emerald-500 ring-2 ring-white" />
                             </div>
-                            <span className={`text-xs font-bold hidden md:inline truncate max-w-[120px] ${
-                                isDark ? 'text-zinc-200' : 'text-zinc-800'
-                            }`}>
-                                {currentUser.name}
-                            </span>
+                            <div className="hidden sm:flex flex-col text-left leading-tight">
+                                <span className="text-xs font-semibold text-zinc-900 group-hover:text-red-700 transition-colors truncate max-w-[140px]">
+                                    {currentUser.name}
+                                </span>
+                                <span className="text-[10px] font-medium text-zinc-400 truncate">
+                                    Administrator
+                                </span>
+                            </div>
                         </Link>
                     </div>
                 </header>
@@ -746,19 +688,15 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
                     <div
                         className={`fixed top-5 right-5 z-[9999] max-w-sm sm:max-w-md flex items-center justify-between gap-3 px-4 py-3 rounded-lg border shadow-xl backdrop-blur-md transition-all duration-300 animate-in slide-in-from-top-3 fade-in ${
                             toast.type === 'success'
-                                ? isDark
-                                    ? 'bg-emerald-950/95 border-emerald-800/90 text-emerald-200 shadow-emerald-950/50'
-                                    : 'bg-emerald-50 border-emerald-300 text-emerald-900 shadow-emerald-900/10'
-                                : isDark
-                                    ? 'bg-red-950/95 border-red-800/90 text-red-200 shadow-red-950/50'
-                                    : 'bg-red-50 border-red-300 text-red-900 shadow-red-900/10'
+                                ? 'bg-emerald-50 border-emerald-300 text-emerald-900 shadow-emerald-900/10'
+                                : 'bg-red-50 border-red-300 text-red-900 shadow-red-900/10'
                         }`}
                     >
                         <div className="flex items-center gap-2.5 min-w-0">
                             {toast.type === 'success' ? (
-                                <CheckCircle2 className={`h-4 w-4 shrink-0 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
+                                <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" />
                             ) : (
-                                <AlertCircle className={`h-4 w-4 shrink-0 ${isDark ? 'text-red-400' : 'text-red-600'}`} />
+                                <AlertCircle className="h-4 w-4 shrink-0 text-red-600" />
                             )}
                             <span className="text-xs font-semibold leading-snug">
                                 {toast.message}
@@ -771,12 +709,8 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
                             title="Tutup Notifikasi"
                             className={`p-1 rounded-md transition-colors cursor-pointer shrink-0 ${
                                 toast.type === 'success'
-                                    ? isDark
-                                        ? 'text-emerald-400 hover:text-emerald-200 hover:bg-emerald-900/60'
-                                        : 'text-emerald-700 hover:text-emerald-950 hover:bg-emerald-100'
-                                    : isDark
-                                        ? 'text-red-400 hover:text-red-200 hover:bg-red-900/60'
-                                        : 'text-red-700 hover:text-red-950 hover:bg-red-100'
+                                    ? 'text-emerald-700 hover:bg-emerald-100'
+                                    : 'text-red-700 hover:bg-red-100'
                             }`}
                         >
                             <X className="h-3.5 w-3.5" />
@@ -785,7 +719,7 @@ export default function AdminLayout({ children, title = 'Panel Administrator' })
                 )}
 
                 {/* Page Content */}
-                <main className="flex-1 p-4 sm:p-6 lg:p-8">
+                <main className="flex-1 p-3.5 sm:p-4 lg:p-5 bg-white">
                     {children}
                 </main>
             </div>
