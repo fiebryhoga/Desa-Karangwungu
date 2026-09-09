@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import AdminPageHeader from '@/Components/Admin/AdminPageHeader';
 import RichTextEditor from '@/Components/Admin/RichTextEditor';
@@ -29,6 +29,8 @@ import {
 import { getIndoDateTimeLocalNow } from '@/Utils/format';
 
 export default function NewsEditor({ auth, post = null, categories = [] }) {
+    const { props } = usePage();
+    const adminPath = props?.admin_path || 'admin-karangwungu';
     const isEditing = Boolean(post && post.id);
 
     const initialCategories = Array.isArray(post?.categories) && post.categories.length > 0
@@ -187,7 +189,7 @@ export default function NewsEditor({ auth, post = null, categories = [] }) {
 
         try {
             const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-            const res = await fetch('/portal-karangwungu/settings/news/upload-image', {
+            const res = await fetch(`/${adminPath}/settings/news/upload-image`, {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': token || '',
@@ -215,7 +217,7 @@ export default function NewsEditor({ auth, post = null, categories = [] }) {
         setImageUploadError('');
 
         if (isEditing) {
-            submitPut(`/portal-karangwungu/settings/news/${post.id}`, {
+            submitPut(`/${adminPath}/settings/news/${post.id}`, {
                 preserveScroll: true,
                 onSuccess: () => {
                     setSaveSuccessMsg('Perubahan artikel berhasil disimpan!');
@@ -223,7 +225,7 @@ export default function NewsEditor({ auth, post = null, categories = [] }) {
                 },
             });
         } else {
-            submitPost('/portal-karangwungu/settings/news', {
+            submitPost(`/${adminPath}/settings/news`, {
                 onSuccess: () => {
                     // Redirects to news listing
                 },
@@ -249,15 +251,15 @@ export default function NewsEditor({ auth, post = null, categories = [] }) {
                             : 'Tulis naskah berita, informasi kegiatan, atau pengumuman resmi desa untuk warga.'
                     }
                     breadcrumbs={[
-                        { label: 'Admin', href: '/portal-karangwungu/dashboard' },
-                        { label: 'Pengaturan Website', href: '/portal-karangwungu/settings/dashboard' },
-                        { label: 'Warta & Berita Desa', href: '/portal-karangwungu/settings/news' },
+                        { label: 'Admin', href: `/${adminPath}/dashboard` },
+                        { label: 'Pengaturan Website', href: `/${adminPath}/settings/dashboard` },
+                        { label: 'Warta & Berita Desa', href: `/${adminPath}/settings/news` },
                         { label: isEditing ? 'Edit Berita' : 'Tulis Berita Baru' },
                     ]}
                     actions={
                         <div className="flex items-center gap-2">
                             <Link
-                                href="/portal-karangwungu/settings/news"
+                                href={`/${adminPath}/settings/news`}
                                 className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800/80 transition-colors shadow-2xs cursor-pointer"
                             >
                                 <ArrowLeft className="h-3.5 w-3.5" />
@@ -275,7 +277,7 @@ export default function NewsEditor({ auth, post = null, categories = [] }) {
                                         <span>Lihat di Portal</span>
                                     </a>
                                     <Link
-                                        href={`/portal-karangwungu/settings/news/${post.id}/comments`}
+                                        href={`/${adminPath}/settings/news/${post.id}/comments`}
                                         className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800/80 transition-colors shadow-2xs"
                                     >
                                         <MessageSquare className="h-3.5 w-3.5 text-amber-500" />

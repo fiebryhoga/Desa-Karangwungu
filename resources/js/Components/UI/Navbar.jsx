@@ -11,6 +11,7 @@ import {
     Users,
     PieChart,
     FileText,
+    ScrollText,
     Sparkles,
     Search,
     DollarSign,
@@ -35,12 +36,10 @@ export default function Navbar() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
-    const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false);
     const [moreDropdownOpen, setMoreDropdownOpen] = useState(false);
 
     // Mobile Accordion States
     const [mobileProfileOpen, setMobileProfileOpen] = useState(false);
-    const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
     const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
 
     // Global Search State
@@ -163,12 +162,23 @@ export default function Navbar() {
         return false;
     };
 
+    const isServiceActive = () => {
+        return (
+            isActive("/layanan/ajukan") ||
+            isActive("/layanan/surat") ||
+            isActive("/layanan/katalog")
+        );
+    };
+
     const isMoreActive = () => {
         return (
             isActive("/transparansi") ||
             isActive("/potensi") ||
             isActive("/galeri") ||
-            isActive("/kontak")
+            isActive("/kontak") ||
+            isActive("/profil/fasilitas") ||
+            isActive("/produk-hukum") ||
+            (isActive("/layanan") && !isServiceActive())
         );
     };
 
@@ -431,62 +441,7 @@ export default function Navbar() {
                             )}
                         </div>
 
-                        {/* Layanan Dropdown */}
-                        <div
-                            className="relative"
-                            onMouseEnter={() => setServicesDropdownOpen(true)}
-                            onMouseLeave={() => setServicesDropdownOpen(false)}
-                        >
-                            <button
-                                className={`flex items-center gap-1.5 py-1 transition-colors cursor-pointer relative whitespace-nowrap ${
-                                    isActive("/layanan")
-                                        ? "text-amber-300 font-bold"
-                                        : "text-red-100 hover:text-amber-300"
-                                }`}
-                            >
-                                <span>Layanan</span>
-                                <ChevronDown className="h-3.5 w-3.5 opacity-80 text-amber-300" />
-                                {isActive("/layanan") && (
-                                    <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-amber-400 rounded-full shadow-xs" />
-                                )}
-                            </button>
-
-                            {servicesDropdownOpen && (
-                                <div className="absolute left-0 top-full pt-2 w-72 animate-in fade-in-50 zoom-in-95 duration-100 z-50">
-                                    <div className="rounded-xl border border-red-500/40 bg-gradient-to-b from-red-800 via-red-900 to-red-950 text-white backdrop-blur-xl p-2 shadow-2xl space-y-1">
-                                        <Link
-                                            href="/layanan/ajukan"
-                                            className="flex items-start gap-2.5 rounded-lg p-2 text-sm hover:bg-black/30 text-red-100 hover:text-amber-300 transition-colors"
-                                        >
-                                            <Sparkles className="h-4 w-4 text-amber-300 shrink-0 mt-0.5" />
-                                            <div>
-                                                <div className="font-bold text-white">
-                                                    Ajukan Surat Mandiri
-                                                </div>
-                                                <div className="text-xs text-red-200/80">
-                                                    Buat permohonan surat secara daring
-                                                </div>
-                                            </div>
-                                        </Link>
-                                        <Link
-                                            href="/layanan"
-                                            className="flex items-start gap-2.5 rounded-lg p-2 text-sm hover:bg-black/30 text-red-100 hover:text-amber-300 transition-colors"
-                                        >
-                                            <Scale className="h-4 w-4 text-amber-300 shrink-0 mt-0.5" />
-                                            <div>
-                                                <div className="font-bold text-white">
-                                                    Produk Hukum Desa
-                                                </div>
-                                                <div className="text-xs text-red-200/80">
-                                                    Perdes, SK Kepala Desa, Regulasi
-                                                </div>
-                                            </div>
-                                        </Link>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-
+                        {/* Berita Link */}
                         <Link
                             href="/berita"
                             className={`py-1 transition-colors relative whitespace-nowrap ${
@@ -501,7 +456,7 @@ export default function Navbar() {
                             )}
                         </Link>
 
-                        {/* Informasi Dropdown */}
+                        {/* Informasi Dropdown (Termasuk Produk Hukum & Regulasi Desa) */}
                         <div
                             className="relative"
                             onMouseEnter={() => setMoreDropdownOpen(true)}
@@ -522,8 +477,22 @@ export default function Navbar() {
                             </button>
 
                             {moreDropdownOpen && (
-                                <div className="absolute right-0 top-full pt-2 w-72 animate-in fade-in-50 zoom-in-95 duration-100 z-50">
+                                <div className="absolute left-0 top-full pt-2 w-72 animate-in fade-in-50 zoom-in-95 duration-100 z-50">
                                     <div className="rounded-xl border border-red-500/40 bg-gradient-to-b from-red-800 via-red-900 to-red-950 text-white backdrop-blur-xl p-2 shadow-2xl space-y-1">
+                                        <Link
+                                            href="/produk-hukum"
+                                            className="flex items-start gap-2.5 rounded-lg p-2 text-sm hover:bg-black/30 text-red-100 hover:text-amber-300 transition-colors"
+                                        >
+                                            <Scale className="h-4 w-4 text-amber-300 shrink-0 mt-0.5" />
+                                            <div>
+                                                <div className="font-bold text-white">
+                                                    Produk Hukum Desa
+                                                </div>
+                                                <div className="text-xs text-red-200/80">
+                                                    Perdes, SK Kepala Desa & Regulasi
+                                                </div>
+                                            </div>
+                                        </Link>
                                         <Link
                                             href="/transparansi"
                                             className="flex items-start gap-2.5 rounded-lg p-2 text-sm hover:bg-black/30 text-red-100 hover:text-amber-300 transition-colors"
@@ -567,20 +536,6 @@ export default function Navbar() {
                                             </div>
                                         </Link>
                                         <Link
-                                            href="/kontak"
-                                            className="flex items-start gap-2.5 rounded-lg p-2 text-sm hover:bg-black/30 text-red-100 hover:text-amber-300 transition-colors"
-                                        >
-                                            <MessageSquare className="h-4 w-4 text-amber-300 shrink-0 mt-0.5" />
-                                            <div>
-                                                <div className="font-bold text-white">
-                                                    Kontak & Lapor Warga
-                                                </div>
-                                                <div className="text-xs text-red-200/80">
-                                                    Lokasi balai desa & formulir aspirasi
-                                                </div>
-                                            </div>
-                                        </Link>
-                                        <Link
                                             href="/profil/fasilitas"
                                             className="flex items-start gap-2.5 rounded-lg p-2 text-sm hover:bg-black/30 text-red-100 hover:text-amber-300 transition-colors"
                                         >
@@ -594,10 +549,37 @@ export default function Navbar() {
                                                 </div>
                                             </div>
                                         </Link>
+                                        <Link
+                                            href="/kontak"
+                                            className="flex items-start gap-2.5 rounded-lg p-2 text-sm hover:bg-black/30 text-red-100 hover:text-amber-300 transition-colors"
+                                        >
+                                            <MessageSquare className="h-4 w-4 text-amber-300 shrink-0 mt-0.5" />
+                                            <div>
+                                                <div className="font-bold text-white">
+                                                    Kontak & Lapor Warga
+                                                </div>
+                                                <div className="text-xs text-red-200/80">
+                                                    Lokasi balai desa & formulir aspirasi
+                                                </div>
+                                            </div>
+                                        </Link>
                                     </div>
                                 </div>
                             )}
                         </div>
+
+                        {/* Layanan Highlight Button (Direct Link ke Pengajuan Surat Online) */}
+                        <Link
+                            href="/layanan/ajukan"
+                            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs xl:text-sm font-bold tracking-tight transition-all duration-200 shadow-md ${
+                                isServiceActive()
+                                    ? "bg-gradient-to-r from-amber-400 via-amber-300 to-amber-400 text-red-950 ring-2 ring-amber-300 ring-offset-2 ring-offset-red-800 shadow-amber-400/40"
+                                    : "bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 hover:from-amber-300 hover:to-amber-200 text-red-950 shadow-amber-500/25 hover:shadow-amber-400/40 hover:scale-105 active:scale-95"
+                            }`}
+                        >
+                            <ScrollText className="h-3.5 w-3.5 text-red-950 shrink-0" />
+                            <span>Layanan</span>
+                        </Link>
                     </div>
 
                     {/* Right Action: Sleek Inline Pill Search Bar & Theme Toggle */}
@@ -1145,39 +1127,6 @@ export default function Navbar() {
                                     )}
                                 </div>
 
-                                {/* Accordion 2: Layanan */}
-                                <div>
-                                    <button
-                                        onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
-                                        className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-red-100 hover:bg-black/20 transition-colors"
-                                    >
-                                        <span className="font-medium">Layanan</span>
-                                        <ChevronDown
-                                            className={`h-3.5 w-3.5 text-amber-300 transition-transform ${
-                                                mobileServicesOpen ? "rotate-180" : ""
-                                            }`}
-                                        />
-                                    </button>
-                                    {mobileServicesOpen && (
-                                        <div className="pl-4 space-y-1 pt-1">
-                                            <Link
-                                                href="/layanan/ajukan"
-                                                onClick={() => setMobileMenuOpen(false)}
-                                                className="block px-3 py-1.5 rounded-md text-xs font-bold text-amber-300 hover:bg-black/20"
-                                            >
-                                                Ajukan Surat Mandiri
-                                            </Link>
-                                            <Link
-                                                href="/layanan"
-                                                onClick={() => setMobileMenuOpen(false)}
-                                                className="block px-3 py-1.5 rounded-md text-xs text-red-100 hover:text-amber-300 hover:bg-black/20"
-                                            >
-                                                Produk Hukum Desa
-                                            </Link>
-                                        </div>
-                                    )}
-                                </div>
-
                                 <Link
                                     href="/berita"
                                     onClick={() => setMobileMenuOpen(false)}
@@ -1191,7 +1140,7 @@ export default function Navbar() {
                                     <ArrowRight className="h-3.5 w-3.5 opacity-60 text-amber-300" />
                                 </Link>
 
-                                {/* Accordion 3: Informasi */}
+                                {/* Accordion 2: Informasi (Termasuk Produk Hukum Desa) */}
                                 <div>
                                     <button
                                         onClick={() => setMobileMoreOpen(!mobileMoreOpen)}
@@ -1206,6 +1155,13 @@ export default function Navbar() {
                                     </button>
                                     {mobileMoreOpen && (
                                         <div className="pl-4 space-y-1 pt-1">
+                                            <Link
+                                                href="/produk-hukum"
+                                                onClick={() => setMobileMenuOpen(false)}
+                                                className="block px-3 py-1.5 rounded-md text-xs text-red-100 hover:text-amber-300 hover:bg-black/20"
+                                            >
+                                                Produk Hukum Desa
+                                            </Link>
                                             <Link
                                                 href="/transparansi"
                                                 onClick={() => setMobileMenuOpen(false)}
@@ -1228,21 +1184,36 @@ export default function Navbar() {
                                                 Galeri Foto
                                             </Link>
                                             <Link
-                                                href="/kontak"
-                                                onClick={() => setMobileMenuOpen(false)}
-                                                className="block px-3 py-1.5 rounded-md text-xs text-red-100 hover:text-amber-300 hover:bg-black/20"
-                                            >
-                                                Kontak & Lapor
-                                            </Link>
-                                            <Link
                                                 href="/profil/fasilitas"
                                                 onClick={() => setMobileMenuOpen(false)}
                                                 className="block px-3 py-1.5 rounded-md text-xs text-red-100 hover:text-amber-300 hover:bg-black/20"
                                             >
                                                 Fasilitas Umum
                                             </Link>
+                                            <Link
+                                                href="/kontak"
+                                                onClick={() => setMobileMenuOpen(false)}
+                                                className="block px-3 py-1.5 rounded-md text-xs text-red-100 hover:text-amber-300 hover:bg-black/20"
+                                            >
+                                                Kontak & Lapor
+                                            </Link>
                                         </div>
                                     )}
+                                </div>
+
+                                {/* Highlighted Layanan CTA in Drawer (Langsung ke Pengajuan Surat) */}
+                                <div className="pt-2">
+                                    <Link
+                                        href="/layanan/ajukan"
+                                        onClick={() => setMobileMenuOpen(false)}
+                                        className="flex items-center justify-between p-3 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 hover:from-amber-300 hover:to-amber-200 text-red-950 font-bold text-xs shadow-lg hover:brightness-105 transition-all group"
+                                    >
+                                        <span className="flex items-center gap-2">
+                                            <ScrollText className="h-4 w-4 text-red-950" />
+                                            <span className="text-sm font-bold">Layanan Surat Online</span>
+                                        </span>
+                                        <ArrowRight className="h-4 w-4 text-red-950 group-hover:translate-x-0.5 transition-transform" />
+                                    </Link>
                                 </div>
                             </div>
                         </div>

@@ -32,7 +32,7 @@ import { ICON_REGISTRY, getIconComponent } from '@/Utils/iconRegistry';
 export default function OverviewSettings({ settings = {} }) {
     const [activeTab, setActiveTab] = useState('photos');
     const { props } = usePage();
-    const adminPath = props?.admin_path || 'portal-karangwungu';
+    const adminPath = props?.admin_path || 'admin-karangwungu';
 
     // Parse existing map points safely
     let initialMapPoints = [];

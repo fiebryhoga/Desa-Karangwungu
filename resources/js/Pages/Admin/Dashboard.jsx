@@ -50,7 +50,7 @@ export default function Dashboard({
     recentActivities = [],
 }) {
     const { props } = usePage();
-    const adminPath = props?.admin_path || 'portal-karangwungu';
+    const adminPath = props?.admin_path || 'admin-karangwungu';
     const currentUser = props?.auth?.user || { name: 'Administrator', username: 'admin', role: 'Superadmin' };
 
     // 7-day service trend data

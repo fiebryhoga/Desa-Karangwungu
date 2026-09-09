@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import AdminPageHeader from '@/Components/Admin/AdminPageHeader';
 import {
@@ -28,6 +28,9 @@ export default function NewsIndex({
     categories = [],
     filters = { search: '', category: 'all', status: 'all' },
 }) {
+    const { props } = usePage();
+    const adminPath = props?.admin_path || 'admin-karangwungu';
+
     // Local filters
     const [searchTerm, setSearchTerm] = useState(filters.search || '');
     const [selectedCategory, setSelectedCategory] = useState(filters.category || 'all');
@@ -77,7 +80,7 @@ export default function NewsIndex({
 
     // Quick toggle headline status
     const handleToggleFeatured = (id) => {
-        router.patch(`/portal-karangwungu/settings/news/${id}/toggle-featured`, {}, {
+        router.patch(`/${adminPath}/settings/news/${id}/toggle-featured`, {}, {
             preserveScroll: true,
         });
     };
@@ -87,7 +90,7 @@ export default function NewsIndex({
         if (!postToDelete) return;
         setIsDeleting(true);
 
-        router.delete(`/portal-karangwungu/settings/news/${postToDelete.id}`, {
+        router.delete(`/${adminPath}/settings/news/${postToDelete.id}`, {
             preserveScroll: true,
             onFinish: () => {
                 setIsDeleting(false);
@@ -106,8 +109,8 @@ export default function NewsIndex({
                     title="Warta & Berita Desa"
                     description="Kelola publikasi berita desa, pengumuman warga, headline berita utama, serta tanggapan dan diskusi masyarakat."
                     breadcrumbs={[
-                        { label: 'Admin', href: '/portal-karangwungu/dashboard' },
-                        { label: 'Pengaturan Website', href: '/portal-karangwungu/settings/dashboard' },
+                        { label: 'Admin', href: `/${adminPath}/dashboard` },
+                        { label: 'Pengaturan Website', href: `/${adminPath}/settings/dashboard` },
                         { label: 'Warta & Berita Desa' },
                     ]}
                     actions={
@@ -122,7 +125,7 @@ export default function NewsIndex({
                                 <span>Lihat di Portal</span>
                             </a>
                             <Link
-                                href="/portal-karangwungu/settings/news/create"
+                                href={`/${adminPath}/settings/news/create`}
                                 className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold rounded-lg text-white bg-gradient-to-r from-red-600 to-amber-500 hover:from-red-700 hover:to-amber-600 shadow-md shadow-red-600/20 active:scale-95 transition-all cursor-pointer"
                             >
                                 <Plus className="h-4 w-4" />
@@ -257,7 +260,7 @@ export default function NewsIndex({
                         </p>
                         <div className="pt-2">
                             <Link
-                                href="/portal-karangwungu/settings/news/create"
+                                href={`/${adminPath}/settings/news/create`}
                                 className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold rounded-lg text-white bg-gradient-to-r from-red-600 to-amber-500 shadow-md shadow-red-600/20"
                             >
                                 <Plus className="h-4 w-4" />
@@ -331,7 +334,7 @@ export default function NewsIndex({
 
                                         {/* Title with link */}
                                         <Link
-                                            href={`/portal-karangwungu/settings/news/${post.id}/edit`}
+                                            href={`/${adminPath}/settings/news/${post.id}/edit`}
                                             className="block text-sm sm:text-base font-bold text-zinc-900 dark:text-white line-clamp-2 hover:text-red-600 dark:hover:text-amber-400 transition-colors"
                                         >
                                             {post.title}
@@ -352,7 +355,7 @@ export default function NewsIndex({
                                                 <span>{post.views}</span>
                                             </span>
                                             <Link
-                                                href={`/portal-karangwungu/settings/news/${post.id}/comments`}
+                                                href={`/${adminPath}/settings/news/${post.id}/comments`}
                                                 className="flex items-center gap-1 hover:text-amber-500 transition-colors"
                                                 title="Buka Halaman Diskusi Komentar"
                                             >
@@ -374,7 +377,7 @@ export default function NewsIndex({
                                             </a>
 
                                             <Link
-                                                href={`/portal-karangwungu/settings/news/${post.id}/comments`}
+                                                href={`/${adminPath}/settings/news/${post.id}/comments`}
                                                 title="Moderasi Komentar & Balasan"
                                                 className="p-1.5 rounded-lg text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/40 border border-transparent hover:border-amber-200 transition-colors"
                                             >
@@ -382,7 +385,7 @@ export default function NewsIndex({
                                             </Link>
 
                                             <Link
-                                                href={`/portal-karangwungu/settings/news/${post.id}/edit`}
+                                                href={`/${adminPath}/settings/news/${post.id}/edit`}
                                                 title="Buka Halaman Edit"
                                                 className="p-1.5 rounded-lg text-zinc-600 dark:text-zinc-400 hover:text-red-600 dark:hover:text-amber-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                                             >

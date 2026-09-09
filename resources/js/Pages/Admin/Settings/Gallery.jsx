@@ -41,7 +41,7 @@ const DEFAULT_BLANK_GALLERY = {
 
 export default function GallerySettings({ galleries = [] }) {
     const { props } = usePage();
-    const adminPath = props?.admin_path || 'portal-karangwungu';
+    const adminPath = props?.admin_path || 'admin-karangwungu';
 
     // Search query
     const [searchQuery, setSearchQuery] = useState('');

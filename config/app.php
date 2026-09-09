@@ -128,7 +128,7 @@ return [
     | Portal Administrator Security Configuration
     |--------------------------------------------------------------------------
     */
-    'admin_path' => env('ADMIN_PATH', 'portal-karangwungu'),
+    'admin_path' => env('ADMIN_PATH', 'admin-karangwungu'),
     'admin_security_pin' => env('ADMIN_SECURITY_PIN', '62254'),
 
 ];

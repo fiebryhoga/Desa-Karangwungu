@@ -118,7 +118,7 @@ export default function HeroSection({
                         </Link>
 
                         <Link
-                            href="/layanan"
+                            href="/produk-hukum"
                             className="group flex items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-white/10 hover:bg-white/20 dark:bg-black/40 dark:hover:bg-black/60 backdrop-blur-md border border-white/20 hover:border-amber-400/80 shadow-xl transition-all duration-200 hover:-translate-y-0.5"
                         >
                             <div className="flex items-center gap-3">

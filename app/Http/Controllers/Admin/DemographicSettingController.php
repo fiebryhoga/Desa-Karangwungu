@@ -34,6 +34,13 @@ class DemographicSettingController extends Controller
             ? json_decode($settings['education_list'], true) ?: []
             : (is_array($settings['education_list'] ?? null) ? $settings['education_list'] : []);
 
+        // 0. Visibilitas Seksi Demografi (Default: '1' / Aktif jika belum disetel)
+        $settings['show_kpi_cards'] = $settings['show_kpi_cards'] ?? '1';
+        $settings['show_land_use'] = $settings['show_land_use'] ?? '1';
+        $settings['show_professions'] = $settings['show_professions'] ?? '1';
+        $settings['show_age_groups'] = $settings['show_age_groups'] ?? '1';
+        $settings['show_education'] = $settings['show_education'] ?? '1';
+
         return Inertia::render('Admin/Settings/Demographics', [
             'settings' => $settings,
         ]);
@@ -45,6 +52,13 @@ class DemographicSettingController extends Controller
     public function update(Request $request)
     {
         $validated = $request->validate([
+            // 0. Visibilitas Bagian/Seksi (On/Off)
+            'show_kpi_cards' => ['nullable', 'string', 'in:0,1,true,false'],
+            'show_land_use' => ['nullable', 'string', 'in:0,1,true,false'],
+            'show_professions' => ['nullable', 'string', 'in:0,1,true,false'],
+            'show_age_groups' => ['nullable', 'string', 'in:0,1,true,false'],
+            'show_education' => ['nullable', 'string', 'in:0,1,true,false'],
+
             // 1. Agregat Pokok
             'total_citizens' => ['required', 'numeric', 'min:0'],
             'male_citizens' => ['required', 'numeric', 'min:0'],
@@ -75,6 +89,14 @@ class DemographicSettingController extends Controller
             'education_subtitle' => ['nullable', 'string', 'max:500'],
             'education_list' => ['nullable'],
         ]);
+
+        // Normalisasi boolean visibilitas ('1' atau '0')
+        $visibilityFields = ['show_kpi_cards', 'show_land_use', 'show_professions', 'show_age_groups', 'show_education'];
+        foreach ($visibilityFields as $vField) {
+            if (isset($validated[$vField])) {
+                $validated[$vField] = in_array((string)$validated[$vField], ['1', 'true'], true) ? '1' : '0';
+            }
+        }
 
         // Helper encode array to JSON
         $jsonFields = ['land_use_list', 'professions_list', 'age_groups_list', 'education_list'];

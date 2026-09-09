@@ -72,7 +72,7 @@ const DEFAULT_BLANK_POTENTIAL = {
 
 export default function PotentialsSettings({ potentials = [], categories = [] }) {
     const { props } = usePage();
-    const adminPath = props?.admin_path || 'portal-karangwungu';
+    const adminPath = props?.admin_path || 'admin-karangwungu';
 
     // List search & category filter
     const [searchQuery, setSearchQuery] = useState('');

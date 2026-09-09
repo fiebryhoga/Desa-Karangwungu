@@ -37,7 +37,7 @@ import {
 export default function AdminLayout({ children, title = 'Panel Administrator', breadcrumbs }) {
     const { url, props } = usePage();
     const { auth, flash, admin_path } = props || {};
-    const adminPath = admin_path || 'portal-karangwungu';
+    const adminPath = admin_path || 'admin-karangwungu';
 
     // State 1: Mobile sidebar drawer
     const [sidebarOpen, setSidebarOpen] = useState(false);

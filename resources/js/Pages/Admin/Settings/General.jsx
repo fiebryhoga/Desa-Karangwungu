@@ -34,7 +34,7 @@ import {
 export default function GeneralSettings({ settings = {} }) {
     const [activeTab, setActiveTab] = useState('contact');
     const { props } = usePage();
-    const adminPath = props?.admin_path || 'portal-karangwungu';
+    const adminPath = props?.admin_path || 'admin-karangwungu';
 
     const { data, setData, post, processing, recentlySuccessful, isDirty } = useForm({
         // 1. Identitas & Tagline Desa

@@ -12,7 +12,7 @@ import {
     Check,
 } from 'lucide-react';
 
-export default function Login({ adminPath = 'portal-karangwungu' }) {
+export default function Login({ adminPath = 'admin-karangwungu' }) {
     const [showPassword, setShowPassword] = useState(false);
     const [showPin, setShowPin] = useState(false);
     const [capsLockOn, setCapsLockOn] = useState(false);

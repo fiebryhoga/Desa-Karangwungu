@@ -20,7 +20,7 @@ import {
 
 export default function UsersIndex({ users = { data: [] }, filters = {} }) {
     const { auth, admin_path } = usePage().props;
-    const adminPath = admin_path || 'portal-karangwungu';
+    const adminPath = admin_path || 'admin-karangwungu';
     const currentUserId = auth?.user?.id;
 
     const [search, setSearch] = useState(filters.search || '');

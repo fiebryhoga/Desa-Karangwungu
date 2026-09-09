@@ -52,7 +52,7 @@ class HandleInertiaRequests extends Middleware
                 'new_submission' => fn () => (bool) $request->session()->get('new_submission'),
             ],
             'app_url' => config('app.url'),
-            'admin_path' => config('app.admin_path', 'portal-karangwungu'),
+            'admin_path' => config('app.admin_path', 'admin-karangwungu'),
             'general_settings' => fn () => \App\Models\SiteSetting::getGroup('general'),
             'village_info' => function () {
                 $general = \App\Models\SiteSetting::getGroup('general');

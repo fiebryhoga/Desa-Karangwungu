@@ -48,7 +48,7 @@ import ImageCropModal from '@/Components/Admin/ImageCropModal';
 
 export default function OrganizationsSettings({ settings = {} }) {
     const { props } = usePage();
-    const adminPath = props?.admin_path || 'portal-karangwungu';
+    const adminPath = props?.admin_path || 'admin-karangwungu';
 
     // Parse initial organizations list
     let initialOrganizations = [];

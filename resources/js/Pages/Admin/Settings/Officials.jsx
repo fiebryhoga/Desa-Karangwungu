@@ -47,7 +47,7 @@ export default function OfficialsSettings({ settings = {} }) {
     const [saveSuccess, setSaveSuccess] = useState(false);
     const [saveError, setSaveError] = useState(null);
     const { props } = usePage();
-    const adminPath = props?.admin_path || 'portal-karangwungu';
+    const adminPath = props?.admin_path || 'admin-karangwungu';
 
     // Parse existing lists
     let initialOfficialsList = [];

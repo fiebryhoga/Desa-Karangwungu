@@ -43,7 +43,7 @@ const CATEGORY_OPTIONS = [
 
 export default function FacilitiesSettings({ settings = {} }) {
     const { props } = usePage();
-    const adminPath = props?.admin_path || 'portal-karangwungu';
+    const adminPath = props?.admin_path || 'admin-karangwungu';
 
     // Parse initial facilities list
     let initialFacilities = [];

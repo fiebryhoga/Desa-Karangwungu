@@ -311,7 +311,7 @@ export default function LetterPreview({
     kades_title = 'Kepala Desa Karangwungu',
 }) {
     const { admin_path } = usePage().props;
-    const adminPath = admin_path || 'portal-karangwungu';
+    const adminPath = admin_path || 'admin-karangwungu';
     const isWaliHakim = (letter.letter_type?.toLowerCase().includes('wali') && letter.letter_type?.toLowerCase().includes('hakim')) || letter.letter_type?.toLowerCase() === 'wali-hakim';
     const isDomisiliUsaha = !isWaliHakim && (((letter.letter_type?.toLowerCase().includes('domisili') && letter.letter_type?.toLowerCase().includes('usaha')) || letter.letter_type?.toLowerCase() === 'domisili-usaha' || letter.letter_type?.toLowerCase() === 'sku'));
     const isKuasa = !isWaliHakim && !isDomisiliUsaha && letter.letter_type?.toLowerCase().includes('kuasa');

@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { router } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import AdminPageHeader from '@/Components/Admin/AdminPageHeader';
 import {
@@ -30,6 +30,9 @@ export default function FeedbacksIndex({
     categories = [],
     filters = { search: '', category: 'all', status: 'all' },
 }) {
+    const { props } = usePage();
+    const adminPath = props?.admin_path || 'admin-karangwungu';
+
     // Local state for search and filtering
     const [searchTerm, setSearchTerm] = useState(filters.search || '');
     const [selectedCategory, setSelectedCategory] = useState(filters.category || 'all');
@@ -112,7 +115,7 @@ export default function FeedbacksIndex({
     // Quick single toggle visibility
     const handleTogglePublic = (id) => {
         router.patch(
-            `/portal-karangwungu/settings/feedbacks/${id}/toggle-public`,
+            `/${adminPath}/settings/feedbacks/${id}/toggle-public`,
             {},
             { preserveScroll: true }
         );
@@ -129,7 +132,7 @@ export default function FeedbacksIndex({
         }
 
         router.post(
-            '/portal-karangwungu/settings/feedbacks/bulk-action',
+            `/${adminPath}/settings/feedbacks/bulk-action`,
             { ids: selectedIds, action },
             {
                 preserveScroll: true,
@@ -158,7 +161,7 @@ export default function FeedbacksIndex({
 
         if (deleteTarget === 'bulk') {
             router.post(
-                '/portal-karangwungu/settings/feedbacks/bulk-action',
+                `/${adminPath}/settings/feedbacks/bulk-action`,
                 { ids: selectedIds, action: 'delete' },
                 {
                     preserveScroll: true,
@@ -173,7 +176,7 @@ export default function FeedbacksIndex({
             );
         } else if (deleteTarget?.id) {
             router.delete(
-                `/portal-karangwungu/settings/feedbacks/${deleteTarget.id}`,
+                `/${adminPath}/settings/feedbacks/${deleteTarget.id}`,
                 {
                     preserveScroll: true,
                     onSuccess: () => {
@@ -227,8 +230,8 @@ export default function FeedbacksIndex({
                     title="Aspirasi & Pengaduan Warga"
                     description="Kelola masukan, kritik, dan pengaduan dari warga desa Karangwungu. Pilih masukan yang layak ditampilkan pada portal publik atau hapus pesan yang tidak relevan."
                     breadcrumbs={[
-                        { label: 'Admin', href: '/portal-karangwungu/dashboard' },
-                        { label: 'Pengaturan Portal', href: '/portal-karangwungu/settings/dashboard' },
+                        { label: 'Admin', href: `/${adminPath}/dashboard` },
+                        { label: 'Pengaturan Portal', href: `/${adminPath}/settings/dashboard` },
                         { label: 'Aspirasi Warga' },
                     ]}
                     actions={

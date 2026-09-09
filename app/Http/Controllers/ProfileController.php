@@ -148,6 +148,13 @@ class ProfileController extends Controller
             $settings['education_list_data'] = is_array($settings['education_list'] ?? null) ? $settings['education_list'] : [];
         }
 
+        // Visibilitas Seksi Demografi (Default: '1' / Aktif)
+        $settings['show_kpi_cards'] = $settings['show_kpi_cards'] ?? '1';
+        $settings['show_land_use'] = $settings['show_land_use'] ?? '1';
+        $settings['show_professions'] = $settings['show_professions'] ?? '1';
+        $settings['show_age_groups'] = $settings['show_age_groups'] ?? '1';
+        $settings['show_education'] = $settings['show_education'] ?? '1';
+
         return Inertia::render('Profile/Demographics', [
             'demographicsSettings' => $settings,
             'data' => [

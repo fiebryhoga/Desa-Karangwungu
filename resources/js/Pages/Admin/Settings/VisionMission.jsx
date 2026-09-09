@@ -41,7 +41,7 @@ const BATIK_PATTERN = `data:image/svg+xml,%3Csvg width='120' height='120' viewBo
 export default function VisionMissionSettings({ settings = {} }) {
     const [activeTab, setActiveTab] = useState('leaders'); // default to leaders or vision
     const { props } = usePage();
-    const adminPath = props?.admin_path || 'portal-karangwungu';
+    const adminPath = props?.admin_path || 'admin-karangwungu';
 
     // Parse existing missions
     let initialMissions = [];

@@ -102,7 +102,7 @@ export default function ApbdesSettings({
     summary = {},
 }) {
     const { props } = usePage();
-    const adminPath = props?.admin_path || 'portal-karangwungu';
+    const adminPath = props?.admin_path || 'admin-karangwungu';
 
     // Active subtab on the right side: 'income' | 'expense' | 'financing'
     const [activeTab, setActiveTab] = useState('income');

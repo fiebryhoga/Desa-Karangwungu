@@ -25,7 +25,7 @@ class AuthController extends Controller
         }
 
         return Inertia::render('Admin/Auth/Login', [
-            'adminPath' => config('app.admin_path', 'portal-karangwungu'),
+            'adminPath' => config('app.admin_path', 'admin-karangwungu'),
         ]);
     }
 

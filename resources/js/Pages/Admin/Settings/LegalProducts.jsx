@@ -32,7 +32,7 @@ export default function LegalProductsIndex({
     filters = { search: '', type: 'all', year: 'all', status: 'all' },
 }) {
     const { props } = usePage();
-    const adminPath = props?.admin_path || 'portal-karangwungu';
+    const adminPath = props?.admin_path || 'admin-karangwungu';
 
     // Local filters state
     const [searchTerm, setSearchTerm] = useState(filters.search || '');

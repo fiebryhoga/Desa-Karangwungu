@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Head, Link, useForm, router } from '@inertiajs/react';
+import { Head, Link, useForm, router, usePage } from '@inertiajs/react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import AdminPageHeader from '@/Components/Admin/AdminPageHeader';
 import {
@@ -21,6 +21,8 @@ import {
 } from 'lucide-react';
 
 export default function NewsComments({ auth, post, comments = [] }) {
+    const { props } = usePage();
+    const adminPath = props?.admin_path || 'admin-karangwungu';
     const [replyingToCommentId, setReplyingToCommentId] = useState(null);
     const [commentToDelete, setCommentToDelete] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -34,7 +36,7 @@ export default function NewsComments({ auth, post, comments = [] }) {
         e.preventDefault();
         if (!replyForm.data.content.trim()) return;
 
-        replyForm.post(`/portal-karangwungu/settings/news/${post.id}/comments/${commentId}/reply`, {
+        replyForm.post(`/${adminPath}/settings/news/${post.id}/comments/${commentId}/reply`, {
             preserveScroll: true,
             onSuccess: () => {
                 replyForm.reset();
@@ -44,7 +46,7 @@ export default function NewsComments({ auth, post, comments = [] }) {
     };
 
     const handleToggleApproval = (commentId) => {
-        router.patch(`/portal-karangwungu/settings/news/comments/${commentId}/toggle-approval`, {}, {
+        router.patch(`/${adminPath}/settings/news/comments/${commentId}/toggle-approval`, {}, {
             preserveScroll: true,
         });
     };
@@ -53,7 +55,7 @@ export default function NewsComments({ auth, post, comments = [] }) {
         if (!commentToDelete) return;
         setIsDeleting(true);
 
-        router.delete(`/portal-karangwungu/settings/news/comments/${commentToDelete.id}`, {
+        router.delete(`/${adminPath}/settings/news/comments/${commentToDelete.id}`, {
             preserveScroll: true,
             onFinish: () => {
                 setIsDeleting(false);
@@ -283,16 +285,16 @@ export default function NewsComments({ auth, post, comments = [] }) {
                     title="Moderasi & Diskusi Komentar Warga"
                     description="Pantau seluruh masukan masyarakat, berikan respon resmi pemerintah desa, atau kelola penayangan komentar."
                     breadcrumbs={[
-                        { label: 'Admin', href: '/portal-karangwungu/dashboard' },
-                        { label: 'Pengaturan Website', href: '/portal-karangwungu/settings/dashboard' },
-                        { label: 'Warta & Berita Desa', href: '/portal-karangwungu/settings/news' },
+                        { label: 'Admin', href: `/${adminPath}/dashboard` },
+                        { label: 'Pengaturan Website', href: `/${adminPath}/settings/dashboard` },
+                        { label: 'Warta & Berita Desa', href: `/${adminPath}/settings/news` },
                         { label: 'Moderasi Komentar' },
                     ]}
                     actions={
                         <div className="flex items-center gap-2">
                             <Link
-                                href="/portal-karangwungu/settings/news"
-                                className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors shadow-2xs cursor-pointer"
+                                href={`/${adminPath}/settings/news`}
+                                className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors shadow-2xs cursor-pointer"
                             >
                                 <ArrowLeft className="h-3.5 w-3.5" />
                                 <span>Kembali ke Berita</span>
@@ -307,7 +309,7 @@ export default function NewsComments({ auth, post, comments = [] }) {
                                 <span>Buka di Portal</span>
                             </a>
                             <Link
-                                href={`/portal-karangwungu/settings/news/${post.id}/edit`}
+                                href={`/${adminPath}/settings/news/${post.id}/edit`}
                                 className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold rounded-lg text-white bg-gradient-to-r from-red-600 to-amber-500 hover:from-red-700 hover:to-amber-600 shadow-md shadow-red-600/20 active:scale-95 transition-all"
                             >
                                 <Edit3 className="h-3.5 w-3.5" />
@@ -438,7 +440,7 @@ export default function NewsComments({ auth, post, comments = [] }) {
                                         <span>Buka Portal</span>
                                     </a>
                                     <Link
-                                        href={`/portal-karangwungu/settings/news/${post.id}/edit`}
+                                        href={`/${adminPath}/settings/news/${post.id}/edit`}
                                         className="inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-bold rounded-lg text-white bg-gradient-to-r from-red-600 to-amber-500 hover:from-red-700 hover:to-amber-600 shadow-xs transition-all"
                                     >
                                         <Edit3 className="h-3.5 w-3.5" />

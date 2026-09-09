@@ -31,12 +31,15 @@ import {
     Scale,
     RefreshCw,
     Calculator,
+    Eye,
+    EyeOff,
+    SlidersHorizontal,
 } from 'lucide-react';
 import { ICON_REGISTRY, getIconComponent } from '@/Utils/iconRegistry';
 
 export default function DemographicsSettings({ settings = {} }) {
     const { props } = usePage();
-    const adminPath = props?.admin_path || 'portal-karangwungu';
+    const adminPath = props?.admin_path || 'admin-karangwungu';
 
     // 5 Tab Utama
     const [activeTab, setActiveTab] = useState('agregat');
@@ -87,6 +90,13 @@ export default function DemographicsSettings({ settings = {} }) {
     }
 
     const { data, setData, post, processing } = useForm({
+        // 0. Visibilitas Seksi Demografi ('1' = tampil, '0' = disembunyikan)
+        show_kpi_cards: settings.show_kpi_cards !== undefined ? String(settings.show_kpi_cards) : '1',
+        show_land_use: settings.show_land_use !== undefined ? String(settings.show_land_use) : '1',
+        show_professions: settings.show_professions !== undefined ? String(settings.show_professions) : '1',
+        show_age_groups: settings.show_age_groups !== undefined ? String(settings.show_age_groups) : '1',
+        show_education: settings.show_education !== undefined ? String(settings.show_education) : '1',
+
         // 1. Agregat Pokok
         total_citizens: settings.total_citizens || 3482,
         male_citizens: settings.male_citizens || 1724,
@@ -438,6 +448,7 @@ export default function DemographicsSettings({ settings = {} }) {
     const tabs = [
         {
             id: 'agregat',
+            visibilityKey: 'show_kpi_cards',
             name: 'Agregat Pokok',
             desc: 'Total jiwa, gender, KK & usia kerja',
             icon: Users,
@@ -445,6 +456,7 @@ export default function DemographicsSettings({ settings = {} }) {
         },
         {
             id: 'lahan',
+            visibilityKey: 'show_land_use',
             name: 'Tata Guna Lahan',
             desc: 'Sawah, kebun, tambak & pemukiman',
             icon: Layers,
@@ -452,6 +464,7 @@ export default function DemographicsSettings({ settings = {} }) {
         },
         {
             id: 'profesi',
+            visibilityKey: 'show_professions',
             name: 'Mata Pencaharian',
             desc: 'Distribusi profesi dan mata pencaharian',
             icon: Briefcase,
@@ -459,6 +472,7 @@ export default function DemographicsSettings({ settings = {} }) {
         },
         {
             id: 'usia',
+            visibilityKey: 'show_age_groups',
             name: 'Kelompok Usia',
             desc: 'Piramida penduduk & sebaran gender',
             icon: Activity,
@@ -466,6 +480,7 @@ export default function DemographicsSettings({ settings = {} }) {
         },
         {
             id: 'pendidikan',
+            visibilityKey: 'show_education',
             name: 'Tingkat Pendidikan',
             desc: 'Jenjang sekolah masyarakat desa',
             icon: GraduationCap,
@@ -521,7 +536,135 @@ export default function DemographicsSettings({ settings = {} }) {
                     }
                 />
 
-                {/* 2. Master-Detail Layout */}
+                {/* 2. Master Visibilitas Seksi Demografi (Switchboard Card) */}
+                <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-4 sm:p-5 shadow-xs">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-zinc-100 dark:border-zinc-800">
+                        <div className="flex items-center gap-3">
+                            <div className="h-9 w-9 rounded-xl bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-amber-400 flex items-center justify-center border border-red-100 dark:border-red-900/40 shrink-0">
+                                <SlidersHorizontal className="h-4 w-4" />
+                            </div>
+                            <div>
+                                <h3 className="text-sm font-bold text-zinc-900 dark:text-white">
+                                    Visibilitas Seksi di Halaman Publik
+                                </h3>
+                                <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                                    Atur bagian statistik kependudukan yang ingin ditampilkan atau disembunyikan kepada warga.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setData((prev) => ({
+                                        ...prev,
+                                        show_kpi_cards: '1',
+                                        show_land_use: '1',
+                                        show_professions: '1',
+                                        show_age_groups: '1',
+                                        show_education: '1',
+                                    }));
+                                }}
+                                className="px-2.5 py-1 rounded-md text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 border border-emerald-200 dark:border-emerald-800/40 transition-colors cursor-pointer"
+                            >
+                                Tampilkan Semua
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setData((prev) => ({
+                                        ...prev,
+                                        show_kpi_cards: '0',
+                                        show_land_use: '0',
+                                        show_professions: '0',
+                                        show_age_groups: '0',
+                                        show_education: '0',
+                                    }));
+                                }}
+                                className="px-2.5 py-1 rounded-md text-[11px] font-semibold text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700 transition-colors cursor-pointer"
+                            >
+                                Sembunyikan Semua
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* 5 Cards Switchboard Grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                        {tabs.map((tab) => {
+                            const Icon = tab.icon;
+                            const isVisible = data[tab.visibilityKey] === '1';
+                            return (
+                                <div
+                                    key={tab.id}
+                                    className={`p-3 rounded-xl border transition-all flex flex-col justify-between gap-2.5 ${
+                                        isVisible
+                                            ? 'bg-emerald-50/40 dark:bg-emerald-950/20 border-emerald-200/70 dark:border-emerald-800/50'
+                                            : 'bg-zinc-50 dark:bg-zinc-900/40 border-zinc-200 dark:border-zinc-800 opacity-80'
+                                    }`}
+                                >
+                                    <div className="flex items-center justify-between gap-2">
+                                        <div className="flex items-center gap-2 min-w-0">
+                                            <div
+                                                className={`p-1.5 rounded-lg shrink-0 ${
+                                                    isVisible
+                                                        ? 'bg-emerald-600 text-white shadow-xs'
+                                                        : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-500'
+                                                }`}
+                                            >
+                                                <Icon className="h-3.5 w-3.5" />
+                                            </div>
+                                            <span className="text-xs font-bold text-zinc-900 dark:text-white truncate">
+                                                {tab.name}
+                                            </span>
+                                        </div>
+
+                                        {/* Switch Toggle */}
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                setData(
+                                                    tab.visibilityKey,
+                                                    data[tab.visibilityKey] === '1' ? '0' : '1'
+                                                )
+                                            }
+                                            className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                                                isVisible ? 'bg-emerald-500' : 'bg-zinc-300 dark:bg-zinc-700'
+                                            }`}
+                                            title={isVisible ? 'Klik untuk sembunyikan' : 'Klik untuk tampilkan'}
+                                        >
+                                            <span
+                                                className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
+                                                    isVisible ? 'translate-x-4' : 'translate-x-0'
+                                                }`}
+                                            />
+                                        </button>
+                                    </div>
+
+                                    <div className="flex items-center justify-between text-[10.5px]">
+                                        <span className="text-zinc-500 dark:text-zinc-400">Status:</span>
+                                        <span
+                                            className={`font-bold inline-flex items-center gap-1 ${
+                                                isVisible
+                                                    ? 'text-emerald-600 dark:text-emerald-400'
+                                                    : 'text-zinc-400 dark:text-zinc-500'
+                                            }`}
+                                        >
+                                            <span
+                                                className={`h-1.5 w-1.5 rounded-full ${
+                                                    isVisible ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-400'
+                                                }`}
+                                            />
+                                            {isVisible ? 'Tampil' : 'Tersembunyi'}
+                                        </span>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+
+                {/* 3. Master-Detail Layout */}
                 <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                     {/* SISI KIRI: Navigasi Tab (3 cols) */}
                     <div className="lg:col-span-3 space-y-3 lg:sticky lg:top-20">
@@ -532,6 +675,7 @@ export default function DemographicsSettings({ settings = {} }) {
                             {tabs.map((tab) => {
                                 const Icon = tab.icon;
                                 const isActive = activeTab === tab.id;
+                                const isSectionVisible = data[tab.visibilityKey] === '1';
                                 return (
                                     <button
                                         key={tab.id}
@@ -582,6 +726,26 @@ export default function DemographicsSettings({ settings = {} }) {
                                             >
                                                 {tab.desc}
                                             </p>
+                                            <div className="flex items-center gap-1.5 mt-1.5">
+                                                <span
+                                                    className={`inline-flex items-center gap-1 text-[9px] px-2 py-0.5 rounded-full font-bold transition-colors ${
+                                                        isSectionVisible
+                                                            ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-800/60'
+                                                            : 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700'
+                                                    }`}
+                                                >
+                                                    <span
+                                                        className={`h-1.5 w-1.5 rounded-full ${
+                                                            isSectionVisible
+                                                                ? 'bg-emerald-500 animate-pulse'
+                                                                : 'bg-zinc-400'
+                                                        }`}
+                                                    />
+                                                    <span>
+                                                        {isSectionVisible ? 'Aktif' : 'Disembunyikan'}
+                                                    </span>
+                                                </span>
+                                            </div>
                                         </div>
                                     </button>
                                 );
@@ -608,15 +772,48 @@ export default function DemographicsSettings({ settings = {} }) {
                         {activeTab === 'agregat' && (
                             <div className="space-y-6">
                                 <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-5 shadow-xs">
-                                    <div className="flex items-center gap-2.5 mb-1">
-                                        <Users className="h-4 w-4 text-red-600 dark:text-amber-400" />
-                                        <h3 className="text-sm font-bold text-zinc-900 dark:text-white uppercase tracking-wider">
-                                            Indikator Pokok Demografi Desa
-                                        </h3>
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 pb-4 border-b border-zinc-100 dark:border-zinc-800">
+                                        <div>
+                                            <div className="flex items-center gap-2.5 mb-1">
+                                                <Users className="h-4 w-4 text-red-600 dark:text-amber-400" />
+                                                <h3 className="text-sm font-bold text-zinc-900 dark:text-white uppercase tracking-wider">
+                                                    Indikator Pokok Demografi Desa
+                                                </h3>
+                                            </div>
+                                            <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                                                Data agregat kependudukan utama yang tampil pada kartu KPI paling atas di beranda dan halaman profil.
+                                            </p>
+                                        </div>
+
+                                        <div className="flex items-center gap-2.5 bg-zinc-50 dark:bg-zinc-800/60 p-1.5 sm:px-3 rounded-xl border border-zinc-200 dark:border-zinc-700/60 shrink-0">
+                                            <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+                                                Tampilkan Seksi
+                                            </span>
+                                            <button
+                                                type="button"
+                                                onClick={() => setData('show_kpi_cards', data.show_kpi_cards === '1' ? '0' : '1')}
+                                                className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                                                    data.show_kpi_cards === '1' ? 'bg-emerald-500' : 'bg-zinc-300 dark:bg-zinc-700'
+                                                }`}
+                                            >
+                                                <span
+                                                    className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
+                                                        data.show_kpi_cards === '1' ? 'translate-x-4' : 'translate-x-0'
+                                                    }`}
+                                                />
+                                            </button>
+                                            <span className={`text-[11px] font-bold ${data.show_kpi_cards === '1' ? 'text-emerald-600 dark:text-emerald-400' : 'text-zinc-400'}`}>
+                                                {data.show_kpi_cards === '1' ? 'Aktif' : 'Nonaktif'}
+                                            </span>
+                                        </div>
                                     </div>
-                                    <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-5">
-                                        Data agregat kependudukan utama yang tampil pada kartu KPI paling atas di beranda dan halaman profil.
-                                    </p>
+
+                                    {data.show_kpi_cards === '0' && (
+                                        <div className="p-3 mb-5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 flex items-center gap-2.5 text-xs text-amber-800 dark:text-amber-300">
+                                            <EyeOff className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
+                                            <span>Seksi Kartu KPI ini sedang <strong>disembunyikan</strong> dari halaman publik. Data tetap tersimpan aman di database.</span>
+                                        </div>
+                                    )}
 
                                     {/* Preview 4 KPI Cards (Matching Public) */}
                                     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3.5 mb-6">
@@ -793,7 +990,7 @@ export default function DemographicsSettings({ settings = {} }) {
                         {activeTab === 'lahan' && (
                             <div className="space-y-6">
                                 <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-5 shadow-xs space-y-4">
-                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-zinc-100 dark:border-zinc-800">
                                         <div>
                                             <div className="flex items-center gap-2">
                                                 <Layers className="h-4 w-4 text-red-600 dark:text-amber-400" />
@@ -806,15 +1003,46 @@ export default function DemographicsSettings({ settings = {} }) {
                                             </p>
                                         </div>
 
-                                        <button
-                                            type="button"
-                                            onClick={handleAddLandUse}
-                                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-xs cursor-pointer"
-                                        >
-                                            <Plus className="h-3.5 w-3.5" />
-                                            <span>+ Tambah Kartu Lahan</span>
-                                        </button>
+                                        <div className="flex items-center gap-2.5">
+                                            <div className="flex items-center gap-2.5 bg-zinc-50 dark:bg-zinc-800/60 p-1.5 sm:px-3 rounded-xl border border-zinc-200 dark:border-zinc-700/60">
+                                                <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+                                                    Tampilkan Seksi
+                                                </span>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setData('show_land_use', data.show_land_use === '1' ? '0' : '1')}
+                                                    className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                                                        data.show_land_use === '1' ? 'bg-emerald-500' : 'bg-zinc-300 dark:bg-zinc-700'
+                                                    }`}
+                                                >
+                                                    <span
+                                                        className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
+                                                            data.show_land_use === '1' ? 'translate-x-4' : 'translate-x-0'
+                                                        }`}
+                                                    />
+                                                </button>
+                                                <span className={`text-[11px] font-bold ${data.show_land_use === '1' ? 'text-emerald-600 dark:text-emerald-400' : 'text-zinc-400'}`}>
+                                                    {data.show_land_use === '1' ? 'Aktif' : 'Nonaktif'}
+                                                </span>
+                                            </div>
+
+                                            <button
+                                                type="button"
+                                                onClick={handleAddLandUse}
+                                                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-xs cursor-pointer"
+                                            >
+                                                <Plus className="h-3.5 w-3.5" />
+                                                <span>+ Tambah Kartu Lahan</span>
+                                            </button>
+                                        </div>
                                     </div>
+
+                                    {data.show_land_use === '0' && (
+                                        <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 flex items-center gap-2.5 text-xs text-amber-800 dark:text-amber-300">
+                                            <EyeOff className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
+                                            <span>Seksi Tata Guna Lahan ini sedang <strong>disembunyikan</strong> dari halaman publik. Data tetap tersimpan aman di database.</span>
+                                        </div>
+                                    )}
 
                                     {/* Judul & Subtitle Seksi */}
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
@@ -1006,7 +1234,7 @@ export default function DemographicsSettings({ settings = {} }) {
                         {activeTab === 'profesi' && (
                             <div className="space-y-6">
                                 <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-5 shadow-xs space-y-4">
-                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-zinc-100 dark:border-zinc-800">
                                         <div>
                                             <div className="flex items-center gap-2">
                                                 <Briefcase className="h-4 w-4 text-red-600 dark:text-amber-400" />
@@ -1019,15 +1247,46 @@ export default function DemographicsSettings({ settings = {} }) {
                                             </p>
                                         </div>
 
-                                        <button
-                                            type="button"
-                                            onClick={handleAddProfession}
-                                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-xs cursor-pointer"
-                                        >
-                                            <Plus className="h-3.5 w-3.5" />
-                                            <span>+ Tambah Sektor Profesi</span>
-                                        </button>
+                                        <div className="flex items-center gap-2.5">
+                                            <div className="flex items-center gap-2.5 bg-zinc-50 dark:bg-zinc-800/60 p-1.5 sm:px-3 rounded-xl border border-zinc-200 dark:border-zinc-700/60">
+                                                <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+                                                    Tampilkan Seksi
+                                                </span>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setData('show_professions', data.show_professions === '1' ? '0' : '1')}
+                                                    className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                                                        data.show_professions === '1' ? 'bg-emerald-500' : 'bg-zinc-300 dark:bg-zinc-700'
+                                                    }`}
+                                                >
+                                                    <span
+                                                        className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
+                                                            data.show_professions === '1' ? 'translate-x-4' : 'translate-x-0'
+                                                        }`}
+                                                    />
+                                                </button>
+                                                <span className={`text-[11px] font-bold ${data.show_professions === '1' ? 'text-emerald-600 dark:text-emerald-400' : 'text-zinc-400'}`}>
+                                                    {data.show_professions === '1' ? 'Aktif' : 'Nonaktif'}
+                                                </span>
+                                            </div>
+
+                                            <button
+                                                type="button"
+                                                onClick={handleAddProfession}
+                                                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-xs cursor-pointer"
+                                            >
+                                                <Plus className="h-3.5 w-3.5" />
+                                                <span>+ Tambah Sektor Profesi</span>
+                                            </button>
+                                        </div>
                                     </div>
+
+                                    {data.show_professions === '0' && (
+                                        <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 flex items-center gap-2.5 text-xs text-amber-800 dark:text-amber-300">
+                                            <EyeOff className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
+                                            <span>Seksi Mata Pencaharian ini sedang <strong>disembunyikan</strong> dari halaman publik. Data tetap tersimpan aman di database.</span>
+                                        </div>
+                                    )}
 
                                     {/* Judul & Subtitle Seksi */}
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
@@ -1150,7 +1409,7 @@ export default function DemographicsSettings({ settings = {} }) {
                         {activeTab === 'usia' && (
                             <div className="space-y-6">
                                 <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-5 shadow-xs space-y-4">
-                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-zinc-100 dark:border-zinc-800">
                                         <div>
                                             <div className="flex items-center gap-2">
                                                 <Activity className="h-4 w-4 text-red-600 dark:text-amber-400" />
@@ -1163,15 +1422,46 @@ export default function DemographicsSettings({ settings = {} }) {
                                             </p>
                                         </div>
 
-                                        <button
-                                            type="button"
-                                            onClick={handleAddAgeGroup}
-                                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-xs cursor-pointer"
-                                        >
-                                            <Plus className="h-3.5 w-3.5" />
-                                            <span>+ Tambah Kelompok Usia</span>
-                                        </button>
+                                        <div className="flex items-center gap-2.5">
+                                            <div className="flex items-center gap-2.5 bg-zinc-50 dark:bg-zinc-800/60 p-1.5 sm:px-3 rounded-xl border border-zinc-200 dark:border-zinc-700/60">
+                                                <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+                                                    Tampilkan Seksi
+                                                </span>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setData('show_age_groups', data.show_age_groups === '1' ? '0' : '1')}
+                                                    className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                                                        data.show_age_groups === '1' ? 'bg-emerald-500' : 'bg-zinc-300 dark:bg-zinc-700'
+                                                    }`}
+                                                >
+                                                    <span
+                                                        className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
+                                                            data.show_age_groups === '1' ? 'translate-x-4' : 'translate-x-0'
+                                                        }`}
+                                                    />
+                                                </button>
+                                                <span className={`text-[11px] font-bold ${data.show_age_groups === '1' ? 'text-emerald-600 dark:text-emerald-400' : 'text-zinc-400'}`}>
+                                                    {data.show_age_groups === '1' ? 'Aktif' : 'Nonaktif'}
+                                                </span>
+                                            </div>
+
+                                            <button
+                                                type="button"
+                                                onClick={handleAddAgeGroup}
+                                                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-xs cursor-pointer"
+                                            >
+                                                <Plus className="h-3.5 w-3.5" />
+                                                <span>+ Tambah Kelompok Usia</span>
+                                            </button>
+                                        </div>
                                     </div>
+
+                                    {data.show_age_groups === '0' && (
+                                        <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 flex items-center gap-2.5 text-xs text-amber-800 dark:text-amber-300">
+                                            <EyeOff className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
+                                            <span>Seksi Kelompok Usia ini sedang <strong>disembunyikan</strong> dari halaman publik. Data tetap tersimpan aman di database.</span>
+                                        </div>
+                                    )}
 
                                     {/* Judul & Subtitle Seksi */}
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
@@ -1278,7 +1568,7 @@ export default function DemographicsSettings({ settings = {} }) {
                         {activeTab === 'pendidikan' && (
                             <div className="space-y-6">
                                 <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-5 shadow-xs space-y-4">
-                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-zinc-100 dark:border-zinc-800">
                                         <div>
                                             <div className="flex items-center gap-2">
                                                 <GraduationCap className="h-4 w-4 text-red-600 dark:text-amber-400" />
@@ -1291,15 +1581,46 @@ export default function DemographicsSettings({ settings = {} }) {
                                             </p>
                                         </div>
 
-                                        <button
-                                            type="button"
-                                            onClick={handleAddEducation}
-                                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-xs cursor-pointer"
-                                        >
-                                            <Plus className="h-3.5 w-3.5" />
-                                            <span>+ Tambah Jenjang Pendidikan</span>
-                                        </button>
+                                        <div className="flex items-center gap-2.5">
+                                            <div className="flex items-center gap-2.5 bg-zinc-50 dark:bg-zinc-800/60 p-1.5 sm:px-3 rounded-xl border border-zinc-200 dark:border-zinc-700/60">
+                                                <span className="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+                                                    Tampilkan Seksi
+                                                </span>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setData('show_education', data.show_education === '1' ? '0' : '1')}
+                                                    className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                                                        data.show_education === '1' ? 'bg-emerald-500' : 'bg-zinc-300 dark:bg-zinc-700'
+                                                    }`}
+                                                >
+                                                    <span
+                                                        className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
+                                                            data.show_education === '1' ? 'translate-x-4' : 'translate-x-0'
+                                                        }`}
+                                                    />
+                                                </button>
+                                                <span className={`text-[11px] font-bold ${data.show_education === '1' ? 'text-emerald-600 dark:text-emerald-400' : 'text-zinc-400'}`}>
+                                                    {data.show_education === '1' ? 'Aktif' : 'Nonaktif'}
+                                                </span>
+                                            </div>
+
+                                            <button
+                                                type="button"
+                                                onClick={handleAddEducation}
+                                                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-xs cursor-pointer"
+                                            >
+                                                <Plus className="h-3.5 w-3.5" />
+                                                <span>+ Tambah Jenjang Pendidikan</span>
+                                            </button>
+                                        </div>
                                     </div>
+
+                                    {data.show_education === '0' && (
+                                        <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 flex items-center gap-2.5 text-xs text-amber-800 dark:text-amber-300">
+                                            <EyeOff className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
+                                            <span>Seksi Tingkat Pendidikan ini sedang <strong>disembunyikan</strong> dari halaman publik. Data tetap tersimpan aman di database.</span>
+                                        </div>
+                                    )}
 
                                     {/* Judul & Subtitle Seksi */}
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">

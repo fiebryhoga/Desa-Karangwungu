@@ -52,7 +52,7 @@ export default function ServicesIndex({
                 title="Produk Hukum & Regulasi Desa Karangwungu"
                 description="Katalog resmi produk hukum Pemerintah Desa Karangwungu, Kecamatan Karanggeneng, Kabupaten Lamongan. Peraturan Desa (Perdes), Surat Keputusan (SK) Kepala Desa, dan Keputusan BPD yang berlaku."
                 keywords="Produk Hukum Desa Karangwungu, Perdes Karangwungu, SK Kades Karangwungu, Regulasi Desa Lamongan, JDIH Desa Karangwungu"
-                breadcrumbs={[{ label: 'Produk Hukum Desa', url: '/layanan' }]}
+                breadcrumbs={[{ label: 'Produk Hukum Desa', url: '/produk-hukum' }]}
             />
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8">

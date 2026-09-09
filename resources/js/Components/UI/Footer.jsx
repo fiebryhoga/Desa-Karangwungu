@@ -250,15 +250,21 @@ export default function Footer() {
                             </h4>
                             <ul className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm">
                                 <li>
-                                    <Link href="/layanan" className="text-red-100 hover:text-amber-300 flex items-center gap-1 transition-colors">
-                                        <ChevronRight className="h-3 w-3 text-amber-400 shrink-0" />
-                                        <span>Produk Hukum Desa</span>
+                                    <Link href="/layanan/ajukan" className="text-amber-300 hover:text-amber-200 font-bold flex items-center gap-1 transition-colors">
+                                        <Sparkles className="h-3 w-3 shrink-0 text-amber-300" />
+                                        <span>Ajukan Surat Mandiri</span>
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link href="/layanan/ajukan" className="text-amber-300 hover:text-amber-200 font-bold flex items-center gap-1 transition-colors">
-                                        <Sparkles className="h-3 w-3 shrink-0 text-amber-300" />
-                                        <span>Ajukan Surat</span>
+                                    <Link href="/layanan/surat" className="text-red-100 hover:text-amber-300 flex items-center gap-1 transition-colors">
+                                        <ChevronRight className="h-3 w-3 text-amber-400 shrink-0" />
+                                        <span>Katalog Surat Desa</span>
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link href="/produk-hukum" className="text-red-100 hover:text-amber-300 flex items-center gap-1 transition-colors">
+                                        <ChevronRight className="h-3 w-3 text-amber-400 shrink-0" />
+                                        <span>Produk Hukum Desa</span>
                                     </Link>
                                 </li>
                                 <li>

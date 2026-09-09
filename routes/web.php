@@ -99,7 +99,14 @@ Route::any('/cpanel', fn () => abort(404));
 Route::any('/panel', fn () => abort(404));
 
 // Dynamic Secret Admin Path (Configurable via ADMIN_PATH in .env)
-$adminPath = config('app.admin_path', 'portal-karangwungu');
+$adminPath = config('app.admin_path', 'admin-karangwungu');
+
+// Graceful redirect for old portal-karangwungu path
+if ($adminPath !== 'portal-karangwungu') {
+    Route::get('/portal-karangwungu/{path?}', function ($path = null) use ($adminPath) {
+        return redirect($path ? "/{$adminPath}/{$path}" : "/{$adminPath}");
+    })->where('path', '.*');
+}
 
 // Secret Entrance Root
 Route::get("/{$adminPath}", function () use ($adminPath) {

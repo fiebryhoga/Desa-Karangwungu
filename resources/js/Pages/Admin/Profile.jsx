@@ -20,7 +20,7 @@ import {
 
 export default function Profile({ user = {}, activityLogs = [] }) {
     const { admin_path } = usePage().props;
-    const adminPath = admin_path || 'portal-karangwungu';
+    const adminPath = admin_path || 'admin-karangwungu';
 
     const [showCurrentPass, setShowCurrentPass] = useState(false);
     const [showNewPass, setShowNewPass] = useState(false);

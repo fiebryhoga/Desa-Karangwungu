@@ -54,7 +54,7 @@ export default function LettersIndex({
     availableTypes = [],
 }) {
     const { flash, admin_path } = usePage().props;
-    const adminPath = admin_path || 'portal-karangwungu';
+    const adminPath = admin_path || 'admin-karangwungu';
 
     const [search, setSearch] = useState(filters.search || '');
     const [statusFilter, setStatusFilter] = useState(

@@ -180,7 +180,7 @@ export default function DashboardSettings({ settings = {}, allPotentials = [], a
     const [potentialSearch, setPotentialSearch] = useState('');
     const [postSearch, setPostSearch] = useState('');
     const { props } = usePage();
-    const adminPath = props?.admin_path || 'portal-karangwungu';
+    const adminPath = props?.admin_path || 'admin-karangwungu';
 
     // Initial metrics from backend or default
     const initialMetrics = (settings.demographics_metrics_data && settings.demographics_metrics_data.length > 0)
