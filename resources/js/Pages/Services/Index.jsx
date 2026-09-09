@@ -68,12 +68,6 @@ export default function ServicesIndex({
                             icon: Sparkles,
                             variant: 'primary',
                         },
-                        {
-                            label: 'Lacak Status Berkas',
-                            href: '/layanan/lacak',
-                            icon: Search,
-                            variant: 'secondary',
-                        },
                     ]}
                 />
 

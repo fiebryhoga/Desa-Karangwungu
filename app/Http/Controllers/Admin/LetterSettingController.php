@@ -119,21 +119,25 @@ class LetterSettingController extends Controller
     }
 
     /**
-     * Find a letter request by tracking code or fallback numeric id.
+     * Find a letter request by numeric id or fallback tracking code.
      */
     protected function findLetter($identifier): LetterRequest
     {
-        return LetterRequest::where('tracking_code', trim($identifier))
-            ->orWhere('id', is_numeric($identifier) ? $identifier : -1)
-            ->firstOrFail();
+        if (is_numeric($identifier)) {
+            $letter = LetterRequest::find($identifier);
+            if ($letter) {
+                return $letter;
+            }
+        }
+        return LetterRequest::where('tracking_code', trim($identifier))->firstOrFail();
     }
 
     /**
      * Display the preview and edit page for a specific letter request.
      */
-    public function preview($tracking_code)
+    public function preview($id)
     {
-        $letter = $this->findLetter($tracking_code);
+        $letter = $this->findLetter($id);
 
         $kades = VillageOfficial::where('position', 'like', '%Kepala Desa%')->first();
         $kadesName = $kades?->name ?: SiteSetting::getValue('kades_name', 'H. SUNARTO');
@@ -176,9 +180,9 @@ class LetterSettingController extends Controller
     /**
      * Update the specified letter request (status, official letter number, citizen inputs, admin notes, etc.).
      */
-    public function update(Request $request, $tracking_code)
+    public function update(Request $request, $id)
     {
-        $letter = $this->findLetter($tracking_code);
+        $letter = $this->findLetter($id);
 
         $validated = $request->validate([
             'status' => 'required|in:menunggu,bisa_diambil,selesai,ditolak',
@@ -207,18 +211,18 @@ class LetterSettingController extends Controller
 
         AdminActivityLog::log(
             'update_letter_request',
-            "Memperbarui permohonan surat [{$letter->tracking_code}] milik {$letter->citizen_name} (Status: {$letter->status}, No Surat: {$letter->letter_number})"
+            "Memperbarui permohonan surat [ID: #{$letter->id}] milik {$letter->citizen_name} (Status: {$letter->status}, No Surat: {$letter->letter_number})"
         );
 
-        return back()->with('success', "Permohonan surat [{$letter->tracking_code}] berhasil diperbarui.");
+        return back()->with('success', "Permohonan surat milik {$letter->citizen_name} berhasil diperbarui.");
     }
 
     /**
      * Reject a letter request and move it to 'ditolak'.
      */
-    public function reject(Request $request, $tracking_code)
+    public function reject(Request $request, $id)
     {
-        $letter = $this->findLetter($tracking_code);
+        $letter = $this->findLetter($id);
         $reason = $request->input('admin_notes') ?: 'Berkas persyaratan belum memenuhi atau data tidak valid. Silakan hubungi kantor balai desa.';
 
         $letter->update([
@@ -228,18 +232,18 @@ class LetterSettingController extends Controller
 
         AdminActivityLog::log(
             'reject_letter_request',
-            "Menolak permohonan surat [{$letter->tracking_code}] milik {$letter->citizen_name}. Alasan: {$reason}"
+            "Menolak permohonan surat [ID: #{$letter->id}] milik {$letter->citizen_name}. Alasan: {$reason}"
         );
 
-        return back()->with('success', "Permohonan surat [{$letter->tracking_code}] telah ditolak dan dipindahkan ke status Ditolak.");
+        return back()->with('success', "Permohonan surat milik {$letter->citizen_name} telah ditolak.");
     }
 
     /**
      * Restore a rejected letter request back to 'menunggu'.
      */
-    public function restore($tracking_code)
+    public function restore($id)
     {
-        $letter = $this->findLetter($tracking_code);
+        $letter = $this->findLetter($id);
 
         $letter->update([
             'status' => 'menunggu',
@@ -248,10 +252,10 @@ class LetterSettingController extends Controller
 
         AdminActivityLog::log(
             'restore_letter_request',
-            "Memulihkan permohonan surat [{$letter->tracking_code}] milik {$letter->citizen_name} kembali ke status Menunggu"
+            "Memulihkan permohonan surat [ID: #{$letter->id}] milik {$letter->citizen_name} kembali ke status Menunggu"
         );
 
-        return back()->with('success', "Permohonan surat [{$letter->tracking_code}] berhasil dipulihkan ke status Menunggu.");
+        return back()->with('success', "Permohonan surat milik {$letter->citizen_name} berhasil dipulihkan ke status Menunggu.");
     }
 
     /**
@@ -260,18 +264,29 @@ class LetterSettingController extends Controller
     public function bulkAction(Request $request)
     {
         $validated = $request->validate([
-            'codes' => ['required', 'array'],
-            'codes.*' => ['string'],
+            'ids' => ['nullable', 'array'],
+            'ids.*' => ['nullable'],
+            'codes' => ['nullable', 'array'],
+            'codes.*' => ['nullable'],
             'action' => ['required', 'string', 'in:delete,restore,reject'],
             'reason' => ['nullable', 'string', 'max:500'],
         ]);
 
-        $codes = $validated['codes'];
+        $items = $validated['ids'] ?? ($validated['codes'] ?? []);
         $action = $validated['action'];
-        $count = count($codes);
+        $count = count($items);
+
+        if (empty($items)) {
+            return back()->with('error', 'Tidak ada data permohonan surat yang dipilih.');
+        }
+
+        $query = LetterRequest::where(function ($q) use ($items) {
+            $q->whereIn('id', $items)
+              ->orWhereIn('tracking_code', $items);
+        });
 
         if ($action === 'restore') {
-            LetterRequest::whereIn('tracking_code', $codes)->update([
+            $query->update([
                 'status' => 'menunggu',
                 'admin_notes' => 'Permohonan surat dipulihkan kembali secara massal oleh admin desa.',
             ]);
@@ -286,7 +301,7 @@ class LetterSettingController extends Controller
 
         if ($action === 'reject') {
             $reason = $validated['reason'] ?? 'Permohonan ditolak secara massal oleh admin desa.';
-            LetterRequest::whereIn('tracking_code', $codes)->update([
+            $query->update([
                 'status' => 'ditolak',
                 'admin_notes' => $reason,
             ]);
@@ -300,7 +315,7 @@ class LetterSettingController extends Controller
         }
 
         if ($action === 'delete') {
-            LetterRequest::whereIn('tracking_code', $codes)->delete();
+            $query->delete();
 
             AdminActivityLog::log(
                 'bulk_delete_letter',
@@ -316,29 +331,29 @@ class LetterSettingController extends Controller
     /**
      * Remove the specified letter request from storage permanently.
      */
-    public function destroy($tracking_code)
+    public function destroy($id)
     {
-        $letter = $this->findLetter($tracking_code);
-        $code = $letter->tracking_code;
+        $letter = $this->findLetter($id);
+        $letterId = $letter->id;
         $name = $letter->citizen_name;
 
         $letter->delete();
 
         AdminActivityLog::log(
             'delete_letter_request',
-            "Menghapus permohonan surat [{$code}] atas nama {$name}"
+            "Menghapus permohonan surat [ID: #{$letterId}] atas nama {$name}"
         );
 
-        return back()->with('success', "Permohonan surat [{$code}] berhasil dihapus permanen.");
+        return back()->with('success', "Permohonan surat atas nama {$name} berhasil dihapus permanen.");
     }
 
     /**
      * Stream or download the official PDF for this letter request.
      */
-    public function downloadPdf($tracking_code)
+    public function downloadPdf($id)
     {
-        $letter = $this->findLetter($tracking_code);
+        $letter = $this->findLetter($id);
 
-        return app(ServiceController::class)->downloadLetterPdf($letter->tracking_code);
+        return app(ServiceController::class)->downloadLetterPdf($letter->id);
     }
 }

@@ -22,7 +22,6 @@ class SeoController extends Controller
             ['url' => $baseUrl . '/profil/demografi', 'priority' => '0.8', 'changefreq' => 'monthly'],
             ['url' => $baseUrl . '/layanan', 'priority' => '0.9', 'changefreq' => 'weekly'],
             ['url' => $baseUrl . '/layanan/ajukan', 'priority' => '0.9', 'changefreq' => 'monthly'],
-            ['url' => $baseUrl . '/layanan/lacak', 'priority' => '0.8', 'changefreq' => 'weekly'],
             ['url' => $baseUrl . '/transparansi', 'priority' => '0.9', 'changefreq' => 'weekly'],
             ['url' => $baseUrl . '/potensi', 'priority' => '0.8', 'changefreq' => 'weekly'],
             ['url' => $baseUrl . '/berita', 'priority' => '0.9', 'changefreq' => 'daily'],

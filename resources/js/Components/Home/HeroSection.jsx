@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from '@inertiajs/react';
-import { Sparkles, Search, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Sparkles, Scale, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function HeroSection({
     heroImages = [],
@@ -118,17 +118,17 @@ export default function HeroSection({
                         </Link>
 
                         <Link
-                            href="/layanan/tracking"
+                            href="/layanan"
                             className="group flex items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-white/10 hover:bg-white/20 dark:bg-black/40 dark:hover:bg-black/60 backdrop-blur-md border border-white/20 hover:border-amber-400/80 shadow-xl transition-all duration-200 hover:-translate-y-0.5"
                         >
                             <div className="flex items-center gap-3">
-                                <Search className="h-5 w-5 sm:h-6 sm:w-6 text-amber-400 shrink-0 group-hover:scale-110 transition-transform" />
+                                <Scale className="h-5 w-5 sm:h-6 sm:w-6 text-amber-400 shrink-0 group-hover:scale-110 transition-transform" />
                                 <div>
                                     <h4 className="text-sm font-bold text-white group-hover:text-amber-300 transition-colors leading-tight">
-                                        Lacak Status Surat
+                                        Produk Hukum Desa
                                     </h4>
                                     <p className="text-xs text-zinc-200 mt-0.5 leading-tight">
-                                        Pantau proses dokumen Anda
+                                        Perdes & regulasi resmi desa
                                     </p>
                                 </div>
                             </div>

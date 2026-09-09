@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link, router } from '@inertiajs/react';
+import React from 'react';
+import { Link } from '@inertiajs/react';
 import {
     Briefcase,
     ShieldCheck,
@@ -8,18 +8,10 @@ import {
     HeartHandshake,
     FileText,
     FileSignature,
+    Sparkles,
 } from 'lucide-react';
 
 export default function ServicesSection() {
-    const [trackingCode, setTrackingCode] = useState('');
-
-    const handleTrackingSubmit = (e) => {
-        e.preventDefault();
-        if (trackingCode.trim()) {
-            router.get(`/layanan/lacak?code=${encodeURIComponent(trackingCode.trim())}`);
-        }
-    };
-
     const services = [
         {
             title: 'Surat Keterangan Domisili Usaha',
@@ -70,7 +62,7 @@ export default function ServicesSection() {
 
             <div className="relative max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-                    {/* KOLOM KIRI (5 Cols): Editorial, Tracking Box, Alur Singkat */}
+                    {/* KOLOM KIRI (5 Cols): Editorial, Action Box, Alur Singkat */}
                     <div className="lg:col-span-5 space-y-4 sm:space-y-5">
                         <div className="space-y-2">
                             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900/10 dark:bg-white/5 backdrop-blur-md border border-zinc-300/70 dark:border-white/15 text-[10px] sm:text-xs font-semibold text-zinc-800 dark:text-zinc-200 tracking-wide shadow-xs">
@@ -81,40 +73,28 @@ export default function ServicesSection() {
                                 Layanan Surat Online Mandiri
                             </h2>
                             <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed font-normal">
-                                Ajukan berbagai kebutuhan surat pengantar desa secara mandiri dari mana saja. Proses cepat, transparan, dan status berkas dapat dipantau langsung.
+                                Ajukan berbagai kebutuhan surat pengantar desa secara mandiri dari mana saja. Proses cepat, transparan, dan diproses langsung oleh petugas Balai Desa.
                             </p>
                         </div>
 
-                        {/* Kotak Lacak Berkas Terintegrasi */}
-                        <div className="p-4 rounded-lg bg-white/90 dark:bg-zinc-900/90 text-zinc-900 dark:text-white border border-zinc-200/90 dark:border-zinc-800/90 shadow-sm backdrop-blur-xl space-y-2.5">
-                            <div className="flex items-center justify-between text-xs font-bold text-zinc-800 dark:text-zinc-200">
-                                <span className="flex items-center gap-1.5">
-                                    <Search className="h-3.5 w-3.5 text-red-600 dark:text-red-400" />
-                                    <span>Lacak Status Permohonan Surat</span>
-                                </span>
-                                <Link
-                                    href="/layanan/lacak"
-                                    className="text-[10px] font-semibold text-zinc-500 dark:text-zinc-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
-                                >
-                                    Riwayat &rarr;
-                                </Link>
+                        {/* Kartu Aksi Cepat Pengajuan Surat */}
+                        <div className="p-4 rounded-lg bg-white/90 dark:bg-zinc-900/90 text-zinc-900 dark:text-white border border-zinc-200/90 dark:border-zinc-800/90 shadow-sm backdrop-blur-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div className="space-y-1">
+                                <h4 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
+                                    <Sparkles className="h-4 w-4 text-amber-500 shrink-0" />
+                                    <span>Katalog Surat Mandiri Online</span>
+                                </h4>
+                                <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
+                                    Pilih surat keterangan resmi sesuai kebutuhan Anda.
+                                </p>
                             </div>
-                            <form onSubmit={handleTrackingSubmit} className="flex gap-2">
-                                <input
-                                    type="text"
-                                    value={trackingCode}
-                                    onChange={(e) => setTrackingCode(e.target.value)}
-                                    placeholder="Masukkan NIK atau Kode Tiket..."
-                                    className="flex-1 px-3.5 py-2.5 rounded-lg bg-zinc-100 dark:bg-zinc-800/90 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 text-xs focus:outline-hidden focus:border-red-500 transition-all"
-                                />
-                                <button
-                                    type="submit"
-                                    className="px-4 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-semibold shadow-md transition-all cursor-pointer flex items-center gap-1 shrink-0"
-                                >
-                                    <span>Lacak</span>
-                                    <ArrowRight className="h-3.5 w-3.5" />
-                                </button>
-                            </form>
+                            <Link
+                                href="/layanan/ajukan"
+                                className="px-4 py-2.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-semibold shadow-md transition-all cursor-pointer flex items-center justify-center gap-1.5 shrink-0"
+                            >
+                                <span>Buka Katalog</span>
+                                <ArrowRight className="h-3.5 w-3.5" />
+                            </Link>
                         </div>
 
                         {/* Alur 3 Langkah Sederhana */}

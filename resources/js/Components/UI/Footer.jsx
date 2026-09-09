@@ -262,12 +262,6 @@ export default function Footer() {
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link href="/layanan/tracking" className="text-red-100 hover:text-amber-300 flex items-center gap-1 transition-colors">
-                                        <ChevronRight className="h-3 w-3 text-amber-400 shrink-0" />
-                                        <span>Lacak Berkas</span>
-                                    </Link>
-                                </li>
-                                <li>
                                     <Link href="/berita" className="text-red-100 hover:text-amber-300 flex items-center gap-1 transition-colors">
                                         <ChevronRight className="h-3 w-3 text-amber-400 shrink-0" />
                                         <span>Warta Berita</span>
@@ -367,10 +361,6 @@ export default function Footer() {
                         <span>&bull;</span>
                         <Link href="/transparansi" className="hover:text-amber-300 text-red-200 transition-colors">
                             Transparansi
-                        </Link>
-                        <span>&bull;</span>
-                        <Link href="/layanan/tracking" className="hover:text-amber-300 text-red-200 transition-colors">
-                            Lacak Surat
                         </Link>
                     </p>
                 </div>

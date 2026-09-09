@@ -107,16 +107,10 @@ export default function Request({ services = [] }) {
                     subtitle="Pilih jenis surat keterangan yang Anda butuhkan di bawah ini, pelajari persyaratannya jika ada, lalu klik untuk mengisi formulir permohonan."
                     actions={[
                         {
-                            label: 'Lacak Status Permohonan',
-                            href: '/layanan/lacak',
-                            icon: Search,
-                            variant: 'primary',
-                        },
-                        {
                             label: 'Produk Hukum Desa',
                             href: '/layanan',
                             icon: Scale,
-                            variant: 'secondary',
+                            variant: 'primary',
                         },
                     ]}
                 />

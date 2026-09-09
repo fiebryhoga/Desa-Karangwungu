@@ -238,11 +238,9 @@
         <div class="clear"></div>
     </div>
 
-    @if(!empty($tracking_code))
     <div class="footer-note">
-        Dokumen resmi Pelayanan Mandiri Desa Karangwungu | Kode Tracking: <strong>{{ $tracking_code }}</strong> | Dicetak pada: {{ $printed_at ?? date('d-m-Y H:i') }}
+        Dokumen resmi Pelayanan Mandiri Desa Karangwungu | Dicetak pada: {{ $printed_at ?? date('d-m-Y H:i') }}
     </div>
-    @endif
 
 </body>
 </html>

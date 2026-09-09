@@ -246,7 +246,7 @@ function buildDefaultWaTemplate({
     citizen_name,
     citizen_nik,
     letter_type,
-    tracking_code,
+    letter_id,
     letter_number,
     purpose,
     statusText,
@@ -275,7 +275,7 @@ function buildDefaultWaTemplate({
                         : (isKehilangan
                             ? 'SURAT KETERANGAN KEHILANGAN'
                             : (letter_type?.toUpperCase() || 'SURAT KETERANGAN'))))));
-    const code = tracking_code || '-';
+    const idText = letter_id ? `#${letter_id}` : '-';
     const lostItemText = isKehilangan && purpose
         ? `\n*Barang/Dokumen Hilang* : ${purpose}`
         : (isKuasa && purpose
@@ -296,15 +296,13 @@ NIK: *${nik}*
 
 Pengajuan surat Anda:
 *Jenis Surat* : *${type}*
-*Kode Tracking* : *${code}*${lostItemText}
+*ID Permohonan* : *${idText}*${lostItemText}
 *Status* : *${statusText}*
 *No. Surat* : ${numberText}
 
 ${notesText}
 
-Silakan gunakan kode tracking *${code}* untuk memantau proses verifikasi secara mandiri melalui website Desa Karangwungu.
-
-_Pesan ini dikirim otomatis oleh Admin Pelayanan Desa Karangwungu._`;
+_Pesan ini dikirim resmi oleh Admin Pelayanan Desa Karangwungu._`;
 }
 
 export default function LetterPreview({
@@ -320,7 +318,7 @@ export default function LetterPreview({
     const isKematian = !isWaliHakim && !isDomisiliUsaha && !isKuasa && letter.letter_type?.toLowerCase().includes('kematian');
     const isWaliNikah = !isWaliHakim && !isDomisiliUsaha && !isKuasa && letter.letter_type?.toLowerCase().includes('wali');
     const isKehilangan = !isWaliHakim && !isDomisiliUsaha && !isKuasa && letter.letter_type?.toLowerCase().includes('kehilangan');
-    const letterCode = letter.tracking_code || letter.id;
+    const letterCode = letter.id;
     const currentYear = new Date().getFullYear();
     const yearsList = Array.from({ length: currentYear - 1920 + 1 }, (_, i) => String(currentYear - i));
 
@@ -631,7 +629,7 @@ export default function LetterPreview({
             citizen_name: letter.citizen_name,
             citizen_nik: letter.citizen_nik,
             letter_type: letter.letter_type,
-            tracking_code: letter.tracking_code,
+            letter_id: letter.id,
             letter_number: initialLetterNumber,
             purpose: letter.purpose,
         });
@@ -666,7 +664,7 @@ export default function LetterPreview({
             citizen_name: form.citizen_name,
             citizen_nik: form.citizen_nik,
             letter_type: letter.letter_type,
-            tracking_code: letter.tracking_code,
+            letter_id: letter.id,
             letter_number: form.letter_number,
             purpose: form.purpose,
         });
@@ -713,7 +711,7 @@ export default function LetterPreview({
             citizen_name: updatedForm.citizen_name,
             citizen_nik: updatedForm.citizen_nik,
             letter_type: letter.letter_type,
-            tracking_code: letter.tracking_code,
+            letter_id: letter.id,
             letter_number: assignedNumber,
             purpose: updatedForm.purpose,
         });
@@ -840,8 +838,8 @@ export default function LetterPreview({
     const StatusIcon = currentStatusCfg.icon;
 
     return (
-        <AdminLayout title={`Edit & Pertinjau Surat - ${letter.tracking_code}`}>
-            <Head title={`Edit & Pertinjau - ${letter.citizen_name} (${letter.tracking_code})`} />
+        <AdminLayout title={`Edit & Pertinjau Surat #${letter.id}`}>
+            <Head title={`Edit & Pertinjau - ${letter.citizen_name} (#${letter.id})`} />
 
             <div className="space-y-6">
                 {/* 1. Header with Breadcrumbs & Info */}
@@ -862,12 +860,12 @@ export default function LetterPreview({
                             </span>
                         </h1>
                         <div className="flex items-center gap-2 text-xs text-zinc-500">
-                            <span>Kode: <strong className="font-mono text-zinc-800 dark:text-zinc-200">{letter.tracking_code}</strong></span>
+                            <span>ID: <strong className="font-mono text-zinc-800 dark:text-zinc-200">#{letter.id}</strong></span>
                             <button
                                 type="button"
-                                onClick={() => handleCopy(letter.tracking_code)}
+                                onClick={() => handleCopy(letter.id)}
                                 className="p-1 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer"
-                                title="Salin kode"
+                                title="Salin ID"
                             >
                                 {copiedCode ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
                             </button>
@@ -3434,7 +3432,7 @@ export default function LetterPreview({
                                 Konfirmasi Surat Siap Diambil
                             </h3>
                             <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                                Apakah permohonan surat atas nama <strong className="text-zinc-900 dark:text-white">{form.citizen_name}</strong> (Kode: <span className="font-mono font-bold text-zinc-800 dark:text-zinc-200">{letter.tracking_code}</span>) sudah selesai diverifikasi dan siap diambil di Balai Desa?
+                                Apakah permohonan surat atas nama <strong className="text-zinc-900 dark:text-white">{form.citizen_name}</strong> (ID: <span className="font-mono font-bold text-zinc-800 dark:text-zinc-200">#{letter.id}</span>) sudah selesai diverifikasi dan siap diambil di Balai Desa?
                             </p>
 
                             {/* Input Nomor Surat & Tanggal Registrasi */}
@@ -3570,7 +3568,7 @@ export default function LetterPreview({
                                 Tolak Permohonan Surat?
                             </h3>
                             <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                                Permohonan atas nama <strong className="text-zinc-900 dark:text-white">{form.citizen_name}</strong> (Kode: <span className="font-mono font-bold text-zinc-800 dark:text-zinc-200">{letter.tracking_code}</span>) akan dialihkan ke status <strong>Ditolak</strong>.
+                                Permohonan atas nama <strong className="text-zinc-900 dark:text-white">{form.citizen_name}</strong> (ID: <span className="font-mono font-bold text-zinc-800 dark:text-zinc-200">#{letter.id}</span>) akan dialihkan ke status <strong>Ditolak</strong>.
                             </p>
                             <p className="text-[11px] text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-800/60 p-2.5 rounded-lg border border-zinc-200 dark:border-zinc-700">
                                 💡 Berkas yang ditolak akan tersimpan selama 7 hari sebelum dihapus permanen otomatis oleh sistem, atau dapat dipulihkan sewaktu-waktu.
@@ -3579,7 +3577,7 @@ export default function LetterPreview({
 
                         <div className="space-y-1.5">
                             <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
-                                Alasan / Catatan Penolakan (Tampil pada portal lacak warga):
+                                Alasan / Catatan Penolakan:
                             </label>
                             <textarea
                                 rows={3}
@@ -3634,9 +3632,9 @@ export default function LetterPreview({
                                 Hapus Permanen Permohonan Surat?
                             </h3>
                             <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                                Apakah Anda yakin ingin menghapus permanen permohonan surat dengan kode{' '}
+                                Apakah Anda yakin ingin menghapus permanen permohonan surat ID{' '}
                                 <span className="font-mono font-bold text-zinc-800 dark:text-zinc-200">
-                                    {letter.tracking_code}
+                                    #{letter.id}
                                 </span>{' '}
                                 atas nama <span className="font-bold">{form.citizen_name}</span>?
                             </p>

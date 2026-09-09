@@ -1018,36 +1018,37 @@ class VillageDatabaseSeeder extends Seeder
             Potential::updateOrCreate(['slug' => $item['slug']], $item);
         }
 
-        // 5. Contoh Surat Permohonan Online (Tracking Code)
+        // 5. Contoh Surat Permohonan Online Mandiri
         $sampleLetters = [
             [
-                'tracking_code' => 'KW-20260901-001',
                 'citizen_name' => 'Budi Prasetyo',
                 'citizen_nik' => '3524101205900001',
                 'citizen_phone' => '081234567891',
                 'citizen_address' => 'RT 01 RW 01 Dusun Krajan Desa Karangwungu',
                 'letter_type' => 'Surat Keterangan Usaha (SKU)',
                 'purpose' => 'Persyaratan pengajuan modal usaha KUR BRI Unit Karanggeneng',
-                'status' => 'completed',
+                'status' => 'selesai',
                 'admin_notes' => 'Surat telah ditandatangani Kepala Desa dan siap diambil di kantor Balai Desa atau diunduh online.',
                 'created_at' => Carbon::now()->subDays(1),
             ],
             [
-                'tracking_code' => 'KW-20260901-002',
                 'citizen_name' => 'Nurul Aini',
                 'citizen_nik' => '3524105508950003',
                 'citizen_phone' => '085712349876',
                 'citizen_address' => 'RT 03 RW 02 Dusun Karangwungu',
                 'letter_type' => 'Surat Keterangan Domisili',
                 'purpose' => 'Kelengkapan berkas pendaftaran beasiswa perguruan tinggi',
-                'status' => 'processing',
+                'status' => 'bisa_diambil',
                 'admin_notes' => 'Berkas sedang diverifikasi oleh Kepala Seksi Pelayanan.',
                 'created_at' => Carbon::now()->subHours(4),
             ],
         ];
 
         foreach ($sampleLetters as $letter) {
-            LetterRequest::updateOrCreate(['tracking_code' => $letter['tracking_code']], $letter);
+            LetterRequest::updateOrCreate(
+                ['citizen_nik' => $letter['citizen_nik'], 'letter_type' => $letter['letter_type']],
+                $letter
+            );
         }
 
         // 6. Aspirasi & Feedback Warga

@@ -191,10 +191,8 @@ class ServiceController extends Controller
             'citizen_email.email' => 'Format alamat email tidak valid.',
         ]);
 
-        $code = 'KW-' . date('Ymd') . '-' . strtoupper(Str::random(4));
-
         $letter = LetterRequest::create([
-            'tracking_code' => $code,
+            'tracking_code' => null,
             'letter_number' => null, // Diisi secara manual oleh admin di panel administrasi desa
             'citizen_name' => $validated['citizen_name'],
             'citizen_nik' => $validated['citizen_nik'],
@@ -213,27 +211,14 @@ class ServiceController extends Controller
             'admin_notes' => 'Permohonan surat berhasil dikirim. Petugas pelayanan Desa Karangwungu akan segera memverifikasi kelengkapan data Anda.',
         ]);
 
-        return redirect()->route('services.track', ['code' => $code, 'submitted' => 1])
-            ->with('success', 'Permohonan surat berhasil diajukan! Simpan kode tracking Anda: ' . $code)
-            ->with('new_submission', true)
-            ->with('tracking_code', $code);
+        return redirect()->route('services.create')
+            ->with('success', 'Permohonan surat atas nama ' . $letter->citizen_name . ' berhasil diajukan! Petugas pelayanan Balai Desa Karangwungu akan segera memproses berkas Anda.')
+            ->with('new_submission', true);
     }
 
     public function track(Request $request)
     {
-        $code = $request->query('code');
-        $isSubmitted = (bool) $request->query('submitted');
-        $letter = null;
-
-        if ($code) {
-            $letter = LetterRequest::where('tracking_code', trim($code))->first();
-        }
-
-        return Inertia::render('Services/Track', [
-            'searchedCode' => $code,
-            'isSubmitted' => $isSubmitted,
-            'letter' => $letter,
-        ]);
+        return redirect()->route('services.create');
     }
 
     /**
@@ -272,7 +257,6 @@ class ServiceController extends Controller
             'citizen_address' => self::formatFullAddress($request->query('address', '...')),
             'religion' => $request->query('religion', '...'),
             'purpose' => $request->query('purpose', '...'),
-            'tracking_code' => $request->query('ticket', '...'),
             'letter_date' => $letterDate,
             'printed_at' => date('d-m-Y H:i'),
             'year' => date('Y'),
@@ -318,7 +302,6 @@ class ServiceController extends Controller
             'citizen_address' => self::formatFullAddress($request->query('address', 'Desa Karangwungu Rt 007 / Rw 001 Kecamatan Karanggeneng Kabupaten Lamongan.')),
             'religion' => $request->query('religion', 'Islam'),
             'purpose' => $request->query('purpose', 'KTP (KARTU TANDA PENDUDUK)'),
-            'tracking_code' => $request->query('ticket', 'KW-SAMPLE-01'),
             'letter_date' => $letterDate,
             'year' => date('Y'),
         ];
@@ -384,7 +367,6 @@ class ServiceController extends Controller
             'groom_religion' => $request->query('groom_religion', 'Islam'),
             'groom_address' => $request->query('groom_address', 'Dsn. Sumberjo RT 003 RW 002 Desa Sumberjo Kec. Sanankulon Kab. Blitar'),
 
-            'tracking_code' => $request->query('ticket', 'KW-WALI-01'),
             'letter_date' => $letterDate,
             'year' => date('Y'),
         ];
@@ -430,7 +412,6 @@ class ServiceController extends Controller
             'death_date' => $request->query('death_date', '16/07/2022'),
             'death_cause' => $request->query('death_cause', 'Karena Sakit'),
             'death_place' => $request->query('death_place', 'Di rumah dan di semayamkan di Desa Karangwungu'),
-            'tracking_code' => $request->query('ticket', 'KW-MATI-01'),
             'letter_date' => $letterDate,
             'year' => date('Y'),
         ];
@@ -467,7 +448,6 @@ class ServiceController extends Controller
             'grantee_nik' => $request->query('grantee_nik', '6402132707970007'),
             'grantee_address' => $request->query('grantee_address', 'Desa Karangwungu RT/RW: 007/001 Kecamatan Karanggeneng, Kabupaten Lamongan.'),
             'purpose' => $request->query('purpose', 'pengambilan Bantuan Mustahik dari Baznas.'),
-            'tracking_code' => $request->query('ticket', 'KW-KUASA-01'),
             'letter_date' => $letterDate,
             'printed_at' => date('d-m-Y H:i'),
             'year' => date('Y'),
@@ -512,7 +492,6 @@ class ServiceController extends Controller
             'business_status_desc' => $request->query('business_status_desc', 'berpindah Tempat atau Kantor'),
             'business_address' => $request->query('business_address', 'Jalan raya Sumberwudi-Maduran Rt 007 Rw 001 Desa Karangwungu Kec Karanggeneng Kab Lamongan'),
             'description_text' => $request->query('description_text', null),
-            'tracking_code' => $request->query('ticket', 'KW-DOMUSAHA-01'),
             'letter_date' => $letterDate,
             'printed_at' => date('d-m-Y H:i'),
             'year' => date('Y'),
@@ -567,7 +546,6 @@ class ServiceController extends Controller
             // Alasan Wali Hakim (a sampai f)
             'reason_code' => $request->query('reason', 'a'),
 
-            'tracking_code' => $request->query('ticket', 'KW-HAKIM-01'),
             'letter_date' => $letterDate,
             'printed_at' => date('d-m-Y H:i'),
             'year' => date('Y'),
@@ -580,9 +558,11 @@ class ServiceController extends Controller
     /**
      * Download or stream PDF for an existing LetterRequest.
      */
-    public function downloadLetterPdf($tracking_code)
+    public function downloadLetterPdf($id)
     {
-        $letter = LetterRequest::where('tracking_code', trim($tracking_code))->firstOrFail();
+        $letter = LetterRequest::where('id', is_numeric($id) ? $id : -1)
+            ->orWhere('tracking_code', trim($id))
+            ->firstOrFail();
 
         $logoPath = public_path('assets/images/logo_kop_sm.png');
         if (!file_exists($logoPath)) {
@@ -678,7 +658,6 @@ class ServiceController extends Controller
             'citizen_address' => $fullAddress,
             'religion' => $letter->religion ?? 'Islam',
             'purpose' => $letter->purpose,
-            'tracking_code' => $letter->tracking_code,
             'letter_date' => $letterDate,
             'printed_at' => date('d-m-Y H:i'),
             'year' => $targetDate->format('Y'),
@@ -731,7 +710,8 @@ class ServiceController extends Controller
         ];
 
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView($viewName, $data);
-        $filename = $filePrefix . Str::slug($letter->citizen_name) . '_' . $letter->tracking_code . '.pdf';
+        $fileId = $letter->letter_number ? Str::slug($letter->letter_number) : ('req_' . $letter->id);
+        $filename = $filePrefix . Str::slug($letter->citizen_name) . '_' . $fileId . '.pdf';
 
         return $pdf->stream($filename);
     }

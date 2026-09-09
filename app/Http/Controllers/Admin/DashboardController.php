@@ -116,21 +116,21 @@ class DashboardController extends Controller
         $pendingLetters = LetterRequest::whereIn('status', ['menunggu', 'pending'])
             ->latest()
             ->take(5)
-            ->get(['id', 'tracking_code', 'citizen_name', 'letter_type', 'status', 'created_at']);
+            ->get(['id', 'citizen_name', 'letter_type', 'status', 'created_at']);
 
         $processingLetters = LetterRequest::whereIn('status', ['diproses', 'processing', 'bisa_diambil'])
             ->latest()
             ->take(5)
-            ->get(['id', 'tracking_code', 'citizen_name', 'letter_type', 'status', 'created_at']);
+            ->get(['id', 'citizen_name', 'letter_type', 'status', 'created_at']);
 
         $completedLetters = LetterRequest::whereIn('status', ['selesai', 'completed'])
             ->latest()
             ->take(5)
-            ->get(['id', 'tracking_code', 'citizen_name', 'letter_type', 'status', 'created_at']);
+            ->get(['id', 'citizen_name', 'letter_type', 'status', 'created_at']);
 
         $recentLetters = LetterRequest::latest()
             ->take(6)
-            ->get(['id', 'tracking_code', 'citizen_name', 'letter_type', 'status', 'created_at']);
+            ->get(['id', 'citizen_name', 'letter_type', 'status', 'created_at']);
 
         $recentPosts = Post::latest()
             ->take(5)

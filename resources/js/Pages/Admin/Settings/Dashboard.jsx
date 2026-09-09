@@ -19,6 +19,7 @@ import {
     Fish,
     Store,
     Search,
+    FileText,
     ArrowRight,
     MapPin,
     BarChart3,
@@ -839,13 +840,13 @@ export default function DashboardSettings({ settings = {}, allPotentials = [], a
 
                                                             <div className="flex items-center justify-between p-2.5 rounded-lg bg-white/10 backdrop-blur-md border border-white/20 shadow-md">
                                                                 <div className="flex items-center gap-2">
-                                                                    <Search className="h-4 w-4 text-amber-400 shrink-0" />
+                                                                    <FileText className="h-4 w-4 text-amber-400 shrink-0" />
                                                                     <div>
                                                                         <h4 className="text-[11px] sm:text-xs font-bold text-white leading-tight">
-                                                                            Lacak Status Surat
+                                                                            Produk Hukum Desa
                                                                         </h4>
                                                                         <p className="text-[9px] sm:text-[10px] text-zinc-300 mt-0.5 leading-tight">
-                                                                            Pantau proses dokumen Anda
+                                                                            Perdes, Perkades, & SK Resmi
                                                                         </p>
                                                                     </div>
                                                                 </div>

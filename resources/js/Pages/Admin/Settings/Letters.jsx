@@ -63,7 +63,7 @@ export default function LettersIndex({
     const [typeFilter, setTypeFilter] = useState(filters.letter_type || 'all');
 
     // Selection state for checkboxes & bulk actions
-    const [selectedCodes, setSelectedCodes] = useState([]);
+    const [selectedIds, setSelectedIds] = useState([]);
 
     // Modals
     const [rejectTarget, setRejectTarget] = useState(null);
@@ -81,17 +81,17 @@ export default function LettersIndex({
     const [isBulkProcessing, setIsBulkProcessing] = useState(false);
 
     // Copy state
-    const [copiedCode, setCopiedCode] = useState(null);
+    const [copiedId, setCopiedId] = useState(null);
 
-    const handleCopy = (code) => {
-        navigator.clipboard.writeText(code);
-        setCopiedCode(code);
-        setTimeout(() => setCopiedCode(null), 2000);
+    const handleCopy = (id) => {
+        navigator.clipboard.writeText(String(id));
+        setCopiedId(id);
+        setTimeout(() => setCopiedId(null), 2000);
     };
 
     // Filter submit
     const applyFilters = (newStatus, newType, newSearch) => {
-        setSelectedCodes([]);
+        setSelectedIds([]);
         router.get(
             `/${adminPath}/settings/letters`,
             {
@@ -116,26 +116,26 @@ export default function LettersIndex({
         setSearch('');
         setStatusFilter('menunggu');
         setTypeFilter('all');
-        setSelectedCodes([]);
+        setSelectedIds([]);
         router.get(`/${adminPath}/settings/letters`, { status: 'menunggu' }, { preserveState: true });
     };
 
     // Checkbox selection logic
-    const allCodesOnPage = (letters.data || []).map((item) => item.tracking_code);
+    const allIdsOnPage = (letters.data || []).map((item) => item.id);
     const isAllSelected =
-        allCodesOnPage.length > 0 && allCodesOnPage.every((c) => selectedCodes.includes(c));
+        allIdsOnPage.length > 0 && allIdsOnPage.every((id) => selectedIds.includes(id));
 
     const toggleSelectAll = () => {
         if (isAllSelected) {
-            setSelectedCodes([]);
+            setSelectedIds([]);
         } else {
-            setSelectedCodes(allCodesOnPage);
+            setSelectedIds(allIdsOnPage);
         }
     };
 
-    const toggleSelectOne = (code) => {
-        setSelectedCodes((prev) =>
-            prev.includes(code) ? prev.filter((c) => c !== code) : [...prev, code]
+    const toggleSelectOne = (id) => {
+        setSelectedIds((prev) =>
+            prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
         );
     };
 
@@ -151,14 +151,14 @@ export default function LettersIndex({
         setIsRejecting(true);
 
         router.post(
-            `/${adminPath}/settings/letters/${rejectTarget.tracking_code}/reject`,
+            `/${adminPath}/settings/letters/${rejectTarget.id}/reject`,
             { admin_notes: rejectReason },
             {
                 preserveScroll: true,
                 onSuccess: () => {
                     setIsRejecting(false);
                     setRejectTarget(null);
-                    setSelectedCodes((prev) => prev.filter((c) => c !== rejectTarget.tracking_code));
+                    setSelectedIds((prev) => prev.filter((id) => id !== rejectTarget.id));
                 },
                 onError: () => {
                     setIsRejecting(false);
@@ -171,13 +171,13 @@ export default function LettersIndex({
     const handleRestore = (item) => {
         setIsRestoring(true);
         router.post(
-            `/${adminPath}/settings/letters/${item.tracking_code}/restore`,
+            `/${adminPath}/settings/letters/${item.id}/restore`,
             {},
             {
                 preserveScroll: true,
                 onSuccess: () => {
                     setIsRestoring(false);
-                    setSelectedCodes((prev) => prev.filter((c) => c !== item.tracking_code));
+                    setSelectedIds((prev) => prev.filter((id) => id !== item.id));
                 },
                 onError: () => {
                     setIsRestoring(false);
@@ -192,12 +192,12 @@ export default function LettersIndex({
         if (!deleteTarget) return;
 
         setIsDeleting(true);
-        router.delete(`/${adminPath}/settings/letters/${deleteTarget.tracking_code || deleteTarget.id}`, {
+        router.delete(`/${adminPath}/settings/letters/${deleteTarget.id}`, {
             preserveScroll: true,
             onSuccess: () => {
                 setIsDeleting(false);
                 setDeleteTarget(null);
-                setSelectedCodes((prev) => prev.filter((c) => c !== deleteTarget.tracking_code));
+                setSelectedIds((prev) => prev.filter((id) => id !== deleteTarget.id));
             },
             onError: () => {
                 setIsDeleting(false);
@@ -207,19 +207,19 @@ export default function LettersIndex({
 
     // Bulk Restore
     const handleBulkRestore = () => {
-        if (selectedCodes.length === 0) return;
+        if (selectedIds.length === 0) return;
         setIsBulkProcessing(true);
         router.post(
             `/${adminPath}/settings/letters/bulk-action`,
             {
-                codes: selectedCodes,
+                ids: selectedIds,
                 action: 'restore',
             },
             {
                 preserveScroll: true,
                 onSuccess: () => {
                     setIsBulkProcessing(false);
-                    setSelectedCodes([]);
+                    setSelectedIds([]);
                 },
                 onError: () => {
                     setIsBulkProcessing(false);
@@ -230,12 +230,12 @@ export default function LettersIndex({
 
     // Bulk Permanent Delete
     const handleBulkDeleteConfirm = () => {
-        if (selectedCodes.length === 0) return;
+        if (selectedIds.length === 0) return;
         setIsBulkProcessing(true);
         router.post(
             `/${adminPath}/settings/letters/bulk-action`,
             {
-                codes: selectedCodes,
+                ids: selectedIds,
                 action: 'delete',
             },
             {
@@ -243,7 +243,7 @@ export default function LettersIndex({
                 onSuccess: () => {
                     setIsBulkProcessing(false);
                     setShowBulkDeleteModal(false);
-                    setSelectedCodes([]);
+                    setSelectedIds([]);
                 },
                 onError: () => {
                     setIsBulkProcessing(false);
@@ -255,12 +255,12 @@ export default function LettersIndex({
 
     // Bulk Reject
     const handleBulkRejectConfirm = () => {
-        if (selectedCodes.length === 0) return;
+        if (selectedIds.length === 0) return;
         setIsBulkProcessing(true);
         router.post(
             `/${adminPath}/settings/letters/bulk-action`,
             {
-                codes: selectedCodes,
+                ids: selectedIds,
                 action: 'reject',
                 reason: bulkRejectReason || 'Permohonan ditolak secara massal oleh admin desa.',
             },
@@ -269,7 +269,7 @@ export default function LettersIndex({
                 onSuccess: () => {
                     setIsBulkProcessing(false);
                     setShowBulkRejectModal(false);
-                    setSelectedCodes([]);
+                    setSelectedIds([]);
                 },
                 onError: () => {
                     setIsBulkProcessing(false);
@@ -295,15 +295,6 @@ export default function LettersIndex({
                     ]}
                     actions={
                         <div className="flex flex-wrap items-center gap-2">
-                            <a
-                                href="/layanan/lacak"
-                                target="_blank"
-                                rel="noreferrer"
-                                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-700/60 shadow-2xs transition-all"
-                            >
-                                <ExternalLink className="h-3.5 w-3.5 text-zinc-400" />
-                                <span>Portal Lacak Warga</span>
-                            </a>
                             <a
                                 href="/layanan/surat"
                                 target="_blank"
@@ -428,7 +419,7 @@ export default function LettersIndex({
                                 type="text"
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
-                                placeholder="Cari kode tracking, nama pemohon, NIK, no. register surat..."
+                                placeholder="Cari ID, nama pemohon, NIK, no. register surat..."
                                 className="w-full pl-10 pr-4 py-2.5 rounded-lg text-xs sm:text-sm bg-zinc-50 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700/80 text-zinc-900 dark:text-white placeholder-zinc-400/60 dark:placeholder-zinc-500/50 focus:outline-hidden focus:ring-2 focus:ring-red-600 dark:focus:ring-amber-400 transition-all"
                             />
                         </div>
@@ -508,11 +499,11 @@ export default function LettersIndex({
                 )}
 
                 {/* 5. Floating / Sticky Bulk Action Bar jika ada data yang dicentang */}
-                {selectedCodes.length > 0 && (
+                {selectedIds.length > 0 && (
                     <div className="p-3.5 rounded-lg bg-zinc-900 text-white dark:bg-zinc-800 border border-zinc-700 shadow-lg flex flex-wrap items-center justify-between gap-3 animate-in fade-in duration-150">
                         <div className="flex items-center gap-2 text-xs font-bold">
                             <span className="inline-flex items-center justify-center h-5 px-2.5 rounded-full bg-red-600 text-white text-[11px]">
-                                {selectedCodes.length}
+                                {selectedIds.length}
                             </span>
                             <span>Permohonan terpilih</span>
                         </div>
@@ -527,7 +518,7 @@ export default function LettersIndex({
                                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition-colors cursor-pointer"
                                     >
                                         <RotateCcw className="h-3.5 w-3.5" />
-                                        <span>Pulihkan Terpilih ({selectedCodes.length})</span>
+                                        <span>Pulihkan Terpilih ({selectedIds.length})</span>
                                     </button>
 
                                     <button
@@ -537,7 +528,7 @@ export default function LettersIndex({
                                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white shadow-xs transition-colors cursor-pointer"
                                     >
                                         <Trash2 className="h-3.5 w-3.5" />
-                                        <span>Hapus Permanen Terpilih ({selectedCodes.length})</span>
+                                        <span>Hapus Permanen Terpilih ({selectedIds.length})</span>
                                     </button>
                                 </>
                             ) : (
@@ -548,13 +539,13 @@ export default function LettersIndex({
                                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white shadow-xs transition-colors cursor-pointer"
                                 >
                                     <Ban className="h-3.5 w-3.5" />
-                                    <span>Tolak Terpilih ({selectedCodes.length})</span>
+                                    <span>Tolak Terpilih ({selectedIds.length})</span>
                                 </button>
                             )}
 
                             <button
                                 type="button"
-                                onClick={() => setSelectedCodes([])}
+                                onClick={() => setSelectedIds([])}
                                 className="px-3 py-1.5 rounded-lg text-xs text-zinc-400 hover:text-white transition-colors cursor-pointer"
                             >
                                 Batal Pilihan
@@ -577,7 +568,7 @@ export default function LettersIndex({
                                         title="Pilih semua baris pada halaman ini"
                                     />
                                 </th>
-                                <th className="px-3.5 py-3">Kode Tracking</th>
+                                <th className="px-3.5 py-3">ID</th>
                                 <th className="px-3.5 py-3">Pemohon & NIK</th>
                                 <th className="px-3.5 py-3">Jenis Surat</th>
                                 <th className="px-3.5 py-3">No. Register Surat</th>
@@ -591,7 +582,7 @@ export default function LettersIndex({
                                 letters.data.map((item) => {
                                     const statusCfg = STATUS_MAP[item.status] || STATUS_MAP.menunggu;
                                     const StatusIcon = statusCfg.icon;
-                                    const isSelected = selectedCodes.includes(item.tracking_code);
+                                    const isSelected = selectedIds.includes(item.id);
 
                                     return (
                                         <tr
@@ -607,22 +598,22 @@ export default function LettersIndex({
                                                 <input
                                                     type="checkbox"
                                                     checked={isSelected}
-                                                    onChange={() => toggleSelectOne(item.tracking_code)}
+                                                    onChange={() => toggleSelectOne(item.id)}
                                                     className="rounded text-red-600 focus:ring-red-500 dark:bg-zinc-800 dark:border-zinc-700 cursor-pointer h-4 w-4"
                                                 />
                                             </td>
 
-                                            {/* Kode Tracking */}
+                                            {/* ID Permohonan */}
                                             <td className="px-3.5 py-3 align-middle">
                                                 <div className="flex items-center gap-1.5 font-mono font-bold text-zinc-900 dark:text-white">
-                                                    <span>{item.tracking_code}</span>
+                                                    <span className="text-zinc-700 dark:text-zinc-300">#{item.id}</span>
                                                     <button
                                                         type="button"
-                                                        onClick={() => handleCopy(item.tracking_code)}
-                                                        title="Salin kode tracking"
+                                                        onClick={() => handleCopy(item.id)}
+                                                        title="Salin ID"
                                                         className="p-1 rounded-lg text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
                                                     >
-                                                        {copiedCode === item.tracking_code ? (
+                                                        {copiedId === item.id ? (
                                                             <Check className="h-3.5 w-3.5 text-emerald-500" />
                                                         ) : (
                                                             <Copy className="h-3.5 w-3.5" />
@@ -700,7 +691,7 @@ export default function LettersIndex({
                                             <td className="px-3.5 py-3 align-middle text-right">
                                                 <div className="flex items-center justify-end gap-1.5">
                                                     <Link
-                                                        href={`/${adminPath}/settings/letters/${item.tracking_code || item.id}/preview`}
+                                                        href={`/${adminPath}/settings/letters/${item.id}/preview`}
                                                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-gradient-to-r from-red-700 via-red-800 to-red-950 text-amber-300 border border-amber-400/30 hover:brightness-110 shadow-2xs transition-all whitespace-nowrap"
                                                         title="Buka pratinjau & proses permohonan surat"
                                                     >
@@ -812,7 +803,7 @@ export default function LettersIndex({
                                 Tolak Permohonan Surat?
                             </h3>
                             <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                                Permohonan atas nama <strong className="text-zinc-900 dark:text-white">{rejectTarget.citizen_name}</strong> (Kode: <span className="font-mono font-bold text-zinc-800 dark:text-zinc-200">{rejectTarget.tracking_code}</span>) akan dialihkan ke status <strong>Ditolak</strong>.
+                                Permohonan atas nama <strong className="text-zinc-900 dark:text-white">{rejectTarget.citizen_name}</strong> (ID: <span className="font-mono font-bold text-zinc-800 dark:text-zinc-200">#{rejectTarget.id}</span>) akan dialihkan ke status <strong>Ditolak</strong>.
                             </p>
                             <p className="text-[11px] text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-800/60 p-2.5 rounded-lg border border-zinc-200 dark:border-zinc-700">
                                 💡 Berkas yang ditolak akan tersimpan selama 7 hari sebelum dihapus permanen otomatis oleh sistem, atau dapat dipulihkan sewaktu-waktu.
@@ -821,7 +812,7 @@ export default function LettersIndex({
 
                         <div className="space-y-1.5">
                             <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
-                                Alasan / Catatan Penolakan (Tampil pada portal lacak warga):
+                                Alasan / Catatan Penolakan:
                             </label>
                             <textarea
                                 rows={3}
@@ -876,9 +867,9 @@ export default function LettersIndex({
                                 Hapus Permanen Permohonan Surat?
                             </h3>
                             <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                                Apakah Anda yakin ingin menghapus permanen permohonan surat dengan kode{' '}
+                                Apakah Anda yakin ingin menghapus permanen permohonan surat ID{' '}
                                 <span className="font-mono font-bold text-zinc-800 dark:text-zinc-200">
-                                    {deleteTarget.tracking_code}
+                                    #{deleteTarget.id}
                                 </span>{' '}
                                 atas nama <span className="font-bold">{deleteTarget.citizen_name}</span>?
                             </p>
@@ -928,10 +919,10 @@ export default function LettersIndex({
 
                         <div className="space-y-1.5">
                             <h3 className="font-bold text-zinc-900 dark:text-white text-base">
-                                Hapus Permanen {selectedCodes.length} Permohonan?
+                                Hapus Permanen {selectedIds.length} Permohonan?
                             </h3>
                             <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                                Apakah Anda yakin ingin menghapus permanen <strong>{selectedCodes.length}</strong> permohonan surat yang dipilih?
+                                Apakah Anda yakin ingin menghapus permanen <strong>{selectedIds.length}</strong> permohonan surat yang dipilih?
                             </p>
                             <p className="text-[11px] text-rose-600 dark:text-rose-400 bg-rose-50/60 dark:bg-rose-950/40 p-2.5 rounded-lg border border-rose-200 dark:border-rose-900/40">
                                 ⚠️ Seluruh data terpilih akan dihapus selamanya dari sistem dan tidak dapat dipulihkan.
@@ -979,10 +970,10 @@ export default function LettersIndex({
 
                         <div className="space-y-1.5">
                             <h3 className="font-bold text-zinc-900 dark:text-white text-base">
-                                Tolak {selectedCodes.length} Permohonan Terpilih?
+                                Tolak {selectedIds.length} Permohonan Terpilih?
                             </h3>
                             <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                                Semua (<strong>{selectedCodes.length}</strong>) permohonan yang dipilih akan dialihkan ke status <strong>Ditolak</strong>.
+                                Semua (<strong>{selectedIds.length}</strong>) permohonan yang dipilih akan dialihkan ke status <strong>Ditolak</strong>.
                             </p>
                         </div>
 

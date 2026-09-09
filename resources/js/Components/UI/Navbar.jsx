@@ -469,20 +469,6 @@ export default function Navbar() {
                                             </div>
                                         </Link>
                                         <Link
-                                            href="/layanan/lacak"
-                                            className="flex items-start gap-2.5 rounded-lg p-2 text-sm hover:bg-black/30 text-red-100 hover:text-amber-300 transition-colors"
-                                        >
-                                            <Search className="h-4 w-4 text-amber-300 shrink-0 mt-0.5" />
-                                            <div>
-                                                <div className="font-bold text-white">
-                                                    Lacak Status Surat
-                                                </div>
-                                                <div className="text-xs text-red-200/80">
-                                                    Cek status kode tiket permohonan
-                                                </div>
-                                            </div>
-                                        </Link>
-                                        <Link
                                             href="/layanan"
                                             className="flex items-start gap-2.5 rounded-lg p-2 text-sm hover:bg-black/30 text-red-100 hover:text-amber-300 transition-colors"
                                         >
@@ -1180,13 +1166,6 @@ export default function Navbar() {
                                                 className="block px-3 py-1.5 rounded-md text-xs font-bold text-amber-300 hover:bg-black/20"
                                             >
                                                 Ajukan Surat Mandiri
-                                            </Link>
-                                            <Link
-                                                href="/layanan/lacak"
-                                                onClick={() => setMobileMenuOpen(false)}
-                                                className="block px-3 py-1.5 rounded-md text-xs text-red-100 hover:text-amber-300 hover:bg-black/20"
-                                            >
-                                                Lacak Surat
                                             </Link>
                                             <Link
                                                 href="/layanan"

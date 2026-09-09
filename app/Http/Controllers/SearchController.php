@@ -457,13 +457,6 @@ class SearchController extends Controller
                 'badge' => 'Sarana Publik',
             ],
             [
-                'title' => 'Lacak Status Permohonan Surat',
-                'description' => 'Cek dan pantau proses verifikasi dokumen persuratan mandiri Anda secara online menggunakan kode tracking.',
-                'keywords' => 'lacak tracking cek permohonan status surat berkas verifikasi',
-                'url' => route('services.track'),
-                'badge' => 'Layanan Publik',
-            ],
-            [
                 'title' => 'Katalog Produk Hukum & Regulasi Desa',
                 'description' => 'Dokumentasi resmi Peraturan Desa (Perdes), Keputusan Kepala Desa (SK), dan produk hukum keterbukaan informasi publik.',
                 'keywords' => 'produk hukum perdes sk kades regulasi peraturan undang jdih',

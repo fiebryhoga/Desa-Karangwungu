@@ -124,12 +124,6 @@ export default function SearchIndex({
                             icon: FileText,
                             variant: 'primary',
                         },
-                        {
-                            label: 'Lacak Berkas',
-                            href: '/layanan/lacak',
-                            icon: Search,
-                            variant: 'secondary',
-                        },
                     ]}
                 />
 

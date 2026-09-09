@@ -52,8 +52,8 @@ Route::prefix('layanan')->group(function () {
     Route::get('/ajukan', [ServiceController::class, 'create'])->name('services.create');
     Route::get('/ajukan/{type}', [ServiceController::class, 'createForm'])->name('services.create.form');
     Route::post('/ajukan', [ServiceController::class, 'store'])->name('services.store');
-    Route::get('/lacak', [ServiceController::class, 'track'])->name('services.track');
-    Route::get('/tracking', [ServiceController::class, 'track'])->name('services.tracking');
+    Route::redirect('/lacak', '/layanan/ajukan');
+    Route::redirect('/tracking', '/layanan/ajukan');
     Route::get('/surat/sktm/preview', [ServiceController::class, 'previewSktm'])->name('services.sktm.preview');
     Route::get('/surat/kehilangan/preview', [ServiceController::class, 'previewKehilangan'])->name('services.kehilangan.preview');
     Route::get('/surat/wali-nikah/preview', [ServiceController::class, 'previewWaliNikah'])->name('services.wali-nikah.preview');
@@ -61,7 +61,7 @@ Route::prefix('layanan')->group(function () {
     Route::get('/surat/kuasa/preview', [ServiceController::class, 'previewKuasa'])->name('services.kuasa.preview');
     Route::get('/surat/domisili-usaha/preview', [ServiceController::class, 'previewDomisiliUsaha'])->name('services.domisili-usaha.preview');
     Route::get('/surat/wali-hakim/preview', [ServiceController::class, 'previewWaliHakim'])->name('services.wali-hakim.preview');
-    Route::get('/surat/pdf/{tracking_code}', [ServiceController::class, 'downloadLetterPdf'])->name('services.letter.pdf');
+    Route::get('/surat/pdf/{id}', [ServiceController::class, 'downloadLetterPdf'])->name('services.letter.pdf');
 });
 Route::get('/produk-hukum', [ServiceController::class, 'index'])->name('legal-products.index');
 Route::get('/produk-hukum/{id}/unduh', [ServiceController::class, 'downloadLegalProduct'])->name('legal-products.download');
@@ -189,12 +189,12 @@ Route::prefix($adminPath)->middleware(['auth', \App\Http\Middleware\AdminSecurit
     // Manajemen Permohonan & Layanan Surat Warga
     Route::get('/settings/letters', [\App\Http\Controllers\Admin\LetterSettingController::class, 'index'])->name('admin.settings.letters');
     Route::post('/settings/letters/bulk-action', [\App\Http\Controllers\Admin\LetterSettingController::class, 'bulkAction'])->name('admin.settings.letters.bulk_action');
-    Route::get('/settings/letters/{tracking_code}/preview', [\App\Http\Controllers\Admin\LetterSettingController::class, 'preview'])->name('admin.settings.letters.preview');
-    Route::put('/settings/letters/{tracking_code}', [\App\Http\Controllers\Admin\LetterSettingController::class, 'update'])->name('admin.settings.letters.update');
-    Route::post('/settings/letters/{tracking_code}/reject', [\App\Http\Controllers\Admin\LetterSettingController::class, 'reject'])->name('admin.settings.letters.reject');
-    Route::post('/settings/letters/{tracking_code}/restore', [\App\Http\Controllers\Admin\LetterSettingController::class, 'restore'])->name('admin.settings.letters.restore');
-    Route::delete('/settings/letters/{tracking_code}', [\App\Http\Controllers\Admin\LetterSettingController::class, 'destroy'])->name('admin.settings.letters.destroy');
-    Route::get('/settings/letters/{tracking_code}/pdf', [\App\Http\Controllers\Admin\LetterSettingController::class, 'downloadPdf'])->name('admin.settings.letters.pdf');
+    Route::get('/settings/letters/{id}/preview', [\App\Http\Controllers\Admin\LetterSettingController::class, 'preview'])->name('admin.settings.letters.preview');
+    Route::put('/settings/letters/{id}', [\App\Http\Controllers\Admin\LetterSettingController::class, 'update'])->name('admin.settings.letters.update');
+    Route::post('/settings/letters/{id}/reject', [\App\Http\Controllers\Admin\LetterSettingController::class, 'reject'])->name('admin.settings.letters.reject');
+    Route::post('/settings/letters/{id}/restore', [\App\Http\Controllers\Admin\LetterSettingController::class, 'restore'])->name('admin.settings.letters.restore');
+    Route::delete('/settings/letters/{id}', [\App\Http\Controllers\Admin\LetterSettingController::class, 'destroy'])->name('admin.settings.letters.destroy');
+    Route::get('/settings/letters/{id}/pdf', [\App\Http\Controllers\Admin\LetterSettingController::class, 'downloadPdf'])->name('admin.settings.letters.pdf');
 
     // Manajemen Aspirasi & Pengaduan Warga (Kanal Lapor Desa)
     Route::get('/settings/feedbacks', [\App\Http\Controllers\Admin\FeedbackSettingController::class, 'index'])->name('admin.settings.feedbacks');

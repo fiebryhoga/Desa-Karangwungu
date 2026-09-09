@@ -695,7 +695,7 @@ export default function Dashboard({
                                         <div key={letter.id} className="py-2.5 flex items-center justify-between gap-2 text-xs">
                                             <div className="min-w-0 flex-1">
                                                 <Link
-                                                    href={`/${adminPath}/settings/letters?status=menunggu&search=${letter.tracking_code}`}
+                                                    href={`/${adminPath}/settings/letters?status=menunggu&search=${encodeURIComponent(letter.citizen_name)}`}
                                                     className="font-bold text-zinc-900 truncate hover:text-red-700 block transition-colors"
                                                     title={letter.citizen_name}
                                                 >
@@ -703,14 +703,14 @@ export default function Dashboard({
                                                 </Link>
                                                 <p className="text-zinc-500 text-[11px] truncate mt-0.5">
                                                     {letter.letter_type} &bull;{' '}
-                                                    <span className="text-red-700 font-mono font-semibold">
-                                                        {letter.tracking_code}
+                                                    <span className="text-zinc-500 font-mono font-semibold">
+                                                        #{letter.id}
                                                     </span>
                                                 </p>
                                             </div>
                                             <div className="shrink-0 flex items-center gap-2">
                                                 <a
-                                                    href={`/layanan/surat/pdf/${letter.tracking_code}`}
+                                                    href={`/layanan/surat/pdf/${letter.id}`}
                                                     target="_blank"
                                                     rel="noreferrer"
                                                     title="Cetak PDF Format Resmi"
@@ -766,7 +766,7 @@ export default function Dashboard({
                                         <div key={letter.id} className="py-2.5 flex items-center justify-between gap-2 text-xs">
                                             <div className="min-w-0 flex-1">
                                                 <Link
-                                                    href={`/${adminPath}/settings/letters?status=bisa_diambil&search=${letter.tracking_code}`}
+                                                    href={`/${adminPath}/settings/letters?status=bisa_diambil&search=${encodeURIComponent(letter.citizen_name)}`}
                                                     className="font-bold text-zinc-900 truncate hover:text-red-700 block transition-colors"
                                                     title={letter.citizen_name}
                                                 >
@@ -774,14 +774,14 @@ export default function Dashboard({
                                                 </Link>
                                                 <p className="text-zinc-500 text-[11px] truncate mt-0.5">
                                                     {letter.letter_type} &bull;{' '}
-                                                    <span className="text-red-700 font-mono font-semibold">
-                                                        {letter.tracking_code}
+                                                    <span className="text-zinc-500 font-mono font-semibold">
+                                                        #{letter.id}
                                                     </span>
                                                 </p>
                                             </div>
                                             <div className="shrink-0 flex items-center gap-2">
                                                 <a
-                                                    href={`/layanan/surat/pdf/${letter.tracking_code}`}
+                                                    href={`/layanan/surat/pdf/${letter.id}`}
                                                     target="_blank"
                                                     rel="noreferrer"
                                                     title="Cetak PDF Format Resmi"
@@ -837,7 +837,7 @@ export default function Dashboard({
                                         <div key={letter.id} className="py-2.5 flex items-center justify-between gap-2 text-xs">
                                             <div className="min-w-0 flex-1">
                                                 <Link
-                                                    href={`/${adminPath}/settings/letters?status=selesai&search=${letter.tracking_code}`}
+                                                    href={`/${adminPath}/settings/letters?status=selesai&search=${encodeURIComponent(letter.citizen_name)}`}
                                                     className="font-bold text-zinc-900 truncate hover:text-red-700 block transition-colors"
                                                     title={letter.citizen_name}
                                                 >
@@ -845,14 +845,14 @@ export default function Dashboard({
                                                 </Link>
                                                 <p className="text-zinc-500 text-[11px] truncate mt-0.5">
                                                     {letter.letter_type} &bull;{' '}
-                                                    <span className="text-red-700 font-mono font-semibold">
-                                                        {letter.tracking_code}
+                                                    <span className="text-zinc-500 font-mono font-semibold">
+                                                        #{letter.id}
                                                     </span>
                                                 </p>
                                             </div>
                                             <div className="shrink-0 flex items-center gap-2">
                                                 <a
-                                                    href={`/layanan/surat/pdf/${letter.tracking_code}`}
+                                                    href={`/layanan/surat/pdf/${letter.id}`}
                                                     target="_blank"
                                                     rel="noreferrer"
                                                     title="Cetak PDF Format Resmi"
@@ -1176,10 +1176,8 @@ export default function Dashboard({
                                 <ChevronRight className="h-3.5 w-3.5 text-zinc-400 group-hover:translate-x-0.5 transition-transform shrink-0" />
                             </Link>
 
-                            <a
-                                href="/layanan/lacak"
-                                target="_blank"
-                                rel="noopener noreferrer"
+                            <Link
+                                href={`/${adminPath}/settings/letters`}
                                 className="p-2 rounded-lg border border-zinc-200 hover:border-amber-300 hover:bg-amber-50/50 transition-all flex items-center justify-between gap-2 group"
                             >
                                 <div className="flex items-center gap-2 min-w-0">
@@ -1188,8 +1186,8 @@ export default function Dashboard({
                                         Verifikasi Permohonan Surat
                                     </span>
                                 </div>
-                                <ExternalLink className="h-3.5 w-3.5 text-zinc-400 shrink-0" />
-                            </a>
+                                <ChevronRight className="h-3.5 w-3.5 text-zinc-400 group-hover:translate-x-0.5 transition-transform shrink-0" />
+                            </Link>
 
                             <Link
                                 href={`/${adminPath}/apbdes`}

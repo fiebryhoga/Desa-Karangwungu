@@ -1908,7 +1908,7 @@ export default function Form({ service = {}, services = [] }) {
                                                     Verifikasi Cepat & Resmi Kantor Desa Karangwungu
                                                 </p>
                                                 <p className="mt-0.5 leading-relaxed text-zinc-500 dark:text-zinc-400">
-                                                    Data diproses langsung oleh petugas pelayanan Balai Desa. Setelah dikirim, Anda akan langsung memperoleh <strong>Kode Tracking</strong> serta tombol <strong>konfirmasi via WhatsApp dengan template pesan resmi otomatis</strong> untuk mempercepat verifikasi berkas.
+                                                    Data diproses langsung oleh petugas pelayanan Balai Desa Karangwungu. Pastikan nomor WhatsApp dan identitas yang Anda masukkan sudah benar dan sesuai KTP / KK sah.
                                                 </p>
                                             </div>
                                         </div>
