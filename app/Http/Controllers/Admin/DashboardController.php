@@ -39,13 +39,37 @@ class DashboardController extends Controller
             'total_admins' => User::count(),
         ];
 
+        $demoSettings = SiteSetting::getGroup('demographics');
+
+        $ageGroups = isset($demoSettings['age_groups_list']) && is_string($demoSettings['age_groups_list'])
+            ? json_decode($demoSettings['age_groups_list'], true) ?: []
+            : (is_array($demoSettings['age_groups_list'] ?? null) ? $demoSettings['age_groups_list'] : []);
+
+        $professions = isset($demoSettings['professions_list']) && is_string($demoSettings['professions_list'])
+            ? json_decode($demoSettings['professions_list'], true) ?: []
+            : (is_array($demoSettings['professions_list'] ?? null) ? $demoSettings['professions_list'] : []);
+
+        $education = isset($demoSettings['education_list']) && is_string($demoSettings['education_list'])
+            ? json_decode($demoSettings['education_list'], true) ?: []
+            : (is_array($demoSettings['education_list'] ?? null) ? $demoSettings['education_list'] : []);
+
+        $landUse = isset($demoSettings['land_use_list']) && is_string($demoSettings['land_use_list'])
+            ? json_decode($demoSettings['land_use_list'], true) ?: []
+            : (is_array($demoSettings['land_use_list'] ?? null) ? $demoSettings['land_use_list'] : []);
+
         $demographics = [
-            'total_citizens' => (int) (SiteSetting::getValue('total_citizens', 3482) ?: 3482),
-            'male_citizens' => (int) (SiteSetting::getValue('male_citizens', 1724) ?: 1724),
-            'female_citizens' => (int) (SiteSetting::getValue('female_citizens', 1758) ?: 1758),
-            'total_families' => (int) (SiteSetting::getValue('total_families', 985) ?: 985),
-            'productive_age_count' => (int) (SiteSetting::getValue('productive_age_count', 2315) ?: 2315),
-            'productive_age_percent' => (float) (SiteSetting::getValue('productive_age_percent', 66.5) ?: 66.5),
+            'total_citizens' => (int) ($demoSettings['total_citizens'] ?? 3482),
+            'male_citizens' => (int) ($demoSettings['male_citizens'] ?? 1724),
+            'female_citizens' => (int) ($demoSettings['female_citizens'] ?? 1758),
+            'total_families' => (int) ($demoSettings['total_families'] ?? 985),
+            'productive_age_count' => (int) ($demoSettings['productive_age_count'] ?? 2380),
+            'productive_age_percent' => (float) ($demoSettings['productive_age_percent'] ?? 68.3),
+            'area_ha' => (float) ($demoSettings['area_ha'] ?? 123),
+            'density' => (int) ($demoSettings['density'] ?? 2830),
+            'age_groups' => $ageGroups,
+            'professions' => $professions,
+            'education' => $education,
+            'land_use' => $landUse,
         ];
 
         // 7 Days Letter Trend (7 Hari Terakhir)

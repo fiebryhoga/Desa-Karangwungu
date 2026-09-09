@@ -32,6 +32,9 @@ import {
     Home,
     RotateCcw,
     X,
+    ChevronDown,
+    ChevronUp,
+    Send,
 } from 'lucide-react';
 
 const BATIK_PARANG_PATTERN = `data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23fbbf24' stroke='%23fbbf24'%3E%3Cpath d='M0 0 L80 80 M0 40 L40 80 M40 0 L80 40' stroke-width='1.2' fill='none' stroke-linecap='round' opacity='0.75'/%3E%3Cpath d='M-5 15 L65 85 M15 -5 L85 65' stroke-width='0.7' fill='none' stroke-dasharray='2 3' opacity='0.5'/%3E%3Cpath d='M14 26 C10 22 10 14 18 14 C26 14 28 22 22 26 C18 28 16 28 14 26 Z' fill='%23fbbf24' fill-opacity='0.25' stroke-width='0.9'/%3E%3Cpath d='M54 66 C50 62 50 54 58 54 C66 54 68 62 62 66 C58 68 56 68 54 66 Z' fill='%23fbbf24' fill-opacity='0.25' stroke-width='0.9'/%3E%3Cpath d='M54 26 C50 22 50 14 58 14 C66 14 68 22 62 26 C58 28 56 28 54 26 Z' fill='%23fbbf24' fill-opacity='0.25' stroke-width='0.9'/%3E%3Cpath d='M14 66 C10 62 10 54 18 54 C26 54 28 62 22 66 C18 68 16 68 14 66 Z' fill='%23fbbf24' fill-opacity='0.25' stroke-width='0.9'/%3E%3Cpolygon points='40,16 44,20 40,24 36,20' fill='%23fbbf24' stroke-width='0.5'/%3E%3Cpolygon points='20,36 24,40 20,44 16,40' fill='%23fbbf24' stroke-width='0.5'/%3E%3Cpolygon points='60,36 64,40 60,44 56,40' fill='%23fbbf24' stroke-width='0.5'/%3E%3Cpolygon points='40,56 44,60 40,64 36,60' fill='%23fbbf24' stroke-width='0.5'/%3E%3Ccircle cx='0' cy='0' r='2' /%3E%3Ccircle cx='80' cy='0' r='2' /%3E%3Ccircle cx='0' cy='80' r='2' /%3E%3Ccircle cx='80' cy='80' r='2' /%3E%3Ccircle cx='40' cy='40' r='2.2' /%3E%3Ccircle cx='20' cy='20' r='1.2' /%3E%3Ccircle cx='60' cy='60' r='1.2' /%3E%3Ccircle cx='60' cy='20' r='1.2' /%3E%3Ccircle cx='20' cy='60' r='1.2' /%3E%3C/g%3E%3C/svg%3E`;
@@ -75,10 +78,14 @@ const STATUS_CONFIG = {
     },
 };
 
-export default function Track({ searchedCode = '', letter = null }) {
-    const { general_settings, village_info } = usePage().props;
+export default function Track({ searchedCode = '', letter = null, isSubmitted = false }) {
+    const { flash, general_settings, village_info } = usePage().props;
     const [code, setCode] = useState(searchedCode || '');
     const [copiedCode, setCopiedCode] = useState(false);
+    const [showSuccessModal, setShowSuccessModal] = useState(
+        Boolean(isSubmitted) || Boolean(flash?.new_submission) || Boolean(flash?.success && letter)
+    );
+    const [showTemplatePreview, setShowTemplatePreview] = useState(false);
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -167,12 +174,13 @@ export default function Track({ searchedCode = '', letter = null }) {
         return letter.birth_place || '-';
     };
 
-    // Link konfirmasi tindak lanjut via WhatsApp resmi ke petugas desa
-    const getWhatsappFollowUpUrl = () => {
-        if (!letter) return '#';
+    // Template pesan WhatsApp resmi & santun untuk konfirmasi permohonan surat ke Balai Desa
+    const getWhatsappConfirmationUrl = (customLetter = null) => {
+        const targetLetter = customLetter || letter;
+        if (!targetLetter) return '#';
 
         // Nomor WhatsApp tujuan (Balai Desa Karangwungu)
-        const rawPhone = general_settings?.contact_whatsapp || village_info?.phone || '081234567890';
+        const rawPhone = general_settings?.contact_whatsapp || village_info?.phone || '085730979537';
         let cleanPhone = String(rawPhone).trim().replace(/[^0-9]/g, '');
         if (cleanPhone.startsWith('0')) {
             cleanPhone = '62' + cleanPhone.substring(1);
@@ -180,24 +188,89 @@ export default function Track({ searchedCode = '', letter = null }) {
             cleanPhone = '62' + cleanPhone;
         }
 
-        const tglPengajuan = formatDateIndo(letter.created_at) || '-';
-        const namaPemohon = letter.citizen_name || '-';
-        const jenisSurat = letter.letter_type || 'Surat Administrasi Desa';
-        const statusSaatIni = currentStatus?.shortBadge || currentStatus?.title || 'Menunggu Verifikasi';
+        const tglPengajuan = formatIndoDateTime(targetLetter.created_at) || formatDateIndo(targetLetter.created_at) || '-';
+        const namaPemohon = targetLetter.citizen_name || '-';
+        const jenisSurat = targetLetter.letter_type || 'Surat Administrasi Desa';
+        const nik = targetLetter.citizen_nik || '-';
+        const alamat = targetLetter.citizen_address || 'Desa Karangwungu, Kec. Karanggeneng, Kab. Lamongan';
+        const keperluan = targetLetter.purpose || '-';
+        const trackingCode = targetLetter.tracking_code || '';
 
-        const message = `Halo Admin Pelayanan Balai Desa Karangwungu,
+        const trackingUrl = typeof window !== 'undefined'
+            ? `${window.location.origin}/layanan/lacak?code=${trackingCode}`
+            : `https://karangwungu-lamongan.desa.id/layanan/lacak?code=${trackingCode}`;
 
-Saya ingin melakukan konfirmasi tindak lanjut terkait permohonan surat saya yang belum selesai diproses dengan rincian berikut:
+        const message = 
+`*KONFIRMASI PENGAJUAN SURAT ONLINE*
+*PEMERINTAH DESA KARANGWUNGU*
+────────────────────────────
+Assalamu'alaikum Wr. Wb.
+Selamat Pagi / Siang Bapak/Ibu Petugas Pelayanan Kantor Balai Desa Karangwungu,
 
-• Kode Tracking : *${letter.tracking_code}*
-• Jenis Surat   : ${jenisSurat}
-• Nama Pemohon  : ${namaPemohon}
-• Tgl Pengajuan : ${tglPengajuan}
-• Status Saat Ini : ${statusSaatIni}
+Saya telah mengajukan permohonan surat secara mandiri melalui website resmi Desa Karangwungu. Mohon bantuan Bapak/Ibu untuk memeriksa dan memverifikasi berkas permohonan saya dengan rincian berikut:
 
-Mohon bantuannya untuk memeriksa kembali progres pemrosesan berkas surat saya ini nggih. Terima kasih banyak atas bantuan dan pelayanannya. 🙏`;
+📋 *RINCIAN PERMOHONAN:*
+• *Kode Tracking* : *${trackingCode}*
+• *Jenis Surat*   : ${jenisSurat}
+• *Nama Pemohon*  : ${namaPemohon}
+• *NIK*           : ${nik}
+• *Alamat*        : ${alamat}
+• *Keperluan*     : ${keperluan}
+• *Waktu Pengajuan*: ${tglPengajuan}
+
+🔗 *Tautan Lacak Berkas (Klik Langsung):*
+${trackingUrl}
+
+Mohon arahan lebih lanjut apabila terdapat berkas persyaratan tambahan yang perlu saya bawa ke Balai Desa, atau jika surat fisik resmi sudah siap diambil.
+
+Matur nuwun sanget atas bantuan dan pelayanannya nggih Bapak/Ibu. 🙏
+
+Wassalamu'alaikum Wr. Wb.`;
 
         return `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
+    };
+
+    const getWhatsappMessagePreview = (customLetter = null) => {
+        const targetLetter = customLetter || letter;
+        if (!targetLetter) return '';
+
+        const tglPengajuan = formatIndoDateTime(targetLetter.created_at) || formatDateIndo(targetLetter.created_at) || '-';
+        const namaPemohon = targetLetter.citizen_name || '-';
+        const jenisSurat = targetLetter.letter_type || 'Surat Administrasi Desa';
+        const nik = targetLetter.citizen_nik || '-';
+        const alamat = targetLetter.citizen_address || 'Desa Karangwungu, Kec. Karanggeneng, Kab. Lamongan';
+        const keperluan = targetLetter.purpose || '-';
+        const trackingCode = targetLetter.tracking_code || '';
+
+        const trackingUrl = typeof window !== 'undefined'
+            ? `${window.location.origin}/layanan/lacak?code=${trackingCode}`
+            : `https://karangwungu-lamongan.desa.id/layanan/lacak?code=${trackingCode}`;
+
+        return `*KONFIRMASI PENGAJUAN SURAT ONLINE*
+*PEMERINTAH DESA KARANGWUNGU*
+────────────────────────────
+Assalamu'alaikum Wr. Wb.
+Selamat Pagi / Siang Bapak/Ibu Petugas Pelayanan Kantor Balai Desa Karangwungu,
+
+Saya telah mengajukan permohonan surat secara mandiri melalui website resmi Desa Karangwungu. Mohon bantuan Bapak/Ibu untuk memeriksa dan memverifikasi berkas permohonan saya dengan rincian berikut:
+
+📋 *RINCIAN PERMOHONAN:*
+• *Kode Tracking* : *${trackingCode}*
+• *Jenis Surat*   : ${jenisSurat}
+• *Nama Pemohon*  : ${namaPemohon}
+• *NIK*           : ${nik}
+• *Alamat*        : ${alamat}
+• *Keperluan*     : ${keperluan}
+• *Waktu Pengajuan*: ${tglPengajuan}
+
+🔗 *Tautan Lacak Berkas (Klik Langsung):*
+${trackingUrl}
+
+Mohon arahan lebih lanjut apabila terdapat berkas persyaratan tambahan yang perlu saya bawa ke Balai Desa, atau jika surat fisik resmi sudah siap diambil.
+
+Matur nuwun sanget atas bantuan dan pelayanannya nggih Bapak/Ibu. 🙏
+
+Wassalamu'alaikum Wr. Wb.`;
     };
 
     return (
@@ -375,6 +448,56 @@ Mohon bantuannya untuk memeriksa kembali progres pemrosesan berkas surat saya in
                 {/* 4. MAIN LETTER TRACKING DETAILS (SENADA TEMA KHAS DESA) */}
                 {letter && currentStatus && (
                     <div className="space-y-6">
+                        {/* BANNER UTAMA: KONFIRMASI WHATSAPP KE PETUGAS BALAI DESA */}
+                        <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-emerald-600 via-emerald-700 to-teal-850 dark:from-emerald-700 dark:via-emerald-850 dark:to-teal-950 text-white p-5 sm:p-6 border-2 border-emerald-400/50 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            {/* Ambient Glows */}
+                            <div className="absolute -top-12 -right-12 w-40 h-40 bg-white/10 rounded-full blur-2xl pointer-events-none" />
+                            <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-emerald-400/10 rounded-full blur-2xl pointer-events-none" />
+                            
+                            <div className="flex items-start gap-3.5 min-w-0 relative z-10">
+                                <div className="h-12 w-12 rounded-xl bg-white text-emerald-700 flex items-center justify-center shrink-0 shadow-lg ring-4 ring-white/20">
+                                    <MessageCircle className="h-6 w-6 fill-emerald-700" />
+                                </div>
+                                <div className="space-y-1 min-w-0">
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-black/30 text-emerald-200 border border-emerald-300/40">
+                                            <Sparkles className="h-3 w-3 text-amber-300" />
+                                            Konfirmasi WhatsApp Otomatis
+                                        </span>
+                                        <span className="text-[11px] text-emerald-100/80 font-medium hidden sm:inline">
+                                            Layanan Cepat Tanggap Balai Desa
+                                        </span>
+                                    </div>
+                                    <h3 className="text-base sm:text-lg font-black text-white leading-tight">
+                                        Percepat Verifikasi: Konfirmasikan Permohonan via WhatsApp
+                                    </h3>
+                                    <p className="text-xs text-emerald-100/90 leading-relaxed font-medium max-w-2xl">
+                                        Kirim pesan konfirmasi resmi ke petugas Balai Desa Karangwungu agar berkas <strong>{letter.letter_type}</strong> Anda segera diverifikasi dan dicetak. Template pesan sudah disiapkan secara otomatis.
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2.5 shrink-0 self-start md:self-center relative z-10">
+                                <a
+                                    href={getWhatsappConfirmationUrl()}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-xs sm:text-sm font-black bg-white text-emerald-800 hover:bg-emerald-50 hover:text-emerald-950 shadow-xl shadow-black/20 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer group"
+                                >
+                                    <MessageCircle className="h-4.5 w-4.5 fill-emerald-800 text-emerald-800 group-hover:scale-110 transition-transform" />
+                                    <span>Konfirmasi via WhatsApp</span>
+                                </a>
+                                <button
+                                    type="button"
+                                    onClick={() => setShowSuccessModal(true)}
+                                    className="inline-flex items-center gap-1.5 px-3.5 py-3 rounded-xl bg-black/30 hover:bg-black/50 text-white border border-emerald-300/40 transition-colors cursor-pointer text-xs font-bold"
+                                    title="Lihat Format Template Pesan & Rincian"
+                                >
+                                    <Info className="h-4 w-4 text-emerald-300" />
+                                    <span className="hidden sm:inline">Lihat Format</span>
+                                </button>
+                            </div>
+                        </div>
+
                         {/* A. STATUS BANNER UTAMA (Gradien Merah Khas Desa + Batik Parang + Aksen Emas) */}
                         <div className="relative group overflow-hidden rounded-xl bg-gradient-to-b from-red-700 via-red-800 to-zinc-950 dark:from-red-800 dark:via-red-950 dark:to-[#080102] text-white p-6 sm:p-7 border border-amber-400/40 dark:border-amber-400/40 shadow-xl space-y-6">
                             {/* Siluet Batik Parang Background Layer */}
@@ -743,7 +866,7 @@ Mohon bantuannya untuk memeriksa kembali progres pemrosesan berkas surat saya in
                                     </div>
                                     <div className="flex flex-col sm:flex-row gap-2.5 pt-1">
                                         <a
-                                            href={getWhatsappFollowUpUrl()}
+                                            href={getWhatsappConfirmationUrl()}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white shadow-md shadow-emerald-900/20 transition-all cursor-pointer group"
@@ -751,12 +874,21 @@ Mohon bantuannya untuk memeriksa kembali progres pemrosesan berkas surat saya in
                                             <MessageCircle className="h-4 w-4 text-white shrink-0 fill-white/20 group-hover:scale-110 transition-transform" />
                                             <span>Konfirmasi via WhatsApp</span>
                                         </a>
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowSuccessModal(true)}
+                                            className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-xs font-bold bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 border border-zinc-300 dark:border-zinc-700 active:scale-[0.99] transition-all cursor-pointer"
+                                            title="Lihat rincian template pesan"
+                                        >
+                                            <Info className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                                            <span>Lihat Format</span>
+                                        </button>
                                         <Link
                                             href="/layanan/ajukan"
-                                            className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg text-xs font-bold bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 border border-zinc-300 dark:border-zinc-700 active:scale-[0.99] transition-all"
+                                            className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-xs font-bold bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 active:scale-[0.99] transition-all"
                                         >
                                             <Sparkles className="h-3.5 w-3.5 text-amber-500" />
-                                            <span>Ajukan Surat Lain</span>
+                                            <span>Ajukan Baru</span>
                                         </Link>
                                     </div>
                                 </div>
@@ -765,6 +897,167 @@ Mohon bantuannya untuk memeriksa kembali progres pemrosesan berkas surat saya in
                     </div>
                 )}
             </div>
+
+            {/* MODAL DIALOG SUKSES PENGAJUAN & KONFIRMASI WHATSAPP RESMI */}
+            {showSuccessModal && letter && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs animate-in fade-in duration-200">
+                    <div className="relative w-full max-w-xl overflow-hidden rounded-2xl bg-white dark:bg-zinc-900 border border-amber-400/50 shadow-2xl space-y-0 text-zinc-900 dark:text-white animate-in zoom-in-95 duration-200">
+                        {/* Header Dialog: Gradien Mewah Khas Karangwungu */}
+                        <div className="relative overflow-hidden bg-gradient-to-br from-red-700 via-red-800 to-zinc-950 text-white p-5 sm:p-6 border-b border-amber-400/30">
+                            {/* Background Batik Accent */}
+                            <div
+                                className="absolute inset-0 pointer-events-none opacity-[0.06] bg-repeat"
+                                style={{
+                                    backgroundImage: `url("${BATIK_PARANG_PATTERN}")`,
+                                    backgroundSize: '80px 80px',
+                                }}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowSuccessModal(false)}
+                                className="absolute top-4 right-4 p-1.5 rounded-lg bg-black/40 hover:bg-black/60 text-amber-200 hover:text-white transition-colors cursor-pointer"
+                                title="Tutup Dialog"
+                            >
+                                <X className="h-4 w-4" />
+                            </button>
+
+                            <div className="relative z-10 flex items-start gap-4">
+                                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 text-zinc-950 flex items-center justify-center shrink-0 shadow-lg ring-4 ring-emerald-400/25">
+                                    <CheckCircle2 className="h-7 w-7 stroke-[2.5]" />
+                                </div>
+                                <div className="space-y-1 min-w-0 pr-6">
+                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-black/40 text-amber-300 border border-amber-400/40">
+                                        <Sparkles className="h-3 w-3 text-amber-400" />
+                                        Permohonan Berhasil Terkirim
+                                    </span>
+                                    <h3 className="text-lg sm:text-xl font-black text-white leading-tight">
+                                        Surat Berhasil Diajukan!
+                                    </h3>
+                                    <p className="text-xs text-amber-100/85 font-medium leading-relaxed">
+                                        Data Anda telah tercatat di sistem pelayanan mandiri Desa Karangwungu.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Content Area */}
+                        <div className="p-5 sm:p-6 space-y-4 max-h-[75vh] overflow-y-auto custom-scrollbar">
+                            {/* Kode Tracking Box (Gaya Tiket Resmi) */}
+                            <div className="p-3.5 sm:p-4 rounded-xl bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent dark:from-amber-400/10 dark:via-zinc-900 dark:to-zinc-900 border border-amber-400/40 flex items-center justify-between gap-3 shadow-inner">
+                                <div className="space-y-0.5 min-w-0">
+                                    <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 dark:text-zinc-400 font-bold block">
+                                        Kode Tracking Resmi
+                                    </span>
+                                    <span className="font-mono text-base sm:text-lg font-black text-amber-600 dark:text-amber-300 tracking-wider block truncate">
+                                        {letter.tracking_code}
+                                    </span>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => handleCopy(letter.tracking_code)}
+                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-500 hover:bg-amber-600 text-zinc-950 transition-all cursor-pointer shadow-xs active:scale-95 shrink-0"
+                                >
+                                    {copiedCode ? (
+                                        <>
+                                            <Check className="h-3.5 w-3.5 text-zinc-950" />
+                                            <span>Tersalin</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Copy className="h-3.5 w-3.5 text-zinc-950" />
+                                            <span>Salin Kode</span>
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+
+                            {/* Rincian Singkat Berkas */}
+                            <div className="rounded-lg bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-800 p-3.5 text-xs space-y-2">
+                                <div className="flex items-center justify-between gap-2">
+                                    <span className="text-zinc-500 dark:text-zinc-400 font-medium">Jenis Surat:</span>
+                                    <span className="font-bold text-zinc-900 dark:text-white text-right truncate max-w-[240px]">
+                                        {letter.letter_type}
+                                    </span>
+                                </div>
+                                <div className="flex items-center justify-between gap-2">
+                                    <span className="text-zinc-500 dark:text-zinc-400 font-medium">Nama Pemohon:</span>
+                                    <span className="font-bold text-zinc-900 dark:text-white uppercase font-mono">
+                                        {letter.citizen_name}
+                                    </span>
+                                </div>
+                                <div className="flex items-center justify-between gap-2">
+                                    <span className="text-zinc-500 dark:text-zinc-400 font-medium">Waktu Pengajuan:</span>
+                                    <span className="font-semibold text-zinc-700 dark:text-zinc-300">
+                                        {formatIndoDateTime(letter.created_at) || formatDateIndo(letter.created_at)}
+                                    </span>
+                                </div>
+                            </div>
+
+                            {/* Callout Konfirmasi WhatsApp yang Menonjol */}
+                            <div className="p-4 rounded-xl bg-gradient-to-br from-emerald-500/15 via-emerald-500/5 to-teal-500/10 dark:from-emerald-950/40 dark:via-zinc-900 dark:to-teal-950/30 border-2 border-emerald-500/40 space-y-3">
+                                <div className="flex items-start gap-3">
+                                    <div className="h-9 w-9 rounded-lg bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-md">
+                                        <MessageCircle className="h-5 w-5 fill-white/30" />
+                                    </div>
+                                    <div className="space-y-0.5">
+                                        <h4 className="text-xs sm:text-sm font-black text-emerald-800 dark:text-emerald-300">
+                                            Konfirmasi via WhatsApp Resmi
+                                        </h4>
+                                        <p className="text-[11px] text-zinc-600 dark:text-zinc-300 leading-relaxed">
+                                            Agar berkas Anda dapat <strong>langsung diverifikasi dan diproses cetak</strong> oleh petugas Balai Desa, silakan kirimkan konfirmasi via WhatsApp.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* Tombol WhatsApp Utama */}
+                                <a
+                                    href={getWhatsappConfirmationUrl()}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-full relative group overflow-hidden rounded-xl bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white py-3 px-4 font-black text-xs sm:text-sm shadow-lg shadow-emerald-950/20 hover:shadow-emerald-950/40 active:scale-[0.99] transition-all flex items-center justify-center gap-2.5 cursor-pointer"
+                                >
+                                    <MessageCircle className="h-4.5 w-4.5 fill-white text-white shrink-0 group-hover:scale-110 transition-transform" />
+                                    <span>Kirim Konfirmasi ke WhatsApp Sekarang</span>
+                                </a>
+
+                                <div className="flex items-center justify-between pt-1">
+                                    <span className="text-[10px] text-zinc-500 dark:text-zinc-400 font-medium">
+                                        *Template pesan sudah terisi otomatis
+                                    </span>
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowTemplatePreview(!showTemplatePreview)}
+                                        className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 dark:text-emerald-400 hover:underline cursor-pointer"
+                                    >
+                                        <span>{showTemplatePreview ? 'Sembunyikan Template' : 'Lihat Format Template Pesan'}</span>
+                                        {showTemplatePreview ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                                    </button>
+                                </div>
+
+                                {/* Collapsible Format Template Pesan */}
+                                {showTemplatePreview && (
+                                    <div className="pt-2 border-t border-emerald-500/20">
+                                        <div className="p-3 rounded-lg bg-zinc-100 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 text-[11px] font-mono leading-relaxed text-zinc-800 dark:text-zinc-200 whitespace-pre-line max-h-44 overflow-y-auto custom-scrollbar select-text shadow-inner">
+                                            {getWhatsappMessagePreview()}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Footer Dialog */}
+                        <div className="p-4 bg-zinc-50 dark:bg-zinc-950/80 border-t border-zinc-200 dark:border-zinc-800 flex items-center justify-end gap-2.5">
+                            <button
+                                type="button"
+                                onClick={() => setShowSuccessModal(false)}
+                                className="w-full sm:w-auto px-5 py-2.5 rounded-lg text-xs font-bold bg-zinc-200 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 transition-colors cursor-pointer text-center"
+                            >
+                                Lihat Progres Lacak di Halaman Ini
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </AppLayout>
     );
 }

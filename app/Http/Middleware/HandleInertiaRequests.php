@@ -49,6 +49,8 @@ class HandleInertiaRequests extends Middleware
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),
+                'new_submission' => fn () => (bool) $request->session()->get('new_submission'),
+                'tracking_code' => fn () => $request->session()->get('tracking_code'),
             ],
             'app_url' => config('app.url'),
             'admin_path' => config('app.admin_path', 'portal-karangwungu'),

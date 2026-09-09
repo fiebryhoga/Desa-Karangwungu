@@ -213,13 +213,16 @@ class ServiceController extends Controller
             'admin_notes' => 'Permohonan surat berhasil dikirim. Petugas pelayanan Desa Karangwungu akan segera memverifikasi kelengkapan data Anda.',
         ]);
 
-        return redirect()->route('services.track', ['code' => $code])
-            ->with('success', 'Permohonan surat berhasil diajukan! Simpan kode tracking Anda: ' . $code);
+        return redirect()->route('services.track', ['code' => $code, 'submitted' => 1])
+            ->with('success', 'Permohonan surat berhasil diajukan! Simpan kode tracking Anda: ' . $code)
+            ->with('new_submission', true)
+            ->with('tracking_code', $code);
     }
 
     public function track(Request $request)
     {
         $code = $request->query('code');
+        $isSubmitted = (bool) $request->query('submitted');
         $letter = null;
 
         if ($code) {
@@ -228,6 +231,7 @@ class ServiceController extends Controller
 
         return Inertia::render('Services/Track', [
             'searchedCode' => $code,
+            'isSubmitted' => $isSubmitted,
             'letter' => $letter,
         ]);
     }
