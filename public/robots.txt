@@ -1,6 +1,15 @@
 User-agent: *
 Allow: /
-Disallow: /api/
+Allow: /assets/
+Allow: /storage/
+Allow: /build/
+Disallow: /admin-karangwungu/
 Disallow: /admin/
+Disallow: /portal-karangwungu/
+Disallow: /administrator/
+Disallow: /layanan/surat/pdf/
+Disallow: /api/
+Disallow: /_debugbar/
 
-Sitemap: http://localhost:8000/sitemap.xml
+Sitemap: /sitemap.xml
+

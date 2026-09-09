@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import AppLayout from '../../Layouts/AppLayout';
 import SeoHead from '../../Components/SEO/SeoHead';
 import { formatDateIndo } from '../../Utils/format';
@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 
 export default function GalleryShow({ album, otherAlbums = [] }) {
+    const { props } = usePage();
     const [activePhotoIndex, setActivePhotoIndex] = useState(null);
     const [copied, setCopied] = useState(false);
 
@@ -62,7 +63,36 @@ export default function GalleryShow({ album, otherAlbums = [] }) {
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [activePhotoIndex, totalPhotos]);
 
-    const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
+    const appUrl = (props?.app_url || (typeof window !== 'undefined' ? window.location.origin : 'https://karangwungu-lamongan.desa.id')).replace(/\/+$/, '');
+    const galleryUrl = `${appUrl}/galeri/${album.slug}`;
+
+    const toAbsoluteUrl = (path, fallback = '/assets/images/hero.jpg') => {
+        const target = path || fallback;
+        if (!target) return `${appUrl}/assets/images/hero.jpg`;
+        if (target.startsWith('http://') || target.startsWith('https://')) return target;
+        return `${appUrl}${target.startsWith('/') ? '' : '/'}${target}`;
+    };
+
+    const gallerySchema = {
+        '@context': 'https://schema.org',
+        '@type': 'ImageGallery',
+        '@id': `${galleryUrl}#gallery`,
+        'name': album.title,
+        'description': album.description || `Dokumentasi foto kegiatan ${album.title} di Desa Karangwungu.`,
+        'url': galleryUrl,
+        'datePublished': album.date || album.created_at,
+        'dateModified': album.updated_at,
+        'image': photos.map(p => toAbsoluteUrl(p, '/assets/images/hero.jpg')),
+        'author': {
+            '@type': 'GovernmentOrganization',
+            'name': 'Pemerintah Desa Karangwungu',
+            'url': appUrl,
+        },
+        'contentLocation': {
+            '@type': 'Place',
+            'name': album.location || 'Desa Karangwungu, Karanggeneng, Lamongan',
+        },
+    };
 
     return (
         <AppLayout>
@@ -75,6 +105,7 @@ export default function GalleryShow({ album, otherAlbums = [] }) {
                     { label: album.title, url: `/galeri/${album.slug}` },
                 ]}
                 image={album.image}
+                schemaData={gallerySchema}
             />
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">

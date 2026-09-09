@@ -37,11 +37,9 @@ class AuthController extends Controller
         $request->validate([
             'username' => ['required', 'string'],
             'password' => ['required', 'string'],
-            'security_pin' => ['required', 'string'],
         ], [
             'username.required' => 'Username administrator wajib diisi.',
             'password.required' => 'Kata sandi wajib diisi.',
-            'security_pin.required' => 'Token / PIN Keamanan wajib dimasukkan.',
         ]);
 
         $throttleKey = Str::lower($request->input('username')) . '|' . $request->ip();
@@ -62,24 +60,7 @@ class AuthController extends Controller
             ]);
         }
 
-        // 2. Secret Security PIN Verification
-        $expectedPin = (string) config('app.admin_security_pin', '62254');
-        if (!hash_equals($expectedPin, (string) $request->input('security_pin'))) {
-            RateLimiter::hit($throttleKey, 60);
-
-            AdminActivityLog::record(
-                'login_failed_invalid_pin',
-                $request->input('username'),
-                null,
-                'Percobaan masuk gagal: Kode Token / PIN Keamanan salah.'
-            );
-
-            throw ValidationException::withMessages([
-                'security_pin' => 'Token / PIN Keamanan yang Anda masukkan tidak valid.',
-            ]);
-        }
-
-        // 3. Username & Password Credentials Attempt
+        // 2. Username & Password Credentials Attempt
         $credentials = [
             'username' => $request->username,
             'password' => $request->password,

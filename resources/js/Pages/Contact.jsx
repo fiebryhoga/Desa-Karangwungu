@@ -77,6 +77,37 @@ export default function Contact({ feedbacks = [] }) {
         });
     };
 
+    const appUrl = (props?.app_url || (typeof window !== 'undefined' ? window.location.origin : 'https://karangwungu-lamongan.desa.id')).replace(/\/+$/, '');
+
+    const contactSchema = {
+        '@context': 'https://schema.org',
+        '@type': 'ContactPage',
+        '@id': `${appUrl}/kontak#contact`,
+        'url': `${appUrl}/kontak`,
+        'name': 'Kontak & Layanan Pengaduan Pemerintah Desa Karangwungu',
+        'description': 'Hubungi Pemerintah Desa Karangwungu, Kecamatan Karanggeneng, Kabupaten Lamongan. Alamat Balai Desa, nomor telepon layanan, serta kanal aspirasi masyarakat.',
+        'mainEntity': {
+            '@type': 'GovernmentOffice',
+            'name': 'Kantor Kepala Desa Karangwungu',
+            'address': {
+                '@type': 'PostalAddress',
+                'streetAddress': address,
+                'addressLocality': 'Karanggeneng',
+                'addressRegion': 'Kabupaten Lamongan, Jawa Timur',
+                'postalCode': '62254',
+                'addressCountry': 'ID',
+            },
+            'telephone': phone,
+            'email': email,
+            'openingHours': 'Mo-Fr 08:00-15:30',
+            'geo': {
+                '@type': 'GeoCoordinates',
+                'latitude': -7.039615,
+                'longitude': 112.355112,
+            },
+        },
+    };
+
     return (
         <AppLayout>
             <SeoHead
@@ -84,6 +115,7 @@ export default function Contact({ feedbacks = [] }) {
                 description="Hubungi Pemerintah Desa Karangwungu, Kecamatan Karanggeneng, Kabupaten Lamongan. Alamat Balai Desa, nomor telepon layanan, serta kanal pengaduan & aspirasi masyarakat."
                 keywords="Kontak Balai Desa Karangwungu, Alamat Desa Karangwungu Karanggeneng, Pengaduan Warga Karangwungu Lamongan, Lapor Desa Karangwungu"
                 breadcrumbs={[{ label: 'Kontak & Pengaduan', url: '/kontak' }]}
+                schemaData={contactSchema}
             />
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-8 sm:space-y-10">

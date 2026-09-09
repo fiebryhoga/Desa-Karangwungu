@@ -14,7 +14,6 @@ import {
 
 export default function Login({ adminPath = 'admin-karangwungu' }) {
     const [showPassword, setShowPassword] = useState(false);
-    const [showPin, setShowPin] = useState(false);
     const [capsLockOn, setCapsLockOn] = useState(false);
     const [isDark, setIsDark] = useState(true);
     const [showHelp, setShowHelp] = useState(false);
@@ -22,7 +21,6 @@ export default function Login({ adminPath = 'admin-karangwungu' }) {
     const { data, setData, post, processing, errors, reset } = useForm({
         username: '',
         password: '',
-        security_pin: '62254',
         remember: false,
     });
 
@@ -67,7 +65,7 @@ export default function Login({ adminPath = 'admin-karangwungu' }) {
     const handleSubmit = (e) => {
         e.preventDefault();
         post(`/${adminPath}/login`, {
-            onFinish: () => reset('password', 'security_pin'),
+            onFinish: () => reset('password'),
         });
     };
 
@@ -288,42 +286,6 @@ export default function Login({ adminPath = 'admin-karangwungu' }) {
                             )}
                         </div>
 
-                        {/* Token / PIN Keamanan */}
-                        <div className="space-y-1.5">
-                            <div className="flex items-center justify-between">
-                                <label className="block text-sm font-medium text-zinc-800 dark:text-zinc-200">
-                                    Token / PIN Keamanan <span className="text-red-500">*</span>
-                                </label>
-                            </div>
-                            <div className="relative">
-                                <input
-                                    type={showPin ? 'text' : 'password'}
-                                    required
-                                    maxLength={10}
-                                    value={data.security_pin}
-                                    onChange={(e) => setData('security_pin', e.target.value)}
-                                    placeholder="****"
-                                    className="w-full h-11 pl-3.5 pr-10 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-600 transition-colors tracking-wider font-mono"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPin(!showPin)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors p-1 cursor-pointer"
-                                    tabIndex={-1}
-                                    title={showPin ? "Sembunyikan PIN" : "Tampilkan PIN"}
-                                >
-                                    {showPin ? (
-                                        <EyeOff className="h-4 w-4" />
-                                    ) : (
-                                        <Eye className="h-4 w-4" />
-                                    )}
-                                </button>
-                            </div>
-                            {errors.security_pin && (
-                                <p className="text-xs text-red-600 dark:text-red-400 mt-1">{errors.security_pin}</p>
-                            )}
-                        </div>
-
                         {/* Remember Me & Help Row with Interactive Popover */}
                         <div className="flex items-center justify-between pt-1">
                             <label className="flex items-center gap-2.5 cursor-pointer select-none group">
@@ -377,7 +339,7 @@ export default function Login({ adminPath = 'admin-karangwungu' }) {
                                         <span>Kendala Akses Administrator</span>
                                     </div>
                                     <p className="text-zinc-300 text-[11px] leading-relaxed">
-                                        Jika Anda mengalami kendala login, lupa kata sandi, atau kehilangan Token PIN keamanan, silakan hubungi <strong>Administrator Utama</strong> atau <strong>Tim Developer</strong> Desa Karangwungu untuk verifikasi identitas dan reset kredensial akun Anda.
+                                        Jika Anda mengalami kendala login atau lupa kata sandi, silakan hubungi <strong>Administrator Utama</strong> atau <strong>Tim Developer</strong> Desa Karangwungu untuk verifikasi identitas dan reset kredensial akun Anda.
                                     </p>
                                     <div className="mt-2.5 pt-2 border-t border-zinc-700/60 flex items-center justify-between text-[10px] text-zinc-400">
                                         <span>Sekretariat Desa</span>

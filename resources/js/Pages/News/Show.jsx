@@ -136,12 +136,19 @@ export default function NewsShow({ post, relatedPosts = [], popularPosts = [] })
             .toUpperCase();
     };
 
+    const toAbsoluteUrl = (path, fallback = '/assets/images/hero.jpg') => {
+        const target = path || fallback;
+        if (!target) return `${appUrl}/assets/images/hero.jpg`;
+        if (target.startsWith('http://') || target.startsWith('https://')) return target;
+        return `${appUrl}${target.startsWith('/') ? '' : '/'}${target}`;
+    };
+
     const newsSchema = {
         '@context': 'https://schema.org',
         '@type': 'NewsArticle',
         'headline': post.title,
         'image': [
-            post.image || 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=1200&q=80'
+            toAbsoluteUrl(post.image, '/assets/images/hero.jpg'),
         ],
         'datePublished': post.published_at,
         'dateModified': post.updated_at,
@@ -153,12 +160,17 @@ export default function NewsShow({ post, relatedPosts = [], popularPosts = [] })
         'publisher': {
             '@type': 'GovernmentOrganization',
             'name': 'Pemerintah Desa Karangwungu',
+            'url': appUrl,
             'logo': {
                 '@type': 'ImageObject',
-                'url': 'https://images.unsplash.com/photo-1577495508048-b635879837f1?auto=format&fit=crop&w=400&q=80',
+                'url': `${appUrl}/assets/images/logo.png`,
+                'width': 512,
+                'height': 512,
             }
         },
         'description': post.excerpt,
+        'articleSection': post.category || 'Berita',
+        'inLanguage': 'id-ID',
         'mainEntityOfPage': {
             '@type': 'WebPage',
             '@id': postUrl,

@@ -12,10 +12,19 @@
     <meta name="geo.placename" content="Karangwungu, Karanggeneng, Lamongan">
     <meta name="geo.position" content="-7.0396;112.3551">
     <meta name="ICBM" content="-7.0396, 112.3551">
-    <meta name="theme-color" content="#070709">
+    <meta name="theme-color" content="#991b1b">
+    <meta name="application-name" content="Desa Karangwungu">
+    <meta name="apple-mobile-web-app-title" content="Desa Karangwungu">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <!-- Fonts -->
+    <!-- Icons & Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/logo.png">
+
+    <!-- Fonts & Resource Hints -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">

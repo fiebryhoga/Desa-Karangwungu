@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import AppLayout from '../../Layouts/AppLayout';
 import SeoHead from '../../Components/SEO/SeoHead';
 import {
@@ -32,6 +32,7 @@ export default function PotentialsShow({
     potential,
     relatedPotentials = [],
 }) {
+    const { props } = usePage();
     const [copied, setCopied] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -121,7 +122,55 @@ export default function PotentialsShow({
         }
     };
 
-    const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
+    const appUrl = (props?.app_url || (typeof window !== 'undefined' ? window.location.origin : 'https://karangwungu-lamongan.desa.id')).replace(/\/+$/, '');
+    const potentialUrl = `${appUrl}/potensi/${potential.slug}`;
+
+    const toAbsoluteUrl = (path, fallback = '/assets/images/hero.jpg') => {
+        const target = path || fallback;
+        if (!target) return `${appUrl}/assets/images/hero.jpg`;
+        if (target.startsWith('http://') || target.startsWith('https://')) return target;
+        return `${appUrl}${target.startsWith('/') ? '' : '/'}${target}`;
+    };
+
+    const potentialSchema = {
+        '@context': 'https://schema.org',
+        '@type': ['LocalBusiness', 'Product'],
+        '@id': `${potentialUrl}#business`,
+        'name': potential.title,
+        'description': potential.description,
+        'image': toAbsoluteUrl(potential.image, '/assets/images/hero.jpg'),
+        'url': potentialUrl,
+        'telephone': potential.contact_phone || potential.contact_whatsapp || '+6281234567890',
+        'address': {
+            '@type': 'PostalAddress',
+            'streetAddress': potential.location || 'Desa Karangwungu',
+            'addressLocality': 'Karanggeneng',
+            'addressRegion': 'Kabupaten Lamongan, Jawa Timur',
+            'postalCode': '62254',
+            'addressCountry': 'ID',
+        },
+        'geo': {
+            '@type': 'GeoCoordinates',
+            'latitude': -7.039615,
+            'longitude': 112.355112,
+        },
+        'priceRange': potential.price_range || 'Rp 10.000 - Rp 500.000',
+        ...(Array.isArray(potential.products) && potential.products.length > 0 ? {
+            'hasOfferCatalog': {
+                '@type': 'OfferCatalog',
+                'name': `Daftar Produk ${potential.title}`,
+                'itemListElement': potential.products.map((p, idx) => ({
+                    '@type': 'Offer',
+                    'itemOffered': {
+                        '@type': 'Product',
+                        'name': p.name,
+                        'description': p.description || p.name,
+                    },
+                    'position': idx + 1,
+                })),
+            }
+        } : {}),
+    };
 
     return (
         <AppLayout>
@@ -134,6 +183,7 @@ export default function PotentialsShow({
                     { label: 'Potensi & UMKM', url: '/potensi' },
                     { label: potential.title, url: `/potensi/${potential.slug}` },
                 ]}
+                schemaData={potentialSchema}
             />
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
